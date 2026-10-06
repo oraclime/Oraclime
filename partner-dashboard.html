@@ -74,13 +74,39 @@
     <form id="createJobForm">
       <div class="grid2">
         <div class="field"><label>Customer Name *</label><input id="cName" class="input" required></div>
-        <div class="field"><label>Customer Mobile *</label><input id="cMobile" class="input" required inputmode="tel"></div>
+        <div class="field"><label>Customer Mobile *</label><input
+  id="cMobile"
+  class="input"
+  type="tel"
+  inputmode="numeric"
+  maxlength="10"
+  pattern="[6-9][0-9]{9}"
+  autocomplete="tel"
+  required
+></div>
         <div class="field full"><label>Customer Address *</label><textarea id="cAddress" class="textarea" rows="2" required></textarea></div>
         <div class="field"><label>City</label><input id="cCity" class="input"></div>
-        <div class="field"><label>Pincode</label><input id="cPincode" class="input"></div>
+        <div class="field"><label>Pincode</label><input
+  id="cPincode"
+  class="input"
+  type="text"
+  inputmode="numeric"
+  maxlength="6"
+  pattern="[0-9]{6}"
+  autocomplete="postal-code"
+></div>
         <div class="field"><label>Service Type *</label><input id="cService" class="input" required list="serviceList" placeholder="Enter the configured service type"><datalist id="serviceList"><option value="INSTALLATION"><option value="SERVICE"><option value="REPAIR"><option value="COMPLAINT"><option value="MAINTENANCE"></datalist><div class="muted" style="margin-top:5px">The value must match an ORACLIME service type configured in the database.</div></div>
         <div class="field"><label>Preferred Date</label><input id="cDate" class="input" type="date"></div>
-        <div class="field"><label>Preferred Time</label><input id="cTime" class="input" placeholder="e.g. 10:00 AM - 12:00 PM"></div>
+        <div class="field"><label>Preferred Time</label><select id="cTime" class="input">
+  <option value="">Select preferred time</option>
+  <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
+  <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+  <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
+  <option value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM</option>
+  <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
+  <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+  <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM</option>
+</select></div>
         <div class="field"><label>Completion Code</label><div class="input" style="background:#f9fafb;font-weight:800;letter-spacing:2px" id="generatedCode">Generate on submit</div></div>
         <div class="field full"><label>Notes</label><textarea id="cNotes" class="textarea" rows="3" placeholder="Additional job information"></textarea></div>
       </div>
@@ -169,6 +195,125 @@ async function requestBankChange(e){e.preventDefault();const {error}=await supab
 
 document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();hide('loginError');const {error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginPassword').value});if(error)showError('loginError','Login failed: '+error.message)});
 document.getElementById('logoutBtn').addEventListener('click',()=>supabaseClient.auth.signOut());document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.section)));document.getElementById('createJobForm').addEventListener('submit',createJob);document.getElementById('uploadExcelBtn').addEventListener('click',uploadExcel);document.getElementById('bankRequestForm').addEventListener('submit',requestBankChange);document.getElementById('jobSearch').addEventListener('input',renderJobs);document.getElementById('jobStatus').addEventListener('change',renderJobs);init();
+
+// =====================================================
+// ORACLIME - Create Job Form Validation
+// =====================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileInput = document.getElementById("cMobile");
+  const pincodeInput = document.getElementById("cPincode");
+  const dateInput = document.getElementById("cDate");
+  const timeInput = document.getElementById("cTime");
+  const createForm = document.getElementById("createJobForm");
+
+  // ---------------------------------------------------
+  // 1. Mobile: allow only 10 digits
+  // ---------------------------------------------------
+  if (mobileInput) {
+    mobileInput.addEventListener("input", () => {
+      mobileInput.value = mobileInput.value
+        .replace(/\D/g, "")
+        .slice(0, 10);
+    });
+  }
+
+  // ---------------------------------------------------
+  // 2. Pincode: allow only 6 digits
+  // ---------------------------------------------------
+  if (pincodeInput) {
+    pincodeInput.addEventListener("input", () => {
+      pincodeInput.value = pincodeInput.value
+        .replace(/\D/g, "")
+        .slice(0, 6);
+    });
+  }
+
+  // ---------------------------------------------------
+  // 3. Preferred Date: today or future only
+  // ---------------------------------------------------
+  if (dateInput) {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    const today = `${year}-${month}-${day}`;
+
+    dateInput.min = today;
+  }
+
+  // ---------------------------------------------------
+  // 4. Final validation before Create Job
+  // ---------------------------------------------------
+  if (createForm) {
+    createForm.addEventListener("submit", (event) => {
+      const mobile = mobileInput?.value.trim() || "";
+      const pincode = pincodeInput?.value.trim() || "";
+      const selectedDate = dateInput?.value || "";
+      const selectedTime = timeInput?.value || "";
+
+      // Mobile
+      if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+        event.preventDefault();
+
+        alert(
+          "Please enter a valid 10-digit Indian mobile number."
+        );
+
+        mobileInput?.focus();
+        return;
+      }
+
+      // Pincode
+      if (!/^[0-9]{6}$/.test(pincode)) {
+        event.preventDefault();
+
+        alert(
+          "Please enter a valid 6-digit pincode."
+        );
+
+        pincodeInput?.focus();
+        return;
+      }
+
+      // Date
+      if (selectedDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const chosenDate = new Date(
+          selectedDate + "T00:00:00"
+        );
+
+        if (chosenDate < today) {
+          event.preventDefault();
+
+          alert(
+            "Preferred date cannot be in the past."
+          );
+
+          dateInput?.focus();
+          return;
+        }
+      }
+
+      // Time
+      if (!selectedTime) {
+        event.preventDefault();
+
+        alert(
+          "Please select a preferred time."
+        );
+
+        timeInput?.focus();
+        return;
+      }
+    });
+  }
+});
+
 </script>
 </body>
 </html>
