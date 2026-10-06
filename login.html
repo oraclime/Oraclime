@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>ORACLIME Login</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<div class="navwrap">
+  <div class="container nav">
+
+    <a class="logo" href="index.html">ORACLIME</a>
+
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="login.html">Login</a>
+    </div>
+
+    <a class="navcta" href="contact.html">Partner With Us</a>
+
+  </div>
+</div>
+
+
+<section class="dashboard">
+
+  <div class="container">
+
+    <div style="max-width:520px;margin:auto">
+
+      <div class="sectionhead">
+
+        <div class="eyebrow">Secure Access</div>
+
+        <h2>ORACLIME Login</h2>
+
+        <p>
+          Secure role-based access for partners and technicians.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <form id="loginForm">
+
+          <div class="field">
+
+            <label for="email">
+              Username / Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              autocomplete="username"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label for="role">
+              Role
+            </label>
+
+            <select id="role" required>
+
+              <option value="PARTNER">
+                Partner
+              </option>
+
+              <option value="TECHNICIAN">
+                Technician
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <button
+            id="loginButton"
+            class="btn primary"
+            type="submit"
+          >
+            Login
+          </button>
+
+
+          <div
+            id="loginMessage"
+            class="notice"
+            style="display:none;margin-top:18px"
+          ></div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="container">
+
+    <div class="grid g3">
+
+      <div class="card">
+
+        <h3>Partner</h3>
+
+        <p>
+          Create and track your service leads
+          through ORACLIME.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>Technician</h3>
+
+        <p>
+          Manage assigned service work,
+          customer visits and completion.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  <div class="container footgrid">
+
+    <div>
+
+      <div class="logo">
+        ORACLIME
+      </div>
+
+      <p>
+        Professional B2B + B2T service coordination
+        for businesses, partners and service professionals.
+      </p>
+
+      <p class="small">
+        AC / Air Conditioner • Electrical •
+        CCTV / Security • Related Technical Services
+      </p>
+
+    </div>
+
+
+    <div>
+
+      <strong>Company</strong>
+
+      <div class="footerlinks">
+
+        <a href="about.html">About Us</a>
+
+        <a href="contact.html">Contact Us</a>
+
+        <a href="login.html">Login</a>
+
+      </div>
+
+    </div>
+
+
+    <div>
+
+      <strong>Contact</strong>
+
+      <div class="footerlinks">
+
+        <span>
+          +91 9917306492 (WhatsApp Only)
+        </span>
+
+        <span>
+          Availability: 24/7
+        </span>
+
+        <span>
+          Oraclime@gmail.com
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+<script>
+
+const SUPABASE_URL =
+  "https://dmygjpkzuewnpxsispcm.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_mQskIlYXBc4v8bXwF1FxmA_HLgigkqi";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+const loginForm =
+  document.getElementById("loginForm");
+
+const loginButton =
+  document.getElementById("loginButton");
+
+const loginMessage =
+  document.getElementById("loginMessage");
+
+const roleSelect =
+  document.getElementById("role");
+
+
+function showMessage(message, type = "error") {
+
+  loginMessage.textContent = message;
+
+  loginMessage.style.display = "block";
+
+  loginMessage.className =
+    type === "success"
+      ? "notice success"
+      : "notice error";
+
+}
+
+
+loginForm.addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+
+  const email =
+    document.getElementById("email")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const password =
+    document.getElementById("password")
+      .value;
+
+
+  const selectedRole =
+    roleSelect.value;
+
+
+  if (!email || !password) {
+
+    showMessage(
+      "Please enter your email and password."
+    );
+
+    return;
+  }
+
+
+  loginButton.disabled = true;
+
+  loginButton.textContent = "Signing in...";
+
+  loginMessage.style.display = "none";
+
+
+  try {
+
+    /*
+     * STEP 1
+     * Authenticate through Supabase Auth
+     */
+
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.signInWithPassword({
+
+      email: email,
+
+      password: password
+
+    });
+
+
+    if (error) {
+
+      console.error(
+        "ORACLIME Auth Error:",
+        error
+      );
+
+      showMessage(
+        error.message || "Login failed."
+      );
+
+      return;
+    }
+
+
+    if (!data || !data.user) {
+
+      showMessage(
+        "Login failed. User account not found."
+      );
+
+      return;
+    }
+
+
+    /*
+     * STEP 2
+     * Get ORACLIME application profile
+     */
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabaseClient
+
+      .from("app_users")
+
+      .select(
+        "id, full_name, email, role, status"
+      )
+
+      .eq("id", data.user.id)
+
+      .single();
+
+
+    if (profileError) {
+
+      console.error(
+        "ORACLIME Profile Error:",
+        profileError
+      );
+
+      await supabaseClient.auth.signOut();
+
+      showMessage(
+        "Your account is authenticated, but the ORACLIME user profile is not configured."
+      );
+
+      return;
+    }
+
+
+    /*
+     * STEP 3
+     * Check account status
+     */
+
+    if (profile.status !== "ACTIVE") {
+
+      await supabaseClient.auth.signOut();
+
+      showMessage(
+        "Your ORACLIME account is not active."
+      );
+
+      return;
+    }
+
+
+    /*
+     * STEP 4
+     * Check selected role against database role
+     */
+
+    if (profile.role !== selectedRole) {
+
+      await supabaseClient.auth.signOut();
+
+      showMessage(
+        "Selected role does not match your account."
+      );
+
+      return;
+    }
+
+
+    /*
+     * STEP 5
+     * Redirect according to role
+     */
+
+    showMessage(
+      "Login successful. Opening your dashboard...",
+      "success"
+    );
+
+
+    if (profile.role === "TECHNICIAN") {
+
+      window.location.href =
+        "technician-dashboard.html";
+
+      return;
+    }
+
+
+    if (profile.role === "PARTNER") {
+
+      window.location.href =
+        "partner-dashboard.html";
+
+      return;
+    }
+
+
+    /*
+     * Safety fallback
+     */
+
+    await supabaseClient.auth.signOut();
+
+    showMessage(
+      "This account does not have a valid ORACLIME role."
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "ORACLIME Login Error:",
+      error
+    );
+
+    showMessage(
+      "Something went wrong while signing in."
+    );
+
+  }
+
+  finally {
+
+    loginButton.disabled = false;
+
+    loginButton.textContent = "Login";
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,2444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORACLIME Technician Dashboard</title>
+
+<link rel="stylesheet" href="assets/style.css">
+
+<style>
+.tech-page{
+  min-height:100vh;
+  background:#06101d;
+}
+
+.tech-header{
+  padding:24px 0;
+}
+
+.tech-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.tech-profile{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.tech-avatar{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#10263a;
+  border:1px solid rgba(99,169,255,.25);
+  font-weight:800;
+  color:#63a9ff;
+}
+
+.tech-name{
+  font-size:18px;
+  font-weight:800;
+}
+
+.tech-code{
+  font-size:13px;
+  opacity:.65;
+  margin-top:3px;
+}
+
+.tech-logout{
+  border:1px solid rgba(255,255,255,.15);
+  background:#0c1b2d;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.tech-main{
+  padding:10px 0 60px;
+}
+
+.tech-welcome{
+  margin-bottom:25px;
+}
+
+.tech-welcome h1{
+  margin:0 0 8px;
+  font-size:32px;
+}
+
+.tech-welcome p{
+  margin:0;
+  opacity:.7;
+}
+
+.tech-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:28px;
+}
+
+.tech-stat{
+  background:#0c1b2d;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:20px;
+}
+
+.tech-stat.clickable{
+  width:100%; box-sizing:border-box; color:#fff; text-align:left; font:inherit;
+  cursor:pointer; transition:transform .15s ease,border-color .15s ease,background .15s ease;
+}
+.tech-stat.clickable:hover{transform:translateY(-2px);border-color:rgba(99,169,255,.35);background:#102238}
+.tech-stat.clickable:focus-visible{outline:2px solid #63a9ff;outline-offset:2px}
+.tech-stat-hint{margin-top:8px;font-size:11px;opacity:.5}
+
+.tech-stat-number{
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+
+.tech-stat-label{
+  font-size:13px;
+  opacity:.65;
+}
+
+.jobs-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.jobs-head h2{
+  margin:0;
+}
+
+.refresh-btn{
+  border:1px solid rgba(255,255,255,.12);
+  background:#0c1b2d;
+  color:#fff;
+  padding:9px 14px;
+  border-radius:9px;
+  cursor:pointer;
+}
+
+.jobs{
+  display:grid;
+  gap:16px;
+}
+
+.job-card{
+  background:#0c1b2d;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  padding:20px;
+}
+
+.job-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+}
+
+.job-number{
+  font-size:14px;
+  font-weight:800;
+  color:#63a9ff;
+}
+
+.job-customer{
+  font-size:21px;
+  font-weight:850;
+  margin-top:5px;
+}
+
+.status-badge{
+  padding:7px 11px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  background:#132a3d;
+  color:#63a9ff;
+  white-space:nowrap;
+}
+
+.job-details{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin:20px 0;
+}
+
+.job-detail{
+  padding:13px;
+  border-radius:11px;
+  background:#081624;
+}
+
+.job-detail-label{
+  font-size:11px;
+  opacity:.5;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  margin-bottom:4px;
+}
+
+.job-detail-value{
+  font-size:14px;
+  line-height:1.5;
+}
+
+.job-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+
+.job-btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  cursor:pointer;
+  font-weight:800;
+  background:#173047;
+  color:#fff;
+}
+
+.job-btn.primary{
+  background:#35d1aa;
+  color:#04131e;
+}
+
+.job-btn.danger{
+  background:#45212a;
+  color:#ffb8c2;
+}
+
+.job-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.empty-state{
+  text-align:center;
+  padding:55px 20px;
+  background:#0c1b2d;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+}
+
+.empty-icon{
+  font-size:40px;
+  margin-bottom:12px;
+}
+
+.loading{
+  text-align:center;
+  padding:60px 20px;
+  opacity:.7;
+}
+
+.notice-box{
+  display:none;
+  margin-bottom:20px;
+  padding:14px 16px;
+  border-radius:12px;
+  background:#45212a;
+  color:#ffd7dc;
+  border:1px solid rgba(255,120,140,.2);
+}
+
+@media(max-width:800px){
+  .tech-stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .container{
+    width:min(94%,1100px);
+  }
+
+  .tech-top{
+    align-items:flex-start;
+  }
+
+  .tech-welcome h1{
+    font-size:27px;
+  }
+
+  .tech-stats{
+    gap:10px;
+  }
+
+  .tech-stat{
+    padding:15px;
+  }
+
+  .tech-stat-number{
+    font-size:23px;
+  }
+
+  .job-card{
+    padding:16px;
+  }
+
+  .job-top{
+    flex-direction:column;
+  }
+
+  .job-details{
+    grid-template-columns:1fr;
+  }
+
+  .job-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .job-btn{
+    width:100%;
+  }
+}
+
+
+/* ===== Completed History ===== */
+.completed-history-modal{position:fixed;inset:0;z-index:9998;display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto;background:rgba(2,8,14,.82);backdrop-filter:blur(8px)}
+.completed-history-modal.open{display:flex}
+.completed-history-panel{width:min(920px,100%);background:#0c1b2d;border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 22px 70px rgba(0,0,0,.45);overflow:hidden}
+.completed-history-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.completed-history-head h2{margin:0 0 5px}.completed-history-head p{margin:0;opacity:.65;font-size:14px}
+.close-history{border:1px solid rgba(255,255,255,.12);background:#10263a;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:22px}
+.completed-history-body{padding:22px}
+.history-filter{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:18px;padding:14px;border-radius:12px;background:#081624}
+.history-date-field{flex:1 1 220px}.history-date-field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;opacity:.82}
+.history-date-field input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);background:#0c1b2d;color:#fff;border-radius:10px;padding:11px;outline:none}
+.history-date-field input:focus{border-color:#63a9ff}
+.history-nav-btn{border:1px solid rgba(255,255,255,.12);background:#10263a;color:#fff;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:800}
+.history-nav-btn.primary{background:#173047}
+.history-results{display:grid;gap:12px}.history-count{font-size:13px;opacity:.65;margin-bottom:4px}
+.history-empty{text-align:center;padding:40px 18px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#081624;opacity:.75}
+.history-job-card{background:#081624;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px}
+.history-job-top{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:12px}
+.history-job-number{font-size:13px;font-weight:800;color:#63a9ff}.history-job-customer{font-size:18px;font-weight:850;margin-top:4px}
+.history-job-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.history-meta-item{padding:10px;border-radius:9px;background:#0c1b2d}.history-meta-label{font-size:10px;opacity:.5;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}.history-meta-value{font-size:13px;line-height:1.4}
+@media(max-width:700px){.completed-history-body,.completed-history-head{padding:16px}.history-job-meta{grid-template-columns:1fr}.history-filter{display:grid;grid-template-columns:1fr 1fr}.history-date-field{grid-column:1/-1}.history-nav-btn{width:100%}}
+
+/* ===== Technician Deposit ===== */
+.deposit-btn{
+  border:1px solid rgba(53,209,170,.30);
+  background:#12352f;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+}
+.deposit-modal{position:fixed;inset:0;z-index:10001;display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto;background:rgba(2,8,14,.82);backdrop-filter:blur(8px)}
+.deposit-modal.open{display:flex}
+.deposit-panel{width:min(760px,100%);background:#0c1b2d;border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 22px 70px rgba(0,0,0,.45);overflow:hidden}
+.deposit-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.deposit-head h2{margin:0 0 5px}.deposit-head p{margin:0;opacity:.65;font-size:14px}
+.close-deposit{border:1px solid rgba(255,255,255,.12);background:#10263a;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:22px}
+.deposit-body{padding:22px}.deposit-section{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.deposit-section:first-child{margin-top:0;padding-top:0;border-top:0}.deposit-section h3{margin:0 0 14px;font-size:17px}
+.company-bank-details{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px;border-radius:12px;background:#081624;border:1px solid rgba(255,255,255,.08)}
+.company-bank-item{padding:10px;border-radius:9px;background:#0c1b2d}.company-bank-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.5;margin-bottom:4px}.company-bank-value{font-size:13px;font-weight:800;word-break:break-word}.company-upi-line{display:block;line-height:1.65}
+.deposit-note{margin-top:10px;padding:12px 14px;border-radius:10px;background:#10263a;font-size:13px;line-height:1.5;opacity:.88}
+.deposit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.deposit-field label,.deposit-file-field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;opacity:.82}.deposit-field input,.deposit-field select,.deposit-file-field input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);background:#081624;color:#fff;border-radius:10px;padding:12px;outline:none}.deposit-field input:focus,.deposit-field select:focus{border-color:#63a9ff}.deposit-file-field{padding:13px;border:1px dashed rgba(99,169,255,.28);border-radius:12px;background:#081624}.deposit-file-field input{margin-top:8px;border:0;padding:0;background:transparent}.deposit-file-field small{display:block;margin-top:7px;opacity:.5;line-height:1.4}.deposit-error,.deposit-success{display:none;margin-bottom:14px;padding:12px 14px;border-radius:10px}.deposit-error{background:#45212a;color:#ffd7dc}.deposit-success{background:#12392f;color:#baf5e3}.deposit-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.submit-deposit{border:0;border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:900;background:#35d1aa;color:#04131e}.submit-deposit:disabled{opacity:.5;cursor:not-allowed}.cancel-deposit{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:800;background:#10263a;color:#fff}
+@media(max-width:700px){.company-bank-details,.deposit-grid{grid-template-columns:1fr}.deposit-body,.deposit-head{padding:16px}.deposit-actions{display:grid;grid-template-columns:1fr 1fr}.deposit-actions button{width:100%}}
+
+/* ===== Technician Profile ===== */
+.profile-btn{
+  border:1px solid rgba(99,169,255,.22);
+  background:#10263a;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+}
+.tech-header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.profile-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto;background:rgba(2,8,14,.82);backdrop-filter:blur(8px)}
+.profile-modal.open{display:flex}
+.profile-panel{width:min(760px,100%);background:#0c1b2d;border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 22px 70px rgba(0,0,0,.45);overflow:hidden}
+.profile-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.profile-head h2{margin:0 0 5px}.profile-head p{margin:0;opacity:.65;font-size:14px}
+.close-profile{border:1px solid rgba(255,255,255,.12);background:#10263a;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:22px}
+.profile-body{padding:22px}
+.profile-section{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.profile-section:first-child{margin-top:0;padding-top:0;border-top:0}
+.profile-section h3{margin:0 0 14px;font-size:17px}
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.profile-field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;opacity:.82}
+.profile-field input,.profile-field select{
+  width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);
+  background:#081624;color:#fff;border-radius:10px;padding:12px;outline:none
+}
+.profile-field input:focus,.profile-field select:focus{border-color:#63a9ff}
+.profile-field input[readonly]{opacity:.62;cursor:not-allowed;background:#091827}
+.profile-locked{font-size:11px;opacity:.55;margin-top:5px}
+.profile-field small{display:block;margin-top:6px;opacity:.5;line-height:1.4}
+.profile-note{padding:12px 14px;border-radius:10px;background:#10263a;font-size:13px;line-height:1.5;opacity:.88}
+.profile-error,.profile-success{display:none;margin-bottom:14px;padding:12px 14px;border-radius:10px}
+.profile-error{background:#45212a;color:#ffd7dc}.profile-success{background:#12392f;color:#baf5e3}
+.profile-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.save-profile{border:0;border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:900;background:#35d1aa;color:#04131e}
+.cancel-profile{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:800;background:#10263a;color:#fff}
+.save-profile:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:700px){.profile-grid{grid-template-columns:1fr}.profile-body,.profile-head{padding:16px}.profile-actions{display:grid;grid-template-columns:1fr 1fr}.profile-actions button{width:100%}}
+
+/* ===== Completion Workflow ===== */
+.completion-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:flex-start;justify-content:center;padding:24px 12px;overflow:auto;background:rgba(2,8,14,.82);backdrop-filter:blur(8px)}
+.completion-modal.open{display:flex}
+.completion-panel{width:min(920px,100%);background:#0c1b2d;border:1px solid rgba(255,255,255,.10);border-radius:20px;box-shadow:0 22px 70px rgba(0,0,0,.45);overflow:hidden}
+.completion-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:22px;border-bottom:1px solid rgba(255,255,255,.08)}
+.completion-head h2{margin:0 0 5px}.completion-head p{margin:0;opacity:.65;font-size:14px}
+.close-completion{border:1px solid rgba(255,255,255,.12);background:#10263a;color:#fff;width:40px;height:40px;border-radius:10px;cursor:pointer;font-size:22px}
+.completion-body{padding:22px}
+.completion-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.summary-item{background:#081624;border-radius:12px;padding:12px}.summary-item small{display:block;opacity:.55;margin-bottom:5px;text-transform:uppercase;font-size:10px;letter-spacing:.05em}.summary-item strong{font-size:14px}
+.completion-section{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.completion-section h3{margin:0 0 14px;font-size:17px}
+.completion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;opacity:.82}
+.field input,.field select,.field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);background:#081624;color:#fff;border-radius:10px;padding:12px;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#63a9ff}.field input[readonly]{opacity:.8;cursor:not-allowed}
+.file-field{padding:13px;border:1px dashed rgba(99,169,255,.28);border-radius:12px;background:#081624}.file-field input{margin-top:8px;border:0;padding:0;background:transparent}
+.required{color:#ff9eaa}.completion-note{padding:12px 14px;border-radius:10px;background:#10263a;font-size:13px;line-height:1.5;opacity:.88}
+.completion-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.submit-completion{border:0;border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:900;background:#35d1aa;color:#04131e}.submit-completion:disabled{opacity:.5;cursor:not-allowed}
+.cancel-completion{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 18px;cursor:pointer;font-weight:800;background:#10263a;color:#fff}
+.completion-error,.completion-success{display:none;margin-bottom:14px;padding:12px 14px;border-radius:10px}.completion-error{background:#45212a;color:#ffd7dc}.completion-success{background:#12392f;color:#baf5e3}
+@media(max-width:700px){.completion-summary,.completion-grid{grid-template-columns:1fr}.completion-body,.completion-head{padding:16px}.completion-actions{display:grid;grid-template-columns:1fr 1fr}.completion-actions button{width:100%}}
+
+</style>
+</head>
+
+<body class="tech-page">
+
+<div class="navwrap">
+  <div class="container nav">
+
+    <a class="logo" href="index.html">ORACLIME</a>
+
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+
+  </div>
+</div>
+
+
+<section class="tech-header">
+  <div class="container">
+
+    <div class="tech-top">
+
+      <div class="tech-profile">
+        <div class="tech-avatar" id="techAvatar">T</div>
+
+        <div>
+          <div class="tech-name" id="techName">
+            Technician
+          </div>
+
+          <div class="tech-code" id="techCode">
+            Loading technician...
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-header-actions">
+        <button class="profile-btn" type="button" id="profileBtn">
+          Profile
+        </button>
+
+        <button class="deposit-btn" type="button" id="depositBtn">
+          Deposit
+        </button>
+
+        <button class="tech-logout" id="logoutBtn">
+          Logout
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<main class="tech-main">
+
+<div class="container">
+
+  <div id="errorBox" class="notice-box"></div>
+
+  <div class="tech-welcome">
+    <h1>Technician Dashboard</h1>
+    <p>Manage your assigned service jobs and update job progress.</p>
+  </div>
+
+
+  <div class="tech-stats">
+
+    <div class="tech-stat">
+      <div class="tech-stat-number" id="statAssigned">0</div>
+      <div class="tech-stat-label">Assigned</div>
+    </div>
+
+    <div class="tech-stat">
+      <div class="tech-stat-number" id="statAccepted">0</div>
+      <div class="tech-stat-label">Accepted</div>
+    </div>
+
+    <div class="tech-stat">
+      <div class="tech-stat-number" id="statProgress">0</div>
+      <div class="tech-stat-label">In Progress</div>
+    </div>
+
+    <button class="tech-stat clickable" id="completedStatCard" type="button" title="View completed jobs by date">
+      <div class="tech-stat-number" id="statCompleted">0</div>
+      <div class="tech-stat-label">Completed Today</div>
+      <div class="tech-stat-hint">Click to view previous completed jobs</div>
+    </button>
+
+  </div>
+
+
+  <div class="jobs-head">
+
+    <h2>My Jobs</h2>
+
+    <button class="refresh-btn" id="refreshBtn">
+      Refresh
+    </button>
+
+  </div>
+
+
+  <div id="loading" class="loading">
+    Loading your jobs...
+  </div>
+
+  <div id="jobs" class="jobs"></div>
+
+</div>
+
+</main>
+
+
+
+
+<div class="completed-history-modal" id="completedHistoryModal" aria-hidden="true">
+  <div class="completed-history-panel">
+    <div class="completed-history-head">
+      <div><h2>Completed Jobs</h2><p>View completed service jobs for today or any previous date.</p></div>
+      <button class="close-history" type="button" onclick="closeCompletedHistory()">×</button>
+    </div>
+    <div class="completed-history-body">
+      <div class="history-filter">
+        <div class="history-date-field">
+          <label for="completedHistoryDate">Select Date</label>
+          <input id="completedHistoryDate" type="date">
+        </div>
+        <button class="history-nav-btn" type="button" id="historyPreviousBtn">Previous Day</button>
+        <button class="history-nav-btn primary" type="button" id="historyTodayBtn">Today</button>
+      </div>
+      <div id="completedHistoryResults" class="history-results"></div>
+    </div>
+  </div>
+</div>
+
+<div class="deposit-modal" id="depositModal" aria-hidden="true">
+  <div class="deposit-panel">
+    <div class="deposit-head">
+      <div>
+        <h2>Deposit Collection</h2>
+        <p>Deposit the customer payment collected for ORACLIME service jobs.</p>
+      </div>
+      <button class="close-deposit" type="button" onclick="closeDeposit()">×</button>
+    </div>
+
+    <div class="deposit-body">
+      <div id="depositError" class="deposit-error"></div>
+      <div id="depositSuccess" class="deposit-success"></div>
+
+      <div class="deposit-section">
+        <h3>ORACLIME Bank Details</h3>
+        <div id="companyBankDetails" class="company-bank-details">
+          Loading company bank details...
+        </div>
+        <div class="deposit-note">Use these company details to deposit the amount collected. Company bank details are managed by ORACLIME Support/Admin and cannot be edited by technicians from this dashboard.</div>
+      </div>
+
+      <form id="depositForm">
+        <div class="deposit-section">
+          <h3>Deposit Details</h3>
+          <div class="deposit-grid">
+            <div class="deposit-field">
+              <label for="depositAmount">Amount Deposited <span class="required">*</span></label>
+              <input id="depositAmount" type="number" min="0.01" step="0.01" required placeholder="Enter amount">
+            </div>
+            <div class="deposit-field">
+              <label for="depositMode">Transfer Mode <span class="required">*</span></label>
+              <select id="depositMode" required>
+                <option value="">Select mode</option>
+                <option value="UPI">UPI Transfer</option>
+                <option value="BANK_TRANSFER">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="deposit-field" style="grid-column:1/-1">
+              <label for="depositTransactionId">Transaction ID / UTR Number <span class="required">*</span></label>
+              <input id="depositTransactionId" type="text" maxlength="100" required placeholder="Enter transaction ID or UTR number">
+            </div>
+            <div class="deposit-file-field" style="grid-column:1/-1">
+              <label for="depositProof">Deposit Proof Photo <span class="required">*</span></label>
+              <input id="depositProof" type="file" accept="image/*,application/pdf" required>
+              <small>Upload a clear screenshot/photo of the receipt or transaction confirmation.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="deposit-actions">
+          <button class="cancel-deposit" type="button" onclick="closeDeposit()">Cancel</button>
+          <button class="submit-deposit" id="submitDepositBtn" type="submit">Submit Deposit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="profile-modal" id="profileModal" aria-hidden="true">
+  <div class="profile-panel">
+    <div class="profile-head">
+      <div>
+        <h2>My Profile</h2>
+        <p>Update your contact and professional information.</p>
+      </div>
+      <button class="close-profile" type="button" onclick="closeProfile()">×</button>
+    </div>
+
+    <div class="profile-body">
+      <div id="profileError" class="profile-error"></div>
+      <div id="profileSuccess" class="profile-success"></div>
+
+      <form id="profileForm">
+        <div class="profile-section">
+          <h3>Personal & Contact</h3>
+          <div class="profile-grid">
+            <div class="profile-field">
+              <label>Full Name</label>
+              <input id="profileFullName" type="text" readonly>
+              <div class="profile-locked">Only ORACLIME Support can change this.</div>
+            </div>
+            <div class="profile-field">
+              <label>Technician ID</label>
+              <input id="profileCode" type="text" readonly>
+              <div class="profile-locked">Only ORACLIME Support can change this.</div>
+            </div>
+            <div class="profile-field">
+              <label>Mobile Number</label>
+              <input id="profileMobile" type="tel" inputmode="numeric" maxlength="15">
+              <div class="profile-locked">You can update your mobile number.</div>
+            </div>
+            <div class="profile-field">
+              <label>Alternative Email</label>
+              <input id="profileAlternateEmail" type="email" autocomplete="email">
+              <div class="profile-locked">You can update your alternative email.</div>
+            </div>
+            <div class="profile-field">
+              <label>Login Email</label>
+              <input id="profileEmail" type="email" readonly>
+              <div class="profile-locked">Only ORACLIME Support can change the login email.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <h3>Address & Service Area</h3>
+          <div class="profile-grid">
+            <div class="profile-field" style="grid-column:1/-1">
+              <label>Address</label>
+              <input id="profileAddress" type="text" readonly>
+              <div class="profile-locked">Managed by ORACLIME Support.</div>
+            </div>
+            <div class="profile-field">
+              <label>City</label>
+              <input id="profileCity" type="text" readonly>
+            </div>
+            <div class="profile-field">
+              <label>State</label>
+              <input id="profileState" type="text" readonly>
+            </div>
+            <div class="profile-field">
+              <label>Pincode</label>
+              <input id="profilePincode" type="text" readonly>
+            </div>
+            <div class="profile-field">
+              <label>Service Area</label>
+              <input id="profileServiceArea" type="text" readonly>
+              <div class="profile-locked">Managed by ORACLIME Support.</div>
+            </div>
+            <div class="profile-field">
+              <label>Availability</label>
+              <select id="profileAvailability">
+                <option value="AVAILABLE">Available</option>
+                <option value="BUSY">Busy</option>
+                <option value="OFFLINE">Offline</option>
+              </select>
+              <div class="profile-locked">You can update your availability.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="cancel-profile" type="button" onclick="closeProfile()">Cancel</button>
+          <button class="save-profile" id="saveProfileBtn" type="submit">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="completion-modal" id="completionModal" aria-hidden="true">
+  <div class="completion-panel">
+    <div class="completion-head">
+      <div><h2>Submit Service Completion</h2><p>Upload required proof, enter the amount collected, select payment mode and provide the customer Completion Code.</p></div>
+      <button class="close-completion" type="button" onclick="closeCompletion()">×</button>
+    </div>
+    <div class="completion-body">
+      <div id="completionError" class="completion-error"></div>
+      <div id="completionSuccess" class="completion-success"></div>
+      <div class="completion-summary">
+        <div class="summary-item"><small>Lead</small><strong id="completionLeadNumber">—</strong></div>
+        <div class="summary-item"><small>Customer</small><strong id="completionCustomer">—</strong></div>
+        <div class="summary-item"><small>Service</small><strong id="completionService">—</strong></div>
+      </div>
+      <form id="completionForm">
+        <div class="completion-section">
+          <h3>Required Service Photos</h3>
+          <div class="completion-grid">
+            <div class="file-field"><label>Indoor Location Photo <span class="required">*</span></label><input id="indoorLocation" type="file" accept="image/*" capture="environment" required></div>
+            <div class="file-field"><label>Indoor Serial Number Photo <span class="required">*</span></label><input id="indoorSerial" type="file" accept="image/*" capture="environment" required></div>
+            <div class="file-field"><label>Outdoor Location Photo <span class="required">*</span></label><input id="outdoorLocation" type="file" accept="image/*" capture="environment" required></div>
+            <div class="file-field"><label>Outdoor Serial Number Photo <span class="required">*</span></label><input id="outdoorSerial" type="file" accept="image/*" capture="environment" required></div>
+            <div class="file-field"><label>AC Bill Photo <span class="required">*</span></label><input id="acBill" type="file" accept="image/*,application/pdf" required></div>
+          </div>
+        </div>
+        <div class="completion-section">
+          <h3>Payment Details</h3>
+          <div class="completion-grid">
+            <div class="field">
+              <label>Amount Collected <span class="required">*</span></label>
+              <input id="amountCollected" type="number" step="0.01" min="0" required placeholder="Enter amount collected">
+            </div>
+
+            <div class="field">
+              <label>Payment Mode <span class="required">*</span></label>
+              <select id="paymentMode" required>
+                <option value="">Select mode</option>
+                <option value="CASH">Cash</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="completion-section">
+          <h3>Customer Verification</h3>
+          <div class="completion-note">Ask the customer for the 6-digit Service Completion Code provided by ORACLIME Support.</div>
+          <div class="field" style="margin-top:14px"><label>Service Completion Code <span class="required">*</span></label><input id="completionCode" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit code" required></div>
+        </div>
+        <div class="completion-actions">
+          <button class="cancel-completion" type="button" onclick="closeCompletion()">Cancel</button>
+          <button class="submit-completion" id="submitCompletionBtn" type="submit">Submit Completion</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container footgrid">
+
+    <div>
+      <div class="logo">ORACLIME</div>
+      <p>
+        Professional B2B + B2T service coordination for businesses,
+        partners and service professionals.
+      </p>
+    </div>
+
+    <div>
+      <strong>Company</strong>
+
+      <div class="footerlinks">
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+    </div>
+
+    <div>
+      <strong>Contact</strong>
+
+      <div class="footerlinks">
+        <span>+91 9917306492 (WhatsApp Only)</span>
+        <span>Availability: 24/7</span>
+        <span>Oraclime@gmail.com</span>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+  "https://dmygjpkzuewnpxsispcm.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_mQskIlYXBc4v8bXwF1FxmA_HLgigkqi";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+let currentUser = null;
+let currentTechnician = null;
+let currentJobs = [];
+
+
+const loading =
+  document.getElementById("loading");
+
+const jobsContainer =
+  document.getElementById("jobs");
+
+const errorBox =
+  document.getElementById("errorBox");
+
+
+function showError(message){
+
+  errorBox.textContent = message;
+  errorBox.style.display = "block";
+
+}
+
+
+function hideError(){
+
+  errorBox.style.display = "none";
+
+}
+
+
+function escapeHtml(value){
+
+  if(value === null || value === undefined){
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function formatDate(date){
+
+  if(!date){
+    return "Not scheduled";
+  }
+
+  const d = new Date(date + "T00:00:00");
+
+  return d.toLocaleDateString("en-IN",{
+    day:"2-digit",
+    month:"short",
+    year:"numeric"
+  });
+
+}
+
+
+function formatService(type){
+
+  const map = {
+
+    AC: "AC / Air Conditioner",
+
+    ELECTRICAL: "Electrical",
+
+    CCTV: "CCTV / Security",
+
+    OTHER: "Other Technical Service"
+
+  };
+
+  return map[type] || type || "Service";
+
+
+}
+
+
+function statusLabel(status){
+
+  const map = {
+
+    NEW: "New",
+
+    ASSIGNED: "Assigned",
+
+    ACCEPTED: "Accepted",
+
+    EN_ROUTE: "En Route",
+
+    ARRIVED: "Arrived",
+
+    IN_PROGRESS: "In Progress",
+
+    COMPLETION_SUBMITTED: "Completion Submitted",
+
+    COMPLETED: "Completed",
+
+    REJECTED: "Rejected",
+
+    RESCHEDULE_REQUESTED: "Reschedule Requested",
+
+    CUSTOMER_UNAVAILABLE: "Customer Unavailable",
+
+    CANCELLED: "Cancelled",
+
+    CORRECTION_REQUIRED: "Correction Required",
+
+    PAYMENT_PENDING: "Payment Pending"
+
+  };
+
+  return map[status] || status || "Unknown";
+
+}
+
+
+
+function getIndiaDateKey(value=new Date()){
+  const parts = new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(value));
+  const map = Object.fromEntries(parts.map(p => [p.type,p.value]));
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function formatHistoryDate(dateKey){
+  if(!dateKey) return "Unknown date";
+  const d = new Date(dateKey + "T00:00:00");
+  return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function getCompletedJobsForDate(dateKey){
+  return currentJobs.filter(job => job.status === "COMPLETED" && job.updated_at && getIndiaDateKey(job.updated_at) === dateKey);
+}
+
+function renderCompletedHistory(dateKey){
+  const results=document.getElementById("completedHistoryResults");
+  const completed=getCompletedJobsForDate(dateKey);
+  if(!completed.length){
+    results.innerHTML=`<div class="history-empty"><strong>No completed jobs on ${escapeHtml(formatHistoryDate(dateKey))}.</strong><div style="margin-top:6px">Select another date to view previous completed jobs.</div></div>`;
+    return;
+  }
+  results.innerHTML=`<div class="history-count">${completed.length} completed ${completed.length===1?"job":"jobs"} on ${escapeHtml(formatHistoryDate(dateKey))}</div>${completed.map(job=>`
+    <article class="history-job-card">
+      <div class="history-job-top"><div><div class="history-job-number">${escapeHtml(job.lead_number)}</div><div class="history-job-customer">${escapeHtml(job.customer_name)}</div></div><div class="status-badge">Completed</div></div>
+      <div class="history-job-meta">
+        <div class="history-meta-item"><div class="history-meta-label">Service</div><div class="history-meta-value">${escapeHtml(formatService(job.service_type))}</div></div>
+        <div class="history-meta-item"><div class="history-meta-label">Customer Mobile</div><div class="history-meta-value">${escapeHtml(job.mobile||"Not available")}</div></div>
+        <div class="history-meta-item"><div class="history-meta-label">Scheduled Date</div><div class="history-meta-value">${escapeHtml(formatDate(job.preferred_date))}</div></div>
+        <div class="history-meta-item"><div class="history-meta-label">Preferred Time</div><div class="history-meta-value">${escapeHtml(job.preferred_time||"Not specified")}</div></div>
+        <div class="history-meta-item" style="grid-column:1/-1"><div class="history-meta-label">Address</div><div class="history-meta-value">${escapeHtml(job.address||"Address not available")}${job.city?", "+escapeHtml(job.city):""}${job.state?", "+escapeHtml(job.state):""}${job.pincode?" - "+escapeHtml(job.pincode):""}</div></div>
+      </div>
+    </article>`).join("")}`;
+}
+
+function openCompletedHistory(){
+  const modal=document.getElementById("completedHistoryModal");
+  const input=document.getElementById("completedHistoryDate");
+  const today=getIndiaDateKey();
+  input.value=today;
+  renderCompletedHistory(today);
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function closeCompletedHistory(){
+  const modal=document.getElementById("completedHistoryModal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+}
+
+function shiftCompletedHistoryDate(days){
+  const input=document.getElementById("completedHistoryDate");
+  if(!input.value) input.value=getIndiaDateKey();
+  const d=new Date(input.value+"T00:00:00");
+  d.setDate(d.getDate()+days);
+  input.value=d.toISOString().slice(0,10);
+  renderCompletedHistory(input.value);
+}
+
+const COMPANY_BANK_TABLE = "company_bank_details";
+const DEPOSIT_TABLE = "technician_deposits";
+const DEPOSIT_BUCKET = "technician-deposit-proofs";
+
+function depositMessage(type,message){
+  const e=document.getElementById("depositError");
+  const s=document.getElementById("depositSuccess");
+  e.style.display="none";
+  s.style.display="none";
+  if(type==="error"){
+    e.textContent=message;
+    e.style.display="block";
+  }else{
+    s.textContent=message;
+    s.style.display="block";
+  }
+}
+
+function renderCompanyBankDetails(details){
+  const box=document.getElementById("companyBankDetails");
+  if(!details){
+    box.innerHTML=`<div class="company-bank-item" style="grid-column:1/-1"><div class="company-bank-value">Company bank details are not configured yet. Please contact ORACLIME Support.</div></div>`;
+    return;
+  }
+  const upiIds=(details.upi_id || "")
+    .split(/[\n,;]+/)
+    .map(v=>v.trim())
+    .filter(Boolean);
+
+  const fields=[
+    ["Account Holder",details.account_holder_name],
+    ["Bank Name",details.bank_name],
+    ["Account Number",details.account_number],
+    ["IFSC Code",details.ifsc_code]
+  ].filter(([,v])=>v);
+
+  if(upiIds.length){
+    fields.push(["UPI IDs",upiIds]);
+  }
+
+  box.innerHTML=fields.map(([label,value])=>{
+    const valueHtml=Array.isArray(value)
+      ? value.map(v=>`<div class="company-upi-line">${escapeHtml(v)}</div>`).join("")
+      : escapeHtml(value);
+    return `<div class="company-bank-item"><div class="company-bank-label">${escapeHtml(label)}</div><div class="company-bank-value">${valueHtml}</div></div>`;
+  }).join("");
+}
+
+async function loadCompanyBankDetails(){
+  const box=document.getElementById("companyBankDetails");
+  box.textContent="Loading company bank details...";
+  const {data,error}=await supabaseClient
+    .from(COMPANY_BANK_TABLE)
+    .select("account_holder_name,bank_name,account_number,ifsc_code,upi_id")
+    .eq("is_active",true)
+    .order("updated_at",{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(error){
+    console.error("Company bank details error:",error);
+    renderCompanyBankDetails(null);
+    depositMessage("error","Company bank details could not be loaded. Please contact ORACLIME Support.");
+    return;
+  }
+  renderCompanyBankDetails(data);
+}
+
+function openDeposit(){
+  if(!currentTechnician){
+    showError("Technician profile is not loaded yet.");
+    return;
+  }
+  document.getElementById("depositForm").reset();
+  document.getElementById("depositError").style.display="none";
+  document.getElementById("depositSuccess").style.display="none";
+  const modal=document.getElementById("depositModal");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  loadCompanyBankDetails();
+}
+
+function closeDeposit(){
+  const modal=document.getElementById("depositModal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+  document.getElementById("depositForm").reset();
+  document.getElementById("depositError").style.display="none";
+  document.getElementById("depositSuccess").style.display="none";
+}
+
+async function submitDeposit(){
+  const amount=Number(document.getElementById("depositAmount").value||0);
+  const mode=document.getElementById("depositMode").value;
+  const transactionId=document.getElementById("depositTransactionId").value.trim();
+  const file=document.getElementById("depositProof").files?.[0];
+
+  if(!Number.isFinite(amount) || amount<=0) throw new Error("Please enter a valid deposit amount.");
+  if(!mode) throw new Error("Please select the deposit mode.");
+  if(!transactionId) throw new Error("Please enter the Transaction ID / UTR number.");
+  if(!file) throw new Error("Please upload the deposit proof.");
+  if(!currentTechnician || !currentUser) throw new Error("Technician session is not ready.");
+
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path=`${currentTechnician.id}/${Date.now()}_${safeName}`;
+
+  const {error:uploadError}=await supabaseClient.storage
+    .from(DEPOSIT_BUCKET)
+    .upload(path,file,{upsert:false});
+  if(uploadError) throw new Error("Deposit proof upload failed: " + uploadError.message);
+
+  const {data:deposit,error:depositError}=await supabaseClient
+    .from(DEPOSIT_TABLE)
+    .insert({
+      technician_id:currentTechnician.id,
+      amount:amount,
+      deposit_mode:mode,
+      transaction_id:transactionId,
+      proof_path:path,
+      status:"SUBMITTED",
+      submitted_at:new Date().toISOString()
+    })
+    .select("id")
+    .single();
+
+  if(depositError){
+    // Remove the uploaded proof if the database insert fails.
+    await supabaseClient.storage.from(DEPOSIT_BUCKET).remove([path]);
+    throw new Error("Deposit could not be saved: " + depositError.message);
+  }
+
+  return deposit.id;
+}
+
+document.getElementById("depositBtn").addEventListener("click",openDeposit);
+document.getElementById("depositModal").addEventListener("click",function(e){
+  if(e.target===this) closeDeposit();
+});
+document.getElementById("depositForm").addEventListener("submit",async function(e){
+  e.preventDefault();
+  const btn=document.getElementById("submitDepositBtn");
+  btn.disabled=true;
+  btn.textContent="Submitting...";
+  try{
+    await submitDeposit();
+    depositMessage("success","Deposit submitted successfully. ORACLIME Support will verify it.");
+    btn.textContent="Submitted";
+    setTimeout(closeDeposit,1200);
+  }catch(err){
+    console.error("Deposit error:",err);
+    depositMessage("error",err.message||"Unable to submit deposit.");
+  }finally{
+    btn.disabled=false;
+    if(btn.textContent!=="Submitted") btn.textContent="Submit Deposit";
+  }
+});
+
+function profileMessage(type,message){
+  const e=document.getElementById("profileError");
+  const s=document.getElementById("profileSuccess");
+  e.style.display="none";
+  s.style.display="none";
+
+  if(type==="error"){
+    e.textContent=message;
+    e.style.display="block";
+  }else{
+    s.textContent=message;
+    s.style.display="block";
+  }
+}
+
+function openProfile(){
+  if(!currentTechnician){
+    showError("Technician profile is not loaded yet.");
+    return;
+  }
+
+  document.getElementById("profileFullName").value =
+    currentTechnician.full_name || "";
+  document.getElementById("profileCode").value =
+    currentTechnician.technician_code || "";
+  document.getElementById("profileMobile").value =
+    currentTechnician.mobile || "";
+  document.getElementById("profileAlternateEmail").value =
+    currentTechnician.alternate_email || "";
+  document.getElementById("profileEmail").value =
+    currentTechnician.email || currentUser?.email || "";
+  document.getElementById("profileAddress").value =
+    currentTechnician.address || "";
+  document.getElementById("profileCity").value =
+    currentTechnician.city || "";
+  document.getElementById("profileState").value =
+    currentTechnician.state || "";
+  document.getElementById("profilePincode").value =
+    currentTechnician.pincode || "";
+  document.getElementById("profileServiceArea").value =
+    currentTechnician.service_area || "";
+  document.getElementById("profileAvailability").value =
+    currentTechnician.availability_status || "AVAILABLE";
+
+
+  profileMessage("success","");
+  document.getElementById("profileSuccess").style.display="none";
+
+  const modal=document.getElementById("profileModal");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function closeProfile(){
+  const modal=document.getElementById("profileModal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+  document.getElementById("profileForm").reset();
+  document.getElementById("profileError").style.display="none";
+  document.getElementById("profileSuccess").style.display="none";
+}
+
+async function saveProfile(){
+  if(!currentTechnician || !currentUser){
+    throw new Error("Technician profile is not ready.");
+  }
+
+  const mobile=document.getElementById("profileMobile").value.trim();
+  const alternateEmail=document.getElementById("profileAlternateEmail").value.trim();
+  const availability=document.getElementById("profileAvailability").value;
+
+  if(mobile && !/^[0-9+()\-\s]{7,15}$/.test(mobile)){
+    throw new Error("Please enter a valid mobile number.");
+  }
+
+  if(alternateEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alternateEmail)){
+    throw new Error("Please enter a valid alternative email address.");
+  }
+
+  const payload={
+    mobile:mobile || null,
+    alternate_email:alternateEmail || null,
+    availability_status:availability,
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await supabaseClient
+    .from("technicians")
+    .update(payload)
+    .eq("id",currentTechnician.id)
+    .eq("user_id",currentUser.id);
+
+  if(error){
+    throw error;
+  }
+
+  currentTechnician={
+    ...currentTechnician,
+    ...payload
+  };
+  profileMessage("success","Profile updated successfully.");
+  setTimeout(closeProfile,900);
+}
+
+document.getElementById("profileBtn").addEventListener("click",openProfile);
+
+document.getElementById("profileForm").addEventListener("submit",async function(e){
+  e.preventDefault();
+
+  const btn=document.getElementById("saveProfileBtn");
+  btn.disabled=true;
+  btn.textContent="Saving...";
+
+  try{
+    await saveProfile();
+  }catch(err){
+    console.error("Profile update error:",err);
+    profileMessage(
+      "error",
+      err.message || "Unable to update profile."
+    );
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Save Profile";
+  }
+});
+
+
+async function loadTechnician(){
+
+  hideError();
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError){
+
+    console.error(authError);
+
+    showError("Unable to verify your login session.");
+
+    setTimeout(() => {
+      window.location.href = "login.html";
+    },1500);
+
+    return false;
+  }
+
+
+  if(!user){
+
+    window.location.href = "login.html";
+
+    return false;
+  }
+
+
+  currentUser = user;
+
+
+  const {
+    data: technician,
+    error
+  } = await supabaseClient
+    .from("technicians")
+    .select(`
+      id,
+      user_id,
+      technician_code,
+      full_name,
+      mobile,
+      email,
+      alternate_email,
+      address,
+      city,
+      state,
+      pincode,
+      service_area,
+      status,
+      availability_status
+    `)
+    .eq("user_id", user.id)
+    .single();
+
+
+  if(error){
+
+    console.error("Technician profile error:",error);
+
+    showError(
+      "Technician profile is not connected to this login account."
+    );
+
+    return false;
+  }
+
+
+  if(!technician){
+
+    showError("Technician profile not found.");
+
+    return false;
+  }
+
+
+  if(
+    technician.status &&
+    technician.status !== "ACTIVE"
+  ){
+
+    showError("Your technician account is not active.");
+
+    await supabaseClient.auth.signOut();
+
+    return false;
+  }
+
+
+  currentTechnician = technician;
+
+
+  document.getElementById("techName").textContent =
+    technician.full_name || "Technician";
+
+
+  document.getElementById("techCode").textContent =
+    technician.technician_code || "Technician";
+
+
+  const firstLetter =
+    (technician.full_name || "T")
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+
+  document.getElementById("techAvatar").textContent =
+    firstLetter;
+
+
+  return true;
+
+}
+
+
+async function loadJobs(){
+
+  if(!currentTechnician){
+    return;
+  }
+
+
+  loading.style.display = "block";
+  jobsContainer.innerHTML = "";
+  hideError();
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("leads")
+    .select(`
+      id,
+      lead_number,
+      customer_name,
+      mobile,
+      address,
+      city,
+      state,
+      pincode,
+      service_type,
+      preferred_date,
+      preferred_time,
+      notes,
+      status,
+      assigned_technician_id,
+       created_at,
+       updated_at
+    `)
+    .eq(
+      "assigned_technician_id",
+      currentTechnician.id
+    )
+    .order(
+      "preferred_date",
+      {ascending:true}
+    );
+
+
+  loading.style.display = "none";
+
+
+  if(error){
+
+    console.error("Jobs error:",error);
+
+    showError(
+      "Unable to load assigned jobs. Please check the database permissions."
+    );
+
+    return;
+  }
+
+
+  currentJobs = data || [];
+
+  updateStats(currentJobs);
+
+  renderJobs(currentJobs);
+
+}
+
+
+function updateStats(jobs){
+
+  const assigned =
+    jobs.filter(j =>
+      ["ASSIGNED","ACCEPTED","EN_ROUTE","ARRIVED","IN_PROGRESS"].includes(j.status)
+    ).length;
+
+
+  const accepted =
+    jobs.filter(j =>
+      j.status === "ACCEPTED"
+    ).length;
+
+
+  const progress =
+    jobs.filter(j =>
+      ["EN_ROUTE","ARRIVED","IN_PROGRESS"].includes(j.status)
+    ).length;
+
+
+  // Completed is a DAILY metric. Historical completed jobs are opened from the card.
+  const today = getIndiaDateKey();
+  const completed = jobs.filter(j =>
+    j.status === "COMPLETED" &&
+    j.updated_at &&
+    getIndiaDateKey(j.updated_at) === today
+  ).length;
+
+
+  document.getElementById("statAssigned").textContent =
+    assigned;
+
+  document.getElementById("statAccepted").textContent =
+    accepted;
+
+  document.getElementById("statProgress").textContent =
+    progress;
+
+  document.getElementById("statCompleted").textContent =
+    completed;
+
+}
+
+
+function renderJobs(jobs){
+
+  if(!jobs.length){
+
+    jobsContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✓</div>
+        <h3>No Assigned Jobs</h3>
+        <p>
+          You currently have no service jobs assigned to you.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  // Completed jobs are shown only inside Completed History.
+  const activeJobs = jobs.filter(j => j.status !== "COMPLETED");
+
+  if(!activeJobs.length){
+    jobsContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✓</div>
+        <h3>No Active Jobs</h3>
+        <p>You currently have no active service jobs. Completed jobs are available from the Completed card above.</p>
+      </div>
+    `;
+    return;
+  }
+
+  jobsContainer.innerHTML =
+    activeJobs.map(renderJob).join("");
+
+}
+
+
+function renderJob(job){
+
+  const status = job.status;
+
+
+  let buttons = "";
+
+
+  if(status === "ASSIGNED"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="updateJobStatus('${job.id}','ACCEPTED')">
+        Accept Job
+      </button>
+
+      <button
+        class="job-btn danger"
+        onclick="rejectJob('${job.id}')">
+        Reject
+      </button>
+    `;
+
+  }
+
+
+  if(status === "ACCEPTED"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="updateJobStatus('${job.id}','EN_ROUTE')">
+        Start Travel
+      </button>
+    `;
+
+  }
+
+
+  if(status === "EN_ROUTE"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="updateJobStatus('${job.id}','ARRIVED')">
+        Mark Arrived
+      </button>
+    `;
+
+  }
+
+
+  if(status === "ARRIVED"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="updateJobStatus('${job.id}','IN_PROGRESS')">
+        Start Service
+      </button>
+    `;
+
+  }
+
+
+  if(status === "IN_PROGRESS"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="goToCompletion('${job.id}')">
+        Submit Completion
+      </button>
+    `;
+
+  }
+
+
+  if(status === "CORRECTION_REQUIRED"){
+
+    buttons += `
+      <button
+        class="job-btn primary"
+        onclick="goToCompletion('${job.id}')">
+        Resubmit Completion
+      </button>
+    `;
+
+  }
+
+
+  if(status === "COMPLETION_SUBMITTED"){
+
+    buttons += `
+      <button
+        class="job-btn"
+        disabled>
+        Completion Submitted
+      </button>
+    `;
+
+  }
+
+
+  if(status === "COMPLETED"){
+
+    buttons += `
+      <button
+        class="job-btn"
+        disabled>
+        Job Completed
+      </button>
+    `;
+
+  }
+
+
+  if(
+    status === "CANCELLED" ||
+    status === "REJECTED"
+  ){
+
+    buttons += `
+      <button
+        class="job-btn"
+        disabled>
+        ${escapeHtml(statusLabel(status))}
+      </button>
+    `;
+
+  }
+
+
+  return `
+
+    <article class="job-card">
+
+      <div class="job-top">
+
+        <div>
+
+          <div class="job-number">
+            ${escapeHtml(job.lead_number)}
+          </div>
+
+          <div class="job-customer">
+            ${escapeHtml(job.customer_name)}
+          </div>
+
+        </div>
+
+        <div class="status-badge">
+          ${escapeHtml(statusLabel(status))}
+        </div>
+
+      </div>
+
+
+      <div class="job-details">
+
+        <div class="job-detail">
+
+          <div class="job-detail-label">
+            Service
+          </div>
+
+          <div class="job-detail-value">
+            ${escapeHtml(formatService(job.service_type))}
+          </div>
+
+        </div>
+
+
+        <div class="job-detail">
+
+          <div class="job-detail-label">
+            Customer Mobile
+          </div>
+
+          <div class="job-detail-value">
+            ${escapeHtml(job.mobile)}
+          </div>
+
+        </div>
+
+
+        <div class="job-detail">
+
+          <div class="job-detail-label">
+            Scheduled Date
+          </div>
+
+          <div class="job-detail-value">
+            ${escapeHtml(formatDate(job.preferred_date))}
+          </div>
+
+        </div>
+
+
+        <div class="job-detail">
+
+          <div class="job-detail-label">
+            Preferred Time
+          </div>
+
+          <div class="job-detail-value">
+            ${escapeHtml(job.preferred_time || "Not specified")}
+          </div>
+
+        </div>
+
+
+        <div class="job-detail" style="grid-column:1/-1">
+
+          <div class="job-detail-label">
+            Address
+          </div>
+
+          <div class="job-detail-value">
+            ${escapeHtml(job.address || "Address not available")}
+            ${job.city ? ", " + escapeHtml(job.city) : ""}
+            ${job.state ? ", " + escapeHtml(job.state) : ""}
+            ${job.pincode ? " - " + escapeHtml(job.pincode) : ""}
+          </div>
+
+        </div>
+
+
+        ${
+          job.notes
+          ? `
+          <div class="job-detail" style="grid-column:1/-1">
+
+            <div class="job-detail-label">
+              Notes
+            </div>
+
+            <div class="job-detail-value">
+              ${escapeHtml(job.notes)}
+            </div>
+
+          </div>
+          `
+          : ""
+        }
+
+      </div>
+
+
+      <div class="job-actions">
+
+        ${buttons}
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+async function updateJobStatus(
+  leadId,
+  newStatus
+){
+
+  hideError();
+
+
+  const {
+    error
+  } = await supabaseClient
+    .from("leads")
+    .update({
+      status:newStatus,
+      updated_by:currentUser.id,
+      updated_at:new Date().toISOString()
+    })
+    .eq("id",leadId)
+    .eq(
+      "assigned_technician_id",
+      currentTechnician.id
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showError(
+      "Unable to update job status: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadJobs();
+
+}
+
+
+async function rejectJob(leadId){
+
+  const reason =
+    prompt(
+      "Why are you rejecting this job?\n\nExample: too far, wrong service, schedule conflict."
+    );
+
+
+  if(reason === null){
+    return;
+  }
+
+
+  const cleanReason =
+    reason.trim();
+
+
+  if(!cleanReason){
+
+    alert("Please enter a rejection reason.");
+
+    return;
+  }
+
+
+  const {
+    error
+  } = await supabaseClient
+    .from("leads")
+    .update({
+      status:"REJECTED",
+      updated_by:currentUser.id,
+      updated_at:new Date().toISOString()
+    })
+    .eq("id",leadId)
+    .eq(
+      "assigned_technician_id",
+      currentTechnician.id
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showError(
+      "Unable to reject this job: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadJobs();
+
+}
+
+
+
+let completionJob=null,completionServiceOrder=null,completionVisit=null;
+
+function completionMessage(type,message){
+  const e=document.getElementById("completionError"),s=document.getElementById("completionSuccess");
+  e.style.display="none";s.style.display="none";
+  if(type==="error"){e.textContent=message;e.style.display="block";}
+  else{s.textContent=message;s.style.display="block";}
+}
+
+function closeCompletion(){
+  document.getElementById("completionModal").classList.remove("open");
+  document.getElementById("completionModal").setAttribute("aria-hidden","true");
+  completionJob=null;completionServiceOrder=null;completionVisit=null;
+  document.getElementById("completionForm").reset();
+  document.getElementById("completionError").style.display="none";
+  document.getElementById("completionSuccess").style.display="none";
+}
+
+async function goToCompletion(leadId){
+  const job = currentJobs.find(j => j.id === leadId);
+  if(!job) return;
+
+  completionJob = job;
+
+  const modal = document.getElementById("completionModal");
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+
+  document.getElementById("completionLeadNumber").textContent =
+    job.lead_number || "—";
+
+  document.getElementById("completionCustomer").textContent =
+    job.customer_name || "—";
+
+  document.getElementById("completionService").textContent =
+    formatService(job.service_type);
+
+  completionMessage(
+    "success",
+    job.status === "CORRECTION_REQUIRED"
+      ? "Correction requested by ORACLIME Support. Please resubmit the required completion proof."
+      : "Preparing service record..."
+  );
+
+  document.getElementById("submitCompletionBtn").disabled = true;
+
+  /*
+    IMPORTANT:
+    A technician does NOT need Support to create a service order.
+
+    If the service order or technician visit does not exist,
+    Supabase creates it automatically for this assigned lead.
+  */
+
+  const {
+    data:recordData,
+    error:recordError
+  } = await supabaseClient.rpc(
+    "ensure_technician_service_records",
+    {
+      p_lead_id: leadId
+    }
+  );
+
+  if(recordError){
+    console.error(recordError);
+
+    completionMessage(
+      "error",
+      "Unable to prepare service record: " +
+      recordError.message
+    );
+
+    return;
+  }
+
+  if(
+    !recordData ||
+    !recordData.service_order_id ||
+    !recordData.visit_id
+  ){
+    completionMessage(
+      "error",
+      "Service record could not be prepared."
+    );
+
+    return;
+  }
+
+  completionServiceOrder = {
+    id: recordData.service_order_id,
+    lead_id: leadId
+  };
+
+  completionVisit = {
+    id: recordData.visit_id,
+    service_order_id: recordData.service_order_id,
+    technician_id: currentTechnician.id
+  };
+
+  document.getElementById("amountCollected").value = "";
+  document.getElementById("paymentMode").value = "";
+
+  completionMessage(
+    "success",
+    "Ready. Enter the amount collected and select Cash or UPI."
+  );
+
+  document.getElementById("submitCompletionBtn").disabled = false;
+}
+
+function safeFileName(name){
+  return String(name || "file")
+    .replace(/[^a-zA-Z0-9._-]/g,"_")
+    .slice(-120);
+}
+
+async function uploadCompletionDocument(file,documentType){
+  if(!file){
+    throw new Error("Required document is missing: " + documentType);
+  }
+
+  const path =
+    "private/" +
+    currentTechnician.id +
+    "/" +
+    completionJob.id +
+    "/" +
+    Date.now() +
+    "-" +
+    crypto.randomUUID() +
+    "-" +
+    safeFileName(file.name);
+
+  const {error:uploadError} =
+    await supabaseClient
+      .storage
+      .from("service-documents")
+      .upload(
+        path,
+        file,
+        {
+          cacheControl:"3600",
+          upsert:false,
+          contentType:file.type || undefined
+        }
+      );
+
+  if(uploadError){
+    throw new Error(
+      "Upload failed for " +
+      documentType +
+      ": " +
+      uploadError.message
+    );
+  }
+
+  const {data:row,error} =
+    await supabaseClient
+      .from("documents")
+      .insert({
+        service_order_id:completionServiceOrder.id,
+        visit_id:completionVisit.id,
+        uploaded_by:currentUser.id,
+        document_type:documentType,
+        storage_path:path,
+        original_filename:file.name,
+        mime_type:file.type || null,
+        file_size:file.size || null
+      })
+      .select("id")
+      .single();
+
+  if(error){
+    throw new Error(
+      "Document record failed: " +
+      error.message
+    );
+  }
+
+  return row.id;
+}
+
+async function verifyCompletionCode(code){
+  const {data,error} =
+    await supabaseClient.rpc(
+      "verify_service_completion_code",
+      {
+        p_lead_id:completionJob.id,
+        p_code:code
+      }
+    );
+
+  if(error){
+    throw new Error(
+      "Completion Code verification failed: " +
+      error.message
+    );
+  }
+
+  if(data !== true){
+    throw new Error(
+      "Invalid, expired or already-used Service Completion Code."
+    );
+  }
+}
+
+async function savePayment(){
+  const collected = Number(
+    document.getElementById("amountCollected").value || 0
+  );
+
+  const mode = document.getElementById("paymentMode").value;
+
+  if(!Number.isFinite(collected) || collected < 0){
+    throw new Error("Please enter a valid Amount Collected.");
+  }
+
+  if(!mode){
+    throw new Error("Please select Cash or UPI.");
+  }
+
+  if(!completionServiceOrder){
+    throw new Error("Service order details are missing.");
+  }
+
+  // Technician payment is completely independent of approved pricing.
+  // Only the collected amount and payment mode are stored.
+  const payload = {
+    service_order_id: completionServiceOrder.id,
+    amount_collected: collected,
+    payment_mode: mode
+  };
+
+  const {
+    data:existing,
+    error:existingError
+  } = await supabaseClient
+    .from("payments")
+    .select("id")
+    .eq("service_order_id", completionServiceOrder.id)
+    .maybeSingle();
+
+  if(existingError){
+    throw existingError;
+  }
+
+  if(existing){
+    const {data,error} = await supabaseClient
+      .from("payments")
+      .update(payload)
+      .eq("id",existing.id)
+      .select("id")
+      .single();
+
+    if(error){
+      throw error;
+    }
+
+    return data.id;
+  }
+
+  const {data,error} = await supabaseClient
+    .from("payments")
+    .insert(payload)
+    .select("id")
+    .single();
+
+  if(error){
+    throw error;
+  }
+
+  return data.id;
+}
+
+
+document.getElementById("completionForm").addEventListener("submit",async function(e){
+  e.preventDefault();
+
+  const btn =
+    document.getElementById("submitCompletionBtn");
+
+  btn.disabled = true;
+  btn.textContent = "Submitting...";
+
+  try{
+
+    const required = [
+      ["indoorLocation","Indoor location photo"],
+      ["indoorSerial","Indoor serial photo"],
+      ["outdoorLocation","Outdoor location photo"],
+      ["outdoorSerial","Outdoor serial photo"],
+      ["acBill","AC bill photo"]
+    ];
+
+    for(const [id,label] of required){
+      const input = document.getElementById(id);
+
+      if(!input || !input.files || !input.files[0]){
+        throw new Error(label + " is required.");
+      }
+    }
+
+    const code =
+      document.getElementById("completionCode")
+        .value
+        .trim();
+
+    if(!/^\d{6}$/.test(code)){
+      throw new Error(
+        "Enter the valid 6-digit Service Completion Code."
+      );
+    }
+
+    const amountCollected =
+      Number(
+        document.getElementById("amountCollected")
+          .value || 0
+      );
+
+    if(!Number.isFinite(amountCollected) || amountCollected < 0){
+      throw new Error(
+        "Please enter a valid Amount Collected."
+      );
+    }
+
+    const paymentMode =
+      document.getElementById("paymentMode").value;
+
+    if(!paymentMode){
+      throw new Error(
+        "Please select Cash or UPI."
+      );
+    }
+
+    // Verify the customer code before changing the job status.
+    await verifyCompletionCode(code);
+
+    await uploadCompletionDocument(
+      document.getElementById("indoorLocation").files[0],
+      "INDOOR_LOCATION"
+    );
+
+    await uploadCompletionDocument(
+      document.getElementById("indoorSerial").files[0],
+      "INDOOR_SERIAL"
+    );
+
+    await uploadCompletionDocument(
+      document.getElementById("outdoorLocation").files[0],
+      "OUTDOOR_LOCATION"
+    );
+
+    await uploadCompletionDocument(
+      document.getElementById("outdoorSerial").files[0],
+      "OUTDOOR_SERIAL"
+    );
+
+    await uploadCompletionDocument(
+      document.getElementById("acBill").files[0],
+      "AC_BILL"
+    );
+    // Payment: only Amount Collected + Payment Mode are stored.
+    await savePayment();
+
+const now =
+      new Date().toISOString();
+
+    let {error} =
+      await supabaseClient
+        .from("visits")
+        .update({
+          status:"COMPLETION_SUBMITTED",
+          service_completed_at:now,
+          updated_at:now
+        })
+        .eq("id",completionVisit.id)
+        .eq("technician_id",currentTechnician.id);
+
+    if(error){
+      throw error;
+    }
+
+    ({error} =
+      await supabaseClient
+        .from("leads")
+        .update({
+          status:"COMPLETION_SUBMITTED",
+          updated_by:currentUser.id,
+          updated_at:now
+        })
+        .eq("id",completionJob.id)
+        .eq("assigned_technician_id",currentTechnician.id)
+        .in("status",["IN_PROGRESS","CORRECTION_REQUIRED"]));
+
+    if(error){
+      throw error;
+    }
+
+    completionMessage(
+      "success",
+      "Completion submitted successfully. ORACLIME Support will verify and close the job."
+    );
+
+    btn.textContent = "Submitted";
+
+    setTimeout(async()=>{
+      closeCompletion();
+      await loadJobs();
+    },1400);
+
+  }catch(err){
+
+    console.error(err);
+
+    completionMessage(
+      "error",
+      err.message ||
+      "Unable to submit completion."
+    );
+
+    btn.disabled = false;
+    btn.textContent = "Submit Completion";
+  }
+});
+
+
+document.getElementById("completedStatCard").addEventListener("click",openCompletedHistory);
+document.getElementById("completedHistoryDate").addEventListener("change",function(){
+  renderCompletedHistory(this.value || getIndiaDateKey());
+});
+document.getElementById("historyPreviousBtn").addEventListener("click",function(){
+  shiftCompletedHistoryDate(-1);
+});
+document.getElementById("historyTodayBtn").addEventListener("click",function(){
+  const today=getIndiaDateKey();
+  document.getElementById("completedHistoryDate").value=today;
+  renderCompletedHistory(today);
+});
+
+document
+  .getElementById("refreshBtn")
+  .addEventListener(
+    "click",
+    loadJobs
+  );
+
+
+document
+  .getElementById("logoutBtn")
+  .addEventListener(
+    "click",
+    async function(){
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href =
+        "login.html";
+
+    }
+  );
+
+
+document.getElementById("completedHistoryModal").addEventListener("click",function(e){
+  if(e.target === this) closeCompletedHistory();
+});
+
+window.addEventListener("keydown",function(e){
+  if(e.key === "Escape"){
+    closeCompletedHistory();
+    closeDeposit();
+    closeProfile();
+    closeCompletion();
+  }
+});
+
+async function init(){
+
+  const ok =
+    await loadTechnician();
+
+
+  if(!ok){
+    loading.style.display = "none";
+    return;
+  }
+
+
+  await loadJobs();
+
+}
+
+
+supabaseClient.auth.onAuthStateChange(
+  function(event){
+
+    if(
+      event === "SIGNED_OUT"
+    ){
+
+      window.location.href =
+        "login.html";
+
+    }
+
+  }
+);
+
+
+init();
+
+</script>
+
+</body>
+</html>

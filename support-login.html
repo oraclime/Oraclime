@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>ORACLIME — Support Team Login</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <div class="navwrap">
+    <div class="container nav">
+
+      <a class="logo" href="index.html">ORACLIME</a>
+
+      <a class="navcta" href="index.html">
+        Back to Website
+      </a>
+
+    </div>
+  </div>
+
+
+  <!-- Support Login -->
+  <main class="dashboard">
+
+    <div class="container">
+
+      <div style="max-width:480px;margin:40px auto 0;">
+
+        <div class="card">
+
+          <div class="eyebrow">
+            ORACLIME Operations
+          </div>
+
+          <h1 style="margin:10px 0 8px;font-size:38px;line-height:1.1;">
+            Support Team Login
+          </h1>
+
+          <p class="small" style="margin-bottom:28px;">
+            Authorized ORACLIME support team members only.
+          </p>
+
+
+          <form id="supportLoginForm">
+
+            <div class="field">
+
+              <label for="supportUsername">
+                Email
+              </label>
+
+              <input
+                id="supportUsername"
+                name="username"
+                type="email"
+                placeholder="Enter your support email"
+                autocomplete="username"
+                required
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="supportPassword">
+                Password
+              </label>
+
+              <input
+                id="supportPassword"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              >
+
+            </div>
+
+
+            <button
+              id="signInButton"
+              type="submit"
+              class="btn primary"
+              style="width:100%;margin-top:6px;"
+            >
+              Sign In
+            </button>
+
+
+            <div
+              id="supportLoginMessage"
+              class="notice"
+            ></div>
+
+          </form>
+
+
+          <div
+            style="
+              margin-top:25px;
+              padding-top:20px;
+              border-top:1px solid var(--line);
+            "
+          >
+
+            <p class="small" style="margin:0;">
+              Support team members use individual accounts.
+              Access and system activity are recorded for operational security.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div style="text-align:center;margin-top:20px;">
+
+          <a
+            href="login.html"
+            class="small"
+          >
+            Partner / Technician Login
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer>
+
+    <div class="container">
+
+      <div class="logo">ORACLIME</div>
+
+      <p class="small">
+        Support and operations access for ORACLIME.
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    /*
+      ============================================
+      ORACLIME SUPABASE CONFIGURATION
+      ============================================
+
+      IMPORTANT:
+      - Use your Supabase Project URL
+      - Use your Supabase Publishable/Anon key
+      - NEVER put the service_role/secret key here
+    */
+
+    const SUPABASE_URL =
+      "https://dmygjpkzuewnpxsispcm.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_mQskIlYXBc4v8bXwF1FxmA_HLgigkqi";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+
+    const supportLoginForm =
+      document.getElementById("supportLoginForm");
+
+    const supportLoginMessage =
+      document.getElementById("supportLoginMessage");
+
+    const signInButton =
+      document.getElementById("signInButton");
+
+
+    function showMessage(message, type) {
+
+      supportLoginMessage.className =
+        "notice " + type;
+
+      supportLoginMessage.style.display =
+        "block";
+
+      supportLoginMessage.textContent =
+        message;
+    }
+
+
+    supportLoginForm.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const email =
+          document.getElementById("supportUsername")
+            .value
+            .trim();
+
+        const password =
+          document.getElementById("supportPassword")
+            .value;
+
+
+        signInButton.disabled = true;
+
+        signInButton.textContent = "Signing In...";
+
+        supportLoginMessage.style.display = "none";
+
+
+        try {
+
+          /*
+            STEP 1
+            Authenticate through Supabase Auth
+          */
+
+          const {
+            data,
+            error
+          } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+
+          if (error) {
+            throw error;
+          }
+
+
+          if (!data.user) {
+            throw new Error(
+              "Authentication failed."
+            );
+          }
+
+
+          /*
+            STEP 2
+            Find the authenticated user
+            inside ORACLIME app_users
+          */
+
+          const {
+            data: appUser,
+            error: profileError
+          } = await supabaseClient
+            .from("app_users")
+            .select("id, full_name, email, role, status")
+            .eq("id", data.user.id)
+            .single();
+
+
+          if (profileError || !appUser) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+              "Your account is not registered in ORACLIME."
+            );
+          }
+
+
+          /*
+            STEP 3
+            Verify that this is actually
+            a SUPPORT account.
+          */
+
+          if (appUser.role !== "SUPPORT") {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+              "Access denied. This account is not a Support account."
+            );
+          }
+
+
+          /*
+            STEP 4
+            Verify account status
+          */
+
+          if (appUser.status !== "ACTIVE") {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+              "Your Support account is inactive. Please contact ORACLIME Operations."
+            );
+          }
+
+
+          /*
+            STEP 5
+            Login successful.
+
+            Dashboard will be connected next.
+          */
+
+          showMessage(
+            "Login successful. Opening Support Dashboard...",
+            "success"
+          );
+
+
+          /*
+            TEMPORARY:
+            Dashboard page will be created next.
+          */
+
+          setTimeout(function() {
+
+            window.location.href =
+              "support-dashboard.html";
+
+          }, 800);
+
+
+        } catch (error) {
+
+          console.error(
+            "Support login error:",
+            error
+          );
+
+          showMessage(
+            error.message ||
+            "Unable to sign in. Please try again.",
+            "error"
+          );
+
+          signInButton.disabled = false;
+
+          signInButton.textContent =
+            "Sign In";
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
