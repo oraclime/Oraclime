@@ -1090,7 +1090,192 @@
   }
 }
 
-  </style>
+  
+
+/* =====================================================
+   NOTIFICATIONS MODULE
+   ===================================================== */
+
+.notifications-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.notifications-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notifications-list {
+  display: grid;
+  gap: 12px;
+}
+
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(10,27,45,.72);
+}
+
+.notification-card:hover {
+  border-color: rgba(53,209,170,.35);
+}
+
+.notification-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.notification-topline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 7px;
+}
+
+.notification-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(53,209,170,.10);
+  border: 1px solid rgba(53,209,170,.24);
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.notification-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.notification-message {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.notification-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.notification-action {
+  flex: 0 0 auto;
+}
+
+@media (max-width:600px) {
+  .notification-card {
+    display: block;
+  }
+
+  .notification-action {
+    margin-top: 12px;
+  }
+}
+
+
+
+/* =====================================================
+   ACTIVITY LOGS
+   ===================================================== */
+.activity-toolbar {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.activity-filters {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.activity-filters input,
+.activity-filters select {
+  min-height:42px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  font:inherit;
+  outline:none;
+}
+.activity-filters input { min-width:240px; }
+.activity-list { display:flex; flex-direction:column; gap:10px; }
+.activity-item {
+  display:grid;
+  grid-template-columns:48px minmax(0,1fr) auto;
+  gap:14px;
+  align-items:start;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(14,31,51,.72);
+}
+.activity-icon {
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:rgba(53,209,170,.10);
+  border:1px solid rgba(53,209,170,.22);
+  color:var(--green);
+  font-size:18px;
+  font-weight:800;
+}
+.activity-title { font-weight:800; margin-bottom:5px; }
+.activity-meta { display:flex; flex-wrap:wrap; gap:7px 12px; color:var(--muted); font-size:12px; }
+.activity-reason { margin-top:8px; color:var(--muted); font-size:13px; line-height:1.5; }
+.activity-time { color:var(--muted); font-size:12px; white-space:nowrap; }
+.activity-badge {
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(53,209,170,.10);
+  border:1px solid rgba(53,209,170,.20);
+  color:var(--green);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+@media (max-width:760px) {
+  .activity-item { grid-template-columns:42px minmax(0,1fr); }
+  .activity-time { grid-column:2; }
+  .activity-filters input { min-width:0; width:100%; }
+  .activity-filters { width:100%; }
+  .activity-filters select { flex:1; min-width:0; }
+}
+
+</style>
 </head>
 
 <body>
@@ -2503,6 +2688,175 @@
 
 
 
+
+
+    <!-- =================================================
+         NOTIFICATIONS SECTION
+         ================================================= -->
+
+    <section
+      id="notificationsSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+        <div>
+          <div class="eyebrow">ORACLIME OPERATIONS</div>
+          <h1>Notifications</h1>
+          <p>Stay updated with the latest service activity and actions that need Support attention.</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn" type="button" id="notificationsRefreshButton">
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div id="notificationsNotice" class="dashboard-notice"></div>
+
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-label">New Alerts</div>
+          <div class="stat-number" id="notificationTotalCount">0</div>
+          <div class="stat-note">Latest operational updates</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Service Updates</div>
+          <div class="stat-number" id="notificationServiceCount">0</div>
+          <div class="stat-note">Lead and service activity</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completion Alerts</div>
+          <div class="stat-number" id="notificationCompletionCount">0</div>
+          <div class="stat-note">Completion review activity</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Follow-up</div>
+          <div class="stat-number" id="notificationFollowupCount">0</div>
+          <div class="stat-note">Pending or rescheduled work</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="notifications-toolbar">
+          <div>
+            <h2 style="margin:0;">Recent Activity</h2>
+            <p class="small" style="margin:6px 0 0;">Notifications are generated from current lead and service status updates.</p>
+          </div>
+
+          <div class="notifications-filters">
+            <input
+              class="technician-search"
+              type="search"
+              id="notificationSearch"
+              placeholder="Search notifications"
+              autocomplete="off"
+            >
+            <select id="notificationFilter" aria-label="Notification filter">
+              <option value="ALL">All Notifications</option>
+              <option value="SERVICE">Service Updates</option>
+              <option value="COMPLETION">Completion</option>
+              <option value="FOLLOWUP">Follow-up</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="notificationsLoading" class="small" style="padding:20px 0;">
+          Loading notifications...
+        </div>
+
+        <div
+          id="notificationsList"
+          class="notifications-list"
+          style="display:none;"
+        ></div>
+
+        <div
+          id="notificationsEmpty"
+          class="technician-empty"
+          style="display:none;"
+        >
+          No notifications found.
+        </div>
+      </div>
+
+    </section>
+
+
+
+    <!-- =================================================
+         ACTIVITY LOGS SECTION
+         ================================================= -->
+
+    <section
+      id="activitySection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+        <div>
+          <div class="eyebrow">ORACLIME OPERATIONS</div>
+          <h1>Activity Logs</h1>
+          <p>Track important actions performed across Support operations.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" type="button" id="activityRefreshButton">Refresh</button>
+        </div>
+      </div>
+
+      <div id="activityNotice" class="dashboard-notice"></div>
+
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-label">Total Activities</div>
+          <div class="stat-number" id="activityTotalCount">0</div>
+          <div class="stat-note">Recent system actions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today</div>
+          <div class="stat-number" id="activityTodayCount">0</div>
+          <div class="stat-note">Actions recorded today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Support Actions</div>
+          <div class="stat-number" id="activitySupportCount">0</div>
+          <div class="stat-note">Actions by Support</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Latest Action</div>
+          <div class="stat-number" id="activityLatestLabel" style="font-size:18px;line-height:1.3;">—</div>
+          <div class="stat-note">Most recent recorded event</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="activity-toolbar">
+          <div>
+            <h2 style="margin:0;">Recent Activity</h2>
+            <p class="small" style="margin:6px 0 0;">Audit history from Support and service operations.</p>
+          </div>
+          <div class="activity-filters">
+            <input type="search" id="activitySearch" placeholder="Search activity" autocomplete="off">
+            <select id="activityFilter" aria-label="Activity filter">
+              <option value="ALL">All Actions</option>
+              <option value="LEAD">Lead Activity</option>
+              <option value="COMPLETION">Completion</option>
+              <option value="ASSIGNMENT">Assignment</option>
+              <option value="CORRECTION">Correction</option>
+              <option value="PAYMENT">Payment</option>
+            </select>
+          </div>
+        </div>
+        <div id="activityLoading" class="small" style="padding:20px 0;">Loading activity...</div>
+        <div id="activityList" class="activity-list" style="display:none;"></div>
+        <div id="activityEmpty" class="technician-empty" style="display:none;">No activity found.</div>
+      </div>
+
+    </section>
+
 <!-- =================================================
      SETTINGS SECTION
      ================================================= -->
@@ -3174,13 +3528,28 @@
           </div>
 
           <div class="lead-form-field">
-            <label for="technicianEmail">Email</label>
+            <label for="technicianEmail">Email *</label>
             <input
               type="email"
               id="technicianEmail"
               maxlength="160"
               autocomplete="email"
+              required
             >
+          </div>
+
+          <div class="lead-form-field">
+            <label for="technicianPassword">Temporary Password *</label>
+            <input
+              type="password"
+              id="technicianPassword"
+              minlength="8"
+              maxlength="72"
+              autocomplete="new-password"
+              value="Admin@9009"
+              required
+            >
+            <div class="form-help">Default: Admin@9009. You can change it before creating the account.</div>
           </div>
 
           <div class="lead-form-field">
@@ -3486,6 +3855,12 @@ let filteredPayments = [];
 let reportsData = {};
 let reportsLoadInProgress = false;
 
+let allNotifications = [];
+let filteredNotifications = [];
+
+let allActivities = [];
+let filteredActivities = [];
+
 
 /* =====================================================
    3. DOM
@@ -3610,6 +3985,78 @@ const reportsDatasetBody =
 
 const reportsLastUpdated =
   document.getElementById("reportsLastUpdated");
+
+const notificationsSection =
+  document.getElementById("notificationsSection");
+
+const notificationsNotice =
+  document.getElementById("notificationsNotice");
+
+const notificationsRefreshButton =
+  document.getElementById("notificationsRefreshButton");
+
+const notificationsLoading =
+  document.getElementById("notificationsLoading");
+
+const notificationsList =
+  document.getElementById("notificationsList");
+
+const notificationsEmpty =
+  document.getElementById("notificationsEmpty");
+
+const notificationSearch =
+  document.getElementById("notificationSearch");
+
+const notificationFilter =
+  document.getElementById("notificationFilter");
+
+const notificationTotalCount =
+  document.getElementById("notificationTotalCount");
+
+const notificationServiceCount =
+  document.getElementById("notificationServiceCount");
+
+const notificationCompletionCount =
+  document.getElementById("notificationCompletionCount");
+
+const notificationFollowupCount =
+  document.getElementById("notificationFollowupCount");
+
+const activitySection =
+  document.getElementById("activitySection");
+
+const activityNotice =
+  document.getElementById("activityNotice");
+
+const activityRefreshButton =
+  document.getElementById("activityRefreshButton");
+
+const activityLoading =
+  document.getElementById("activityLoading");
+
+const activityList =
+  document.getElementById("activityList");
+
+const activityEmpty =
+  document.getElementById("activityEmpty");
+
+const activitySearch =
+  document.getElementById("activitySearch");
+
+const activityFilter =
+  document.getElementById("activityFilter");
+
+const activityTotalCount =
+  document.getElementById("activityTotalCount");
+
+const activityTodayCount =
+  document.getElementById("activityTodayCount");
+
+const activitySupportCount =
+  document.getElementById("activitySupportCount");
+
+const activityLatestLabel =
+  document.getElementById("activityLatestLabel");
 
 const settingsSection =
   document.getElementById("settingsSection");
@@ -6548,7 +6995,12 @@ async function createTechnician(event) {
   const email =
     document.getElementById(
       "technicianEmail"
-    ).value.trim();
+    ).value.trim().toLowerCase();
+
+  const password =
+    document.getElementById(
+      "technicianPassword"
+    ).value;
 
   const city =
     document.getElementById(
@@ -6642,6 +7094,18 @@ async function createTechnician(event) {
     invalid = true;
   }
 
+  if (!email) {
+    technicianFormError.textContent =
+      "Email is required because the technician needs a login account.";
+    invalid = true;
+  }
+
+  if (!password || password.length < 8) {
+    technicianFormError.textContent =
+      "Temporary password must contain at least 8 characters.";
+    invalid = true;
+  }
+
   if (!/^\d{10}$/.test(cleanMobile)) {
     technicianSetError(
       "technicianMobile",
@@ -6710,48 +7174,45 @@ async function createTechnician(event) {
 
   try {
 
-    const technicianCode =
-      await generateTechnicianCode();
-
     const {
-      error
-    } =
-      await supabaseClient
-        .from("technicians")
-        .insert({
-          technician_code:
-            technicianCode,
-          full_name:
-            fullName,
-          mobile:
-            cleanMobile,
-          alternate_mobile:
-            cleanAlternateMobile || null,
-          email:
-            email || null,
-          address:
-            address || null,
-          city:
-            city || null,
-          state:
-            state || null,
-          pincode:
-            cleanPincode || null,
-          service_area:
-            serviceArea || null,
-          skills:
-            skills,
-          status:
-            status,
-          availability_status:
-            availability,
-          notes:
-            notes || null
-        });
+      data: createdTechnician,
+      error: createError
+    } = await supabaseClient.functions.invoke(
+      "create-technician",
+      {
+        body: {
+          fullName,
+          mobile: cleanMobile,
+          alternateMobile: cleanAlternateMobile || null,
+          email,
+          password,
+          city: city || null,
+          state: state || null,
+          pincode: cleanPincode || null,
+          serviceArea: serviceArea || null,
+          skills,
+          status,
+          availability,
+          address: address || null,
+          notes: notes || null
+        }
+      }
+    );
 
-    if (error) {
-      throw error;
+    if (createError) {
+      throw createError;
     }
+
+    if (!createdTechnician?.success) {
+      throw new Error(
+        createdTechnician?.error ||
+        "Unable to create technician account."
+      );
+    }
+
+    const technicianCode =
+      createdTechnician.technician?.technician_code ||
+      "Technician";
 
     closeTechnicianModal();
 
@@ -9226,6 +9687,427 @@ if (settingsGenerateCompletionCodeButton) {
   );
 }
 
+
+
+/* =====================================================
+   37B. NOTIFICATIONS
+   ===================================================== */
+
+function getNotificationDetails(lead) {
+
+  const status = String(lead.status || "").toUpperCase();
+
+  const map = {
+    NEW: {
+      category: "SERVICE",
+      badge: "New Lead",
+      title: "New service request received",
+      message: "A new service request from " + (lead.customer_name || "customer") + " is waiting for Support action."
+    },
+    ASSIGNED: {
+      category: "SERVICE",
+      badge: "Assignment",
+      title: "Technician assignment updated",
+      message: "Lead " + (lead.lead_number || "") + " has been assigned and is awaiting service progress."
+    },
+    ACCEPTED: {
+      category: "SERVICE",
+      badge: "Accepted",
+      title: "Technician accepted the job",
+      message: "The assigned technician has accepted lead " + (lead.lead_number || "") + "."
+    },
+    IN_PROGRESS: {
+      category: "SERVICE",
+      badge: "In Progress",
+      title: "Service is in progress",
+      message: "Lead " + (lead.lead_number || "") + " is currently being handled by the technician."
+    },
+    COMPLETION_SUBMITTED: {
+      category: "COMPLETION",
+      badge: "Completion",
+      title: "Completion submitted for review",
+      message: "Lead " + (lead.lead_number || "") + " has submitted completion details and needs Support review."
+    },
+    CORRECTION_REQUIRED: {
+      category: "COMPLETION",
+      badge: "Correction",
+      title: "Correction requested",
+      message: "Lead " + (lead.lead_number || "") + " requires a new completion submission."
+    },
+    COMPLETED: {
+      category: "COMPLETION",
+      badge: "Completed",
+      title: "Service completed",
+      message: "Lead " + (lead.lead_number || "") + " has been marked as completed."
+    },
+    RESCHEDULED: {
+      category: "FOLLOWUP",
+      badge: "Rescheduled",
+      title: "Service rescheduled",
+      message: "Lead " + (lead.lead_number || "") + " has been rescheduled and needs follow-up."
+    },
+    RESCHEDULE_REQUESTED: {
+      category: "FOLLOWUP",
+      badge: "Follow-up",
+      title: "Reschedule requested",
+      message: "Lead " + (lead.lead_number || "") + " has requested a schedule change."
+    },
+    PAYMENT_PENDING: {
+      category: "FOLLOWUP",
+      badge: "Payment",
+      title: "Payment is pending",
+      message: "Payment follow-up is required for lead " + (lead.lead_number || "") + "."
+    },
+    CANCELLED: {
+      category: "FOLLOWUP",
+      badge: "Cancelled",
+      title: "Service lead cancelled",
+      message: "Lead " + (lead.lead_number || "") + " has been cancelled."
+    }
+  };
+
+  return map[status] || {
+    category: "SERVICE",
+    badge: "Service Update",
+    title: "Service status updated",
+    message: "Lead " + (lead.lead_number || "") + " has a new service status: " + formatStatus(status) + "."
+  };
+}
+
+function formatNotificationTime(value) {
+  if (!value) return "Recently";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function updateNotificationStats(list) {
+  if (notificationTotalCount) notificationTotalCount.textContent = String(list.length);
+  if (notificationServiceCount) notificationServiceCount.textContent = String(list.filter(item => item.category === "SERVICE").length);
+  if (notificationCompletionCount) notificationCompletionCount.textContent = String(list.filter(item => item.category === "COMPLETION").length);
+  if (notificationFollowupCount) notificationFollowupCount.textContent = String(list.filter(item => item.category === "FOLLOWUP").length);
+}
+
+function renderNotifications() {
+
+  const query = String(notificationSearch?.value || "").trim().toLowerCase();
+  const filter = notificationFilter?.value || "ALL";
+
+  filteredNotifications = allNotifications.filter(function(item) {
+    const matchesFilter = filter === "ALL" || item.category === filter;
+    const haystack = [
+      item.title,
+      item.message,
+      item.badge,
+      item.lead_number,
+      item.customer_name,
+      item.service_type
+    ].join(" ").toLowerCase();
+    return matchesFilter && (!query || haystack.includes(query));
+  });
+
+  updateNotificationStats(allNotifications);
+
+  if (notificationsLoading) notificationsLoading.style.display = "none";
+
+  if (!filteredNotifications.length) {
+    if (notificationsList) {
+      notificationsList.innerHTML = "";
+      notificationsList.style.display = "none";
+    }
+    if (notificationsEmpty) notificationsEmpty.style.display = "block";
+    return;
+  }
+
+  if (notificationsEmpty) notificationsEmpty.style.display = "none";
+  if (notificationsList) {
+    notificationsList.style.display = "grid";
+    notificationsList.innerHTML = filteredNotifications.map(function(item) {
+      return `
+        <article class="notification-card">
+          <div class="notification-main">
+            <div class="notification-topline">
+              <span class="notification-badge">${escapeHtml(item.badge)}</span>
+              <span class="small">${escapeHtml(formatNotificationTime(item.updated_at))}</span>
+            </div>
+            <h3 class="notification-title">${escapeHtml(item.title)}</h3>
+            <p class="notification-message">${escapeHtml(item.message)}</p>
+            <div class="notification-meta">
+              <span>${escapeHtml(item.lead_number || "Lead")}</span>
+              <span>•</span>
+              <span>${escapeHtml(item.customer_name || "Customer")}</span>
+              ${item.service_type ? `<span>•</span><span>${escapeHtml(item.service_type)}</span>` : ""}
+            </div>
+          </div>
+          <div class="notification-action">
+            <button class="table-action" type="button" data-notification-lead="${escapeHtml(item.id)}">Open Lead</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    notificationsList.querySelectorAll("[data-notification-lead]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        activateSection("leads");
+      });
+    });
+  }
+}
+
+async function loadNotifications() {
+
+  if (!notificationsSection) return;
+
+  if (notificationsLoading) notificationsLoading.style.display = "block";
+  if (notificationsList) notificationsList.style.display = "none";
+  if (notificationsEmpty) notificationsEmpty.style.display = "none";
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("leads")
+      .select("id,lead_number,customer_name,service_type,status,created_at,updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    allNotifications = (Array.isArray(data) ? data : []).map(function(lead) {
+      const details = getNotificationDetails(lead);
+      return {
+        ...lead,
+        ...details,
+        updated_at: lead.updated_at || lead.created_at
+      };
+    });
+
+    renderNotifications();
+
+  } catch (error) {
+    console.error("Notifications load error:", error);
+    allNotifications = [];
+    updateNotificationStats([]);
+    if (notificationsLoading) notificationsLoading.style.display = "none";
+    if (notificationsEmpty) {
+      notificationsEmpty.textContent = "Unable to load notifications. Please check database access.";
+      notificationsEmpty.style.display = "block";
+    }
+    showNotice(
+      "Notifications could not be loaded. " + (error.message || ""),
+      "error",
+      notificationsNotice
+    );
+  }
+}
+
+if (notificationSearch) {
+  notificationSearch.addEventListener("input", renderNotifications);
+}
+
+if (notificationFilter) {
+  notificationFilter.addEventListener("change", renderNotifications);
+}
+
+if (notificationsRefreshButton) {
+  notificationsRefreshButton.addEventListener("click", async function() {
+    const original = notificationsRefreshButton.textContent;
+    notificationsRefreshButton.disabled = true;
+    notificationsRefreshButton.textContent = "Refreshing...";
+    try {
+      await loadNotifications();
+    } finally {
+      notificationsRefreshButton.disabled = false;
+      notificationsRefreshButton.textContent = original;
+    }
+  });
+}
+
+
+
+
+/* =====================================================
+   ACTIVITY LOGS
+   ===================================================== */
+
+function activityCategory(action) {
+  const value = String(action || "").toUpperCase();
+  if (value.includes("COMPLETION")) return "COMPLETION";
+  if (value.includes("ASSIGN")) return "ASSIGNMENT";
+  if (value.includes("CORRECTION")) return "CORRECTION";
+  if (value.includes("PAYMENT")) return "PAYMENT";
+  if (value.includes("LEAD") || value.includes("STATUS")) return "LEAD";
+  return "LEAD";
+}
+
+function activityIcon(action) {
+  const category = activityCategory(action);
+  return category === "COMPLETION" ? "✓" :
+         category === "ASSIGNMENT" ? "↗" :
+         category === "CORRECTION" ? "!" :
+         category === "PAYMENT" ? "₹" : "•";
+}
+
+function formatActivityAction(action) {
+  return formatStatus(String(action || "Activity"));
+}
+
+function formatActivityTime(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString("en-IN", {
+    day:"2-digit", month:"short", year:"numeric",
+    hour:"2-digit", minute:"2-digit"
+  });
+}
+
+function renderActivityStats(items) {
+  const list = Array.isArray(items) ? items : [];
+  const todayKey = new Date().toLocaleDateString("en-CA");
+  const today = list.filter(function(item) {
+    if (!item.created_at) return false;
+    return new Date(item.created_at).toLocaleDateString("en-CA") === todayKey;
+  }).length;
+  const support = list.filter(function(item) {
+    return String(item.actor_role || "").toUpperCase() === "SUPPORT";
+  }).length;
+
+  if (activityTotalCount) activityTotalCount.textContent = String(list.length);
+  if (activityTodayCount) activityTodayCount.textContent = String(today);
+  if (activitySupportCount) activitySupportCount.textContent = String(support);
+  if (activityLatestLabel) {
+    activityLatestLabel.textContent = list.length
+      ? formatActivityAction(list[0].action)
+      : "—";
+  }
+}
+
+function renderActivities() {
+  const query = String(activitySearch?.value || "").trim().toLowerCase();
+  const category = String(activityFilter?.value || "ALL");
+
+  filteredActivities = allActivities.filter(function(item) {
+    const itemCategory = activityCategory(item.action);
+    const haystack = [
+      item.action,
+      item.actor_role,
+      item.entity_type,
+      item.entity_id,
+      item.reason,
+      item.id
+    ].map(function(value){ return String(value || "").toLowerCase(); }).join(" ");
+
+    return (category === "ALL" || itemCategory === category) &&
+           (!query || haystack.includes(query));
+  });
+
+  renderActivityStats(allActivities);
+
+  if (activityLoading) activityLoading.style.display = "none";
+
+  if (!filteredActivities.length) {
+    if (activityList) activityList.style.display = "none";
+    if (activityEmpty) {
+      activityEmpty.textContent = allActivities.length ? "No activity matches your filter." : "No activity found.";
+      activityEmpty.style.display = "block";
+    }
+    return;
+  }
+
+  if (activityEmpty) activityEmpty.style.display = "none";
+  if (!activityList) return;
+
+  activityList.style.display = "flex";
+  activityList.innerHTML = filteredActivities.map(function(item) {
+    const action = formatActivityAction(item.action);
+    const category = activityCategory(item.action);
+    const entity = item.entity_type ? formatStatus(item.entity_type) : "System";
+    const reason = item.reason ? escapeHtml(item.reason) : "";
+    const actor = item.actor_role ? formatStatus(item.actor_role) : "System";
+    const entityId = item.entity_id ? escapeHtml(item.entity_id) : "—";
+
+    return `
+      <div class="activity-item">
+        <div class="activity-icon">${activityIcon(item.action)}</div>
+        <div>
+          <div class="activity-title">${escapeHtml(action)}</div>
+          <div class="activity-meta">
+            <span class="activity-badge">${escapeHtml(category)}</span>
+            <span>${escapeHtml(actor)}</span>
+            <span>${escapeHtml(entity)}</span>
+            <span>ID: ${entityId}</span>
+          </div>
+          ${reason ? `<div class="activity-reason">${reason}</div>` : ""}
+        </div>
+        <div class="activity-time">${escapeHtml(formatActivityTime(item.created_at))}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function loadActivities() {
+  if (activityLoading) {
+    activityLoading.style.display = "block";
+    activityLoading.textContent = "Loading activity...";
+  }
+  if (activityList) activityList.style.display = "none";
+  if (activityEmpty) activityEmpty.style.display = "none";
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("audit_logs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    allActivities = Array.isArray(data) ? data : [];
+    renderActivities();
+  } catch (error) {
+    console.error("Activity logs load error:", error);
+    allActivities = [];
+    renderActivityStats([]);
+    if (activityLoading) activityLoading.style.display = "none";
+    if (activityEmpty) {
+      activityEmpty.textContent = "Unable to load activity logs. Please check database access.";
+      activityEmpty.style.display = "block";
+    }
+    showNotice(
+      "Activity Logs could not be loaded. " + (error.message || ""),
+      "error",
+      activityNotice
+    );
+  }
+}
+
+if (activitySearch) {
+  activitySearch.addEventListener("input", renderActivities);
+}
+
+if (activityFilter) {
+  activityFilter.addEventListener("change", renderActivities);
+}
+
+if (activityRefreshButton) {
+  activityRefreshButton.addEventListener("click", async function() {
+    const original = activityRefreshButton.textContent;
+    activityRefreshButton.disabled = true;
+    activityRefreshButton.textContent = "Refreshing...";
+    try {
+      await loadActivities();
+    } finally {
+      activityRefreshButton.disabled = false;
+      activityRefreshButton.textContent = original;
+    }
+  });
+}
+
 /* =====================================================
    38. NAVIGATION
    ===================================================== */
@@ -9295,6 +10177,14 @@ function activateSection(section) {
 
   if (settingsSection) {
     settingsSection.style.display = "none";
+  }
+
+  if (notificationsSection) {
+    notificationsSection.style.display = "none";
+  }
+
+  if (activitySection) {
+    activitySection.style.display = "none";
   }
 
 
@@ -9597,6 +10487,74 @@ function activateSection(section) {
   }
 
 
+  if (section === "notifications") {
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "none";
+    paymentsSection.style.display = "none";
+    reportsSection.style.display = "none";
+    settingsSection.style.display = "none";
+    notificationsSection.style.display = "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(servicesNotice);
+    hideNotice(paymentsNotice);
+    hideNotice(reportsNotice);
+    hideNotice(settingsNotice);
+
+    loadNotifications();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    return;
+  }
+
+
+
+
+  if (section === "activity") {
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "none";
+    paymentsSection.style.display = "none";
+    reportsSection.style.display = "none";
+    notificationsSection.style.display = "none";
+    settingsSection.style.display = "none";
+    activitySection.style.display = "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(servicesNotice);
+    hideNotice(paymentsNotice);
+    hideNotice(reportsNotice);
+    hideNotice(settingsNotice);
+    hideNotice(notificationsNotice);
+
+    loadActivities();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    return;
+  }
+
+
   if (section === "settings") {
     dashboardSection.style.display = "none";
     leadsSection.style.display = "none";
@@ -9644,6 +10602,14 @@ function activateSection(section) {
 
   paymentsSection.style.display =
     "none";
+
+  if (notificationsSection) {
+    notificationsSection.style.display = "none";
+  }
+
+  if (activitySection) {
+    activitySection.style.display = "none";
+  }
 
 
   showNotice(
