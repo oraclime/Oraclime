@@ -2111,6 +2111,51 @@
 
 
     <!-- =================================================
+         SERVICES SECTION
+         ================================================= -->
+
+    <section
+      id="servicesSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+      <div class="dashboard-header">
+        <div>
+          <div class="eyebrow">ORACLIME Operations</div>
+          <h1>Services</h1>
+          <p>View service types being requested and handled across ORACLIME operations.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" type="button" id="servicesRefreshButton">Refresh</button>
+        </div>
+      </div>
+
+      <div id="servicesNotice" class="dashboard-notice"></div>
+
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Service Types</div><div class="stat-number" id="serviceTypeCount">0</div><div class="stat-note">Distinct services</div></div>
+        <div class="stat-card"><div class="stat-label">Total Requests</div><div class="stat-number" id="serviceRequestCount">0</div><div class="stat-note">All service requests</div></div>
+        <div class="stat-card"><div class="stat-label">Active Requests</div><div class="stat-number" id="serviceActiveCount">0</div><div class="stat-note">Currently in operation</div></div>
+        <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-number" id="serviceCompletedCount">0</div><div class="stat-note">Completed service jobs</div></div>
+      </div>
+
+      <div class="card">
+        <div class="technician-toolbar">
+          <input class="technician-search" type="search" id="serviceSearch" placeholder="Search service type" autocomplete="off">
+        </div>
+        <div id="servicesLoading" class="small" style="padding:20px 0;">Loading services...</div>
+        <div id="servicesTableWrap" class="technician-table-wrap" style="display:none;">
+          <table class="technician-table">
+            <thead><tr><th>Service</th><th>Requests</th><th>Active</th><th>Completed</th><th>Latest Request</th></tr></thead>
+            <tbody id="servicesTableBody"></tbody>
+          </table>
+        </div>
+        <div id="servicesEmpty" class="technician-empty" style="display:none;">No service types found.</div>
+      </div>
+    </section>
+
+
+    <!-- =================================================
          PAYMENTS SECTION
          ================================================= -->
 
@@ -3119,6 +3164,8 @@ let allPartners = [];
 let filteredPartners = [];
 
 let allPayments = [];
+let allServices = [];
+let filteredServices = [];
 let filteredPayments = [];
 
 
@@ -3173,6 +3220,42 @@ const partnerStatusFilter =
 
 const partnersRefreshButton =
   document.getElementById("partnersRefreshButton");
+
+const servicesSection =
+  document.getElementById("servicesSection");
+
+const servicesNotice =
+  document.getElementById("servicesNotice");
+
+const servicesLoading =
+  document.getElementById("servicesLoading");
+
+const servicesTableWrap =
+  document.getElementById("servicesTableWrap");
+
+const servicesTableBody =
+  document.getElementById("servicesTableBody");
+
+const servicesEmpty =
+  document.getElementById("servicesEmpty");
+
+const serviceSearch =
+  document.getElementById("serviceSearch");
+
+const servicesRefreshButton =
+  document.getElementById("servicesRefreshButton");
+
+const serviceTypeCount =
+  document.getElementById("serviceTypeCount");
+
+const serviceRequestCount =
+  document.getElementById("serviceRequestCount");
+
+const serviceActiveCount =
+  document.getElementById("serviceActiveCount");
+
+const serviceCompletedCount =
+  document.getElementById("serviceCompletedCount");
 
 const paymentsSection =
   document.getElementById("paymentsSection");
@@ -7598,6 +7681,73 @@ async function updatePartnerStatus(
 
 
 /* =====================================================
+   SERVICES MODULE
+   ===================================================== */
+
+function formatServiceDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+}
+
+function renderServices() {
+  const search = String(serviceSearch?.value || "").trim().toLowerCase();
+  filteredServices = allServices.filter(function(service) {
+    return !search || service.service_type.toLowerCase().includes(search);
+  });
+  if (!filteredServices.length) {
+    servicesTableWrap.style.display = "none";
+    servicesEmpty.style.display = "block";
+    servicesTableBody.innerHTML = "";
+    return;
+  }
+  servicesEmpty.style.display = "none";
+  servicesTableWrap.style.display = "block";
+  servicesTableBody.innerHTML = filteredServices.map(function(service) {
+    return `<tr><td><strong>${escapeHtml(service.service_type)}</strong></td><td>${service.requests}</td><td>${service.active}</td><td>${service.completed}</td><td>${escapeHtml(formatServiceDate(service.latest_request))}</td></tr>`;
+  }).join("");
+}
+
+async function loadServices() {
+  servicesLoading.style.display = "block";
+  servicesTableWrap.style.display = "none";
+  servicesEmpty.style.display = "none";
+  const { data, error } = await supabaseClient.from("leads").select("service_type,status,created_at").order("created_at", { ascending:false });
+  servicesLoading.style.display = "none";
+  if (error) {
+    console.error("Services load error:", error);
+    showNotice(error.message || "Unable to load services.", "error", servicesNotice);
+    servicesEmpty.textContent = "Unable to load services.";
+    servicesEmpty.style.display = "block";
+    return;
+  }
+  hideNotice(servicesNotice);
+  const rows = Array.isArray(data) ? data : [];
+  const activeStatuses = ["NEW","ASSIGNED","ACCEPTED","EN_ROUTE","ARRIVED","IN_PROGRESS","COMPLETION_SUBMITTED","CORRECTION_REQUIRED","RESCHEDULED"];
+  const grouped = new Map();
+  rows.forEach(function(row) {
+    const name = String(row.service_type || "Other Service").trim() || "Other Service";
+    if (!grouped.has(name)) grouped.set(name, { service_type:name, requests:0, active:0, completed:0, latest_request:row.created_at || null });
+    const item = grouped.get(name);
+    item.requests += 1;
+    if (activeStatuses.includes(row.status)) item.active += 1;
+    if (row.status === "COMPLETED") item.completed += 1;
+    if (row.created_at && (!item.latest_request || row.created_at > item.latest_request)) item.latest_request = row.created_at;
+  });
+  allServices = Array.from(grouped.values()).sort(function(a,b) { return b.requests - a.requests || a.service_type.localeCompare(b.service_type); });
+  serviceTypeCount.textContent = String(allServices.length);
+  serviceRequestCount.textContent = String(rows.length);
+  serviceActiveCount.textContent = String(rows.filter(function(row) { return activeStatuses.includes(row.status); }).length);
+  serviceCompletedCount.textContent = String(rows.filter(function(row) { return row.status === "COMPLETED"; }).length);
+  renderServices();
+}
+
+if (serviceSearch) serviceSearch.addEventListener("input", renderServices);
+if (servicesRefreshButton) servicesRefreshButton.addEventListener("click", loadServices);
+
+
+/* =====================================================
    PAYMENTS MODULE
    ===================================================== */
 
@@ -8135,6 +8285,9 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    servicesSection.style.display =
+      "none";
+
     partnersSection.style.display =
       "none";
 
@@ -8165,6 +8318,9 @@ function activateSection(section) {
       "none";
 
     techniciansSection.style.display =
+      "none";
+
+    servicesSection.style.display =
       "none";
 
     partnersSection.style.display =
@@ -8199,6 +8355,9 @@ function activateSection(section) {
       "block";
 
     techniciansSection.style.display =
+      "none";
+
+    servicesSection.style.display =
       "none";
 
     partnersSection.style.display =
@@ -8239,6 +8398,9 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    servicesSection.style.display =
+      "none";
+
     paymentsSection.style.display =
       "none";
 
@@ -8276,6 +8438,9 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    servicesSection.style.display =
+      "none";
+
     paymentsSection.style.display =
       "block";
 
@@ -8296,6 +8461,25 @@ function activateSection(section) {
 
   }
 
+
+  if (section === "services") {
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "block";
+    paymentsSection.style.display = "none";
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(paymentsNotice);
+    loadServices();
+    window.scrollTo({ top:0, behavior:"smooth" });
+    return;
+  }
 
   if (section === "technicians") {
 
