@@ -2162,6 +2162,46 @@
           <div class="stat-number" id="paymentsTransactionCount">0</div>
           <div class="stat-note">Recorded payment entries</div>
         </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Today Collected</div>
+          <div class="stat-number" id="paymentsTodayTotal">₹0.00</div>
+          <div class="stat-note">Payments recorded today</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Today Transactions</div>
+          <div class="stat-number" id="paymentsTodayCount">0</div>
+          <div class="stat-note">Today's payment entries</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+
+        <div class="section-title-row" style="margin-bottom:12px;">
+          <h2>Today's Technician Collection</h2>
+          <span class="small">Technician-wise payment summary</span>
+        </div>
+
+        <div id="technicianPaymentsEmpty" class="technician-empty" style="display:none;">
+          No technician collections recorded today.
+        </div>
+
+        <div id="technicianPaymentsTableWrap" class="technician-table-wrap" style="display:none;">
+          <table class="technician-table">
+            <thead>
+              <tr>
+                <th>Technician</th>
+                <th>Transactions</th>
+                <th>Cash</th>
+                <th>UPI</th>
+                <th>Total Collected</th>
+              </tr>
+            </thead>
+            <tbody id="technicianPaymentsTableBody"></tbody>
+          </table>
+        </div>
+
       </div>
 
       <div class="card">
@@ -2196,6 +2236,7 @@
               <tr>
                 <th>Lead</th>
                 <th>Customer</th>
+                <th>Technician</th>
                 <th>Amount</th>
                 <th>Mode</th>
                 <th>Status</th>
@@ -3171,6 +3212,21 @@ const paymentsUpiTotal =
 
 const paymentsTransactionCount =
   document.getElementById("paymentsTransactionCount");
+
+const paymentsTodayTotal =
+  document.getElementById("paymentsTodayTotal");
+
+const paymentsTodayCount =
+  document.getElementById("paymentsTodayCount");
+
+const technicianPaymentsTableWrap =
+  document.getElementById("technicianPaymentsTableWrap");
+
+const technicianPaymentsTableBody =
+  document.getElementById("technicianPaymentsTableBody");
+
+const technicianPaymentsEmpty =
+  document.getElementById("technicianPaymentsEmpty");
 
 const techniciansNotice =
   document.getElementById("techniciansNotice");
@@ -7644,6 +7700,15 @@ function renderPayments() {
           </td>
 
           <td>
+            <div class="technician-name">
+              ${escapeHtml(payment.technician_name || "Technician not linked")}
+            </div>
+            <div class="technician-sub">
+              ${escapeHtml(payment.technician_code || "—")}
+            </div>
+          </td>
+
+          <td>
             <strong>${escapeHtml(formatAmount(payment.amount_collected))}</strong>
           </td>
 
@@ -7664,6 +7729,90 @@ function renderPayments() {
       `;
 
     }).join("");
+}
+
+
+function isPaymentToday(value) {
+
+  if (!value) return false;
+
+  const date = new Date(value);
+  const now = new Date();
+
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+  );
+}
+
+
+function renderTechnicianPaymentSummary() {
+
+  const todayPayments = allPayments.filter(function(payment) {
+    return isPaymentToday(payment.created_at);
+  });
+
+  const technicianMap = {};
+
+  todayPayments.forEach(function(payment) {
+
+    const key = payment.technician_id || "UNASSIGNED";
+
+    if (!technicianMap[key]) {
+      technicianMap[key] = {
+        technician_id: payment.technician_id || null,
+        technician_name: payment.technician_name || "Technician not linked",
+        technician_code: payment.technician_code || "—",
+        transactions: 0,
+        cash: 0,
+        upi: 0,
+        total: 0
+      };
+    }
+
+    const amount = Number(payment.amount_collected) || 0;
+    const mode = String(payment.payment_mode || "").toUpperCase();
+
+    technicianMap[key].transactions += 1;
+    technicianMap[key].total += amount;
+
+    if (mode === "CASH") {
+      technicianMap[key].cash += amount;
+    } else if (mode === "UPI") {
+      technicianMap[key].upi += amount;
+    }
+
+  });
+
+  const summary = Object.values(technicianMap).sort(function(a,b) {
+    return b.total - a.total;
+  });
+
+  if (!summary.length) {
+    technicianPaymentsTableWrap.style.display = "none";
+    technicianPaymentsEmpty.style.display = "block";
+    technicianPaymentsTableBody.innerHTML = "";
+    return;
+  }
+
+  technicianPaymentsEmpty.style.display = "none";
+  technicianPaymentsTableWrap.style.display = "block";
+
+  technicianPaymentsTableBody.innerHTML = summary.map(function(item) {
+    return `
+      <tr>
+        <td>
+          <div class="technician-name">${escapeHtml(item.technician_name)}</div>
+          <div class="technician-sub">${escapeHtml(item.technician_code)}</div>
+        </td>
+        <td>${escapeHtml(String(item.transactions))}</td>
+        <td><strong>${escapeHtml(formatAmount(item.cash))}</strong></td>
+        <td><strong>${escapeHtml(formatAmount(item.upi))}</strong></td>
+        <td><strong>${escapeHtml(formatAmount(item.total))}</strong></td>
+      </tr>
+    `;
+  }).join("");
 }
 
 
@@ -7718,6 +7867,57 @@ async function loadPayments() {
       });
     }
 
+    const visitMap = {};
+
+    if (serviceOrderIds.length) {
+      const {
+        data: visits,
+        error: visitError
+      } = await supabaseClient
+        .from("visits")
+        .select("id,service_order_id,technician_id,visit_number,created_at")
+        .in("service_order_id", serviceOrderIds)
+        .order("visit_number", { ascending: false });
+
+      if (visitError) {
+        throw new Error("Unable to load payment technician details: " + visitError.message);
+      }
+
+      (visits || []).forEach(function(visit) {
+        if (!visitMap[visit.service_order_id]) {
+          visitMap[visit.service_order_id] = visit;
+        }
+      });
+    }
+
+    const technicianIds = [
+      ...new Set(
+        Object.values(visitMap)
+          .map(function(visit) { return visit.technician_id; })
+          .filter(Boolean)
+      )
+    ];
+
+    const technicianMap = {};
+
+    if (technicianIds.length) {
+      const {
+        data: technicians,
+        error: technicianError
+      } = await supabaseClient
+        .from("technicians")
+        .select("id,technician_code,full_name")
+        .in("id", technicianIds);
+
+      if (technicianError) {
+        throw new Error("Unable to load technician payment details: " + technicianError.message);
+      }
+
+      (technicians || []).forEach(function(technician) {
+        technicianMap[technician.id] = technician;
+      });
+    }
+
     const leadIds = [
       ...new Set(
         Object.values(serviceOrderMap)
@@ -7754,6 +7954,12 @@ async function loadPayments() {
       const lead =
         leadMap[order.lead_id] || {};
 
+      const visit =
+        visitMap[row.service_order_id] || {};
+
+      const technician =
+        technicianMap[visit.technician_id] || {};
+
       return {
         id: row.id,
         service_order_id: row.service_order_id,
@@ -7763,7 +7969,10 @@ async function loadPayments() {
         updated_at: row.updated_at,
         lead_number: lead.lead_number,
         customer_name: lead.customer_name,
-        mobile: lead.mobile
+        mobile: lead.mobile,
+        technician_id: visit.technician_id || null,
+        technician_name: technician.full_name || "Technician not linked",
+        technician_code: technician.technician_code || "—"
       };
 
     });
@@ -7787,12 +7996,25 @@ async function loadPayments() {
           : sum;
       }, 0);
 
+    const todayPayments =
+      allPayments.filter(function(payment) {
+        return isPaymentToday(payment.created_at);
+      });
+
+    const todayTotal =
+      todayPayments.reduce(function(sum, payment) {
+        return sum + (Number(payment.amount_collected) || 0);
+      }, 0);
+
     paymentsTotalCollected.textContent = formatAmount(total);
     paymentsCashTotal.textContent = formatAmount(cash);
     paymentsUpiTotal.textContent = formatAmount(upi);
     paymentsTransactionCount.textContent = String(allPayments.length);
+    paymentsTodayTotal.textContent = formatAmount(todayTotal);
+    paymentsTodayCount.textContent = String(todayPayments.length);
 
     paymentsLoading.style.display = "none";
+    renderTechnicianPaymentSummary();
     renderPayments();
 
   } catch (error) {
