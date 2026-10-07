@@ -8418,6 +8418,393 @@ async function loadPayments() {
 
 
 /* =====================================================
+   REPORTS MODULE
+   ===================================================== */
+
+const REPORT_DATASETS = [
+  { key: "leads", label: "Leads" },
+  { key: "partners", label: "Partners" },
+  { key: "technicians", label: "Technicians" },
+  { key: "service_orders", label: "Service Orders" },
+  { key: "visits", label: "Visits" },
+  { key: "payments", label: "Payments" },
+  { key: "correction_requests", label: "Correction Requests" }
+];
+
+function reportSafeRows(rows) {
+  return (rows || []).map(function(row) {
+    const clean = {};
+
+    Object.keys(row || {}).forEach(function(key) {
+      const lower = String(key).toLowerCase();
+
+      if (
+        lower.includes("code_hash") ||
+        lower === "completion_code" ||
+        lower.includes("password") ||
+        lower.includes("secret") ||
+        lower.includes("token")
+      ) {
+        return;
+      }
+
+      clean[key] = row[key];
+    });
+
+    return clean;
+  });
+}
+
+async function fetchReportTable(tableName) {
+  const pageSize = 1000;
+  let offset = 0;
+  let allRows = [];
+
+  while (true) {
+    const result = await supabaseClient
+      .from(tableName)
+      .select("*")
+      .range(offset, offset + pageSize - 1);
+
+    if (result.error) {
+      throw new Error(result.error.message || ("Unable to load " + tableName));
+    }
+
+    const rows = result.data || [];
+    allRows = allRows.concat(rows);
+
+    if (rows.length < pageSize) {
+      break;
+    }
+
+    offset += pageSize;
+  }
+
+  return reportSafeRows(allRows);
+}
+
+function reportCellValue(value) {
+  if (value === null || value === undefined || value === "") {
+    return "—";
+  }
+
+  if (typeof value === "object") {
+    try {
+      return JSON.stringify(value);
+    } catch (error) {
+      return String(value);
+    }
+  }
+
+  return String(value);
+}
+
+function renderReports() {
+  const entries = REPORT_DATASETS.map(function(dataset) {
+    const rows = reportsData[dataset.key];
+    const failed = rows && rows.__error;
+
+    return {
+      ...dataset,
+      rows: failed ? [] : (rows || []),
+      error: failed ? rows.__error : null
+    };
+  });
+
+  const totalRecords = entries.reduce(function(sum, item) {
+    return sum + item.rows.length;
+  }, 0);
+
+  reportTotalRecords.textContent = String(totalRecords);
+  reportDatasetCount.textContent = String(entries.length);
+  reportPaymentCount.textContent = String(
+    (reportsData.payments || []).__error
+      ? 0
+      : (reportsData.payments || []).length
+  );
+  reportLeadCount.textContent = String(
+    (reportsData.leads || []).__error
+      ? 0
+      : (reportsData.leads || []).length
+  );
+
+  reportsDatasetBody.innerHTML = entries.map(function(item) {
+    const status = item.error
+      ? "Unavailable"
+      : "Ready";
+
+    const statusClass = item.error
+      ? "report-warning"
+      : "report-ready";
+
+    return `
+      <tr>
+        <td><strong>${escapeHtml(item.label)}</strong></td>
+        <td>${escapeHtml(String(item.rows.length))}</td>
+        <td>
+          <span class="${statusClass}">
+            ${escapeHtml(status)}${item.error ? " — " + escapeHtml(item.error) : ""}
+          </span>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  reportsLastUpdated.textContent =
+    "Updated " + new Date().toLocaleString();
+}
+
+async function loadReports() {
+  if (reportsLoadInProgress) return;
+
+  reportsLoadInProgress = true;
+
+  if (reportsRefreshButton) {
+    reportsRefreshButton.disabled = true;
+    reportsRefreshButton.textContent = "Loading...";
+  }
+
+  hideNotice(reportsNotice);
+
+  reportsData = {};
+
+  try {
+    const results = await Promise.all(
+      REPORT_DATASETS.map(async function(dataset) {
+        try {
+          return {
+            key: dataset.key,
+            rows: await fetchReportTable(dataset.key),
+            error: null
+          };
+        } catch (error) {
+          console.error("Reports load error for " + dataset.key + ":", error);
+          return {
+            key: dataset.key,
+            rows: [],
+            error: error.message || "Unable to load data."
+          };
+        }
+      })
+    );
+
+    results.forEach(function(result) {
+      if (result.error) {
+        const failedRows = [];
+        failedRows.__error = result.error;
+        reportsData[result.key] = failedRows;
+      } else {
+        reportsData[result.key] = result.rows;
+      }
+    });
+
+    renderReports();
+
+    const failed = results.filter(function(item) {
+      return Boolean(item.error);
+    });
+
+    if (failed.length) {
+      showNotice(
+        failed.length + " report dataset(s) could not be loaded. Available data is still ready for export.",
+        "error",
+        reportsNotice
+      );
+    } else {
+      showNotice(
+        "All report data loaded successfully.",
+        "success",
+        reportsNotice
+      );
+    }
+
+  } catch (error) {
+    console.error("Reports load error:", error);
+
+    showNotice(
+      error.message || "Unable to load reports.",
+      "error",
+      reportsNotice
+    );
+
+    reportsLastUpdated.textContent = "Load failed";
+    renderReports();
+
+  } finally {
+    reportsLoadInProgress = false;
+
+    if (reportsRefreshButton) {
+      reportsRefreshButton.disabled = false;
+      reportsRefreshButton.textContent = "Refresh Data";
+    }
+  }
+}
+
+function reportSheetName(label, usedNames) {
+  let base = String(label || "Data")
+    .replace(/[\\/?*\[\]:]/g, "")
+    .slice(0, 31) || "Data";
+
+  let name = base;
+  let index = 2;
+
+  while (usedNames[name]) {
+    const suffix = " " + index++;
+    name = base.slice(0, 31 - suffix.length) + suffix;
+  }
+
+  usedNames[name] = true;
+  return name;
+}
+
+function downloadReportsExcel() {
+  if (typeof XLSX === "undefined") {
+    showNotice("Excel export library is not available.", "error", reportsNotice);
+    return;
+  }
+
+  if (!Object.keys(reportsData).length) {
+    showNotice("Load the report data first.", "error", reportsNotice);
+    return;
+  }
+
+  try {
+    const workbook = XLSX.utils.book_new();
+    const usedNames = {};
+
+    REPORT_DATASETS.forEach(function(dataset) {
+      const rawRows = reportsData[dataset.key];
+      if (!rawRows || rawRows.__error) return;
+
+      const rows = rawRows.map(function(row) {
+        const output = {};
+        Object.keys(row).forEach(function(key) {
+          output[key] = reportCellValue(row[key]);
+        });
+        return output;
+      });
+
+      const worksheet = rows.length
+        ? XLSX.utils.json_to_sheet(rows)
+        : XLSX.utils.aoa_to_sheet([["No records"]]);
+
+      worksheet["!cols"] = Object.keys(rows[0] || { "No records": "" }).map(function() {
+        return { wch: 22 };
+      });
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        reportSheetName(dataset.label, usedNames)
+      );
+    });
+
+    XLSX.writeFile(
+      workbook,
+      "ORACLIME-Support-Report-" + new Date().toISOString().slice(0, 10) + ".xlsx"
+    );
+
+    showNotice("Excel report downloaded successfully.", "success", reportsNotice);
+  } catch (error) {
+    console.error("Excel export error:", error);
+    showNotice(error.message || "Unable to create Excel report.", "error", reportsNotice);
+  }
+}
+
+function downloadReportsPdf() {
+  const pdfLib = window.jspdf;
+
+  if (!pdfLib || !pdfLib.jsPDF) {
+    showNotice("PDF export library is not available.", "error", reportsNotice);
+    return;
+  }
+
+  if (!Object.keys(reportsData).length) {
+    showNotice("Load the report data first.", "error", reportsNotice);
+    return;
+  }
+
+  try {
+    const doc = new pdfLib.jsPDF({
+      orientation: "landscape",
+      unit: "pt",
+      format: "a4"
+    });
+
+    const generated = new Date().toLocaleString();
+
+    doc.setFontSize(18);
+    doc.text("ORACLIME Support Operational Report", 36, 38);
+    doc.setFontSize(9);
+    doc.text("Generated: " + generated, 36, 54);
+
+    let firstTable = true;
+
+    REPORT_DATASETS.forEach(function(dataset) {
+      const rawRows = reportsData[dataset.key];
+      if (!rawRows || rawRows.__error) return;
+
+      if (!firstTable) {
+        doc.addPage();
+      }
+      firstTable = false;
+
+      const rows = rawRows;
+      const columns = rows.length
+        ? Object.keys(rows[0])
+        : ["Records"];
+
+      const body = rows.length
+        ? rows.map(function(row) {
+            return columns.map(function(column) {
+              return reportCellValue(row[column]);
+            });
+          })
+        : [["No records"]];
+
+      doc.setFontSize(13);
+      doc.text(dataset.label, 36, 78);
+
+      if (typeof doc.autoTable === "function") {
+        doc.autoTable({
+          startY: 90,
+          head: [columns],
+          body: body,
+          styles: {
+            fontSize: 6,
+            cellPadding: 3,
+            overflow: "linebreak"
+          },
+          headStyles: {
+            fontSize: 6
+          },
+          margin: {
+            left: 36,
+            right: 36
+          }
+        });
+      } else {
+        let y = 94;
+        doc.setFontSize(6);
+        body.slice(0, 40).forEach(function(row) {
+          doc.text(row.join(" | ").slice(0, 180), 36, y);
+          y += 9;
+        });
+      }
+    });
+
+    doc.save(
+      "ORACLIME-Support-Report-" + new Date().toISOString().slice(0, 10) + ".pdf"
+    );
+
+    showNotice("PDF report downloaded successfully.", "success", reportsNotice);
+  } catch (error) {
+    console.error("PDF export error:", error);
+    showNotice(error.message || "Unable to create PDF report.", "error", reportsNotice);
+  }
+}
+
+/* =====================================================
    38. NAVIGATION
    ===================================================== */
 
@@ -9193,6 +9580,23 @@ if (paymentsRefreshButton) {
     }
 
   });
+}
+
+
+/* =====================================================
+   REPORTS EVENTS
+   ===================================================== */
+
+if (reportsRefreshButton) {
+  reportsRefreshButton.addEventListener("click", loadReports);
+}
+
+if (reportsExcelButton) {
+  reportsExcelButton.addEventListener("click", downloadReportsExcel);
+}
+
+if (reportsPdfButton) {
+  reportsPdfButton.addEventListener("click", downloadReportsPdf);
 }
 
 
