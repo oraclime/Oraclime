@@ -8983,7 +8983,12 @@ async function loadSettingsCompletionLeads() {
     settingsCompletionLead.innerHTML =
       '<option value="">Select a lead</option>';
 
-    (data || []).forEach(function(lead) {
+    const activeLeads = (data || []).filter(function(lead) {
+      const status = String(lead.status || "").toUpperCase();
+      return ["NEW", "ASSIGNED", "IN_PROGRESS"].includes(status);
+    });
+
+    activeLeads.forEach(function(lead) {
       const option = document.createElement("option");
       option.value = lead.id;
       option.textContent =
@@ -8996,7 +9001,7 @@ async function loadSettingsCompletionLeads() {
       settingsCompletionLead.appendChild(option);
     });
 
-    if (!data || !data.length) {
+    if (!activeLeads.length) {
       settingsCompletionLead.innerHTML =
         '<option value="">No leads found</option>';
     }
