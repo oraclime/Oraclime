@@ -3508,7 +3508,6 @@ async function loadDashboardData() {
       row =>
         [
           "RESCHEDULED",
-          "RESCHEDULE_REQUESTED"
         ].includes(row.status)
     ).length
   );
@@ -3900,7 +3899,7 @@ function renderLeads() {
                         <span class="small">Completed</span>
                       `
                       : !lead.assigned_technician_id &&
-                        ["NEW","RESCHEDULED","RESCHEDULE_REQUESTED"].includes(lead.status)
+                        ["NEW","RESCHEDULED"].includes(lead.status)
                         ? `
                           <button
                             type="button"
@@ -4648,7 +4647,6 @@ async function loadUnassignedLeads() {
         [
           "NEW",
           "RESCHEDULED",
-          "RESCHEDULE_REQUESTED"
         ]
       )
       .order(
@@ -5125,7 +5123,6 @@ async function assignSelectedTechnician() {
       ![
         "NEW",
         "RESCHEDULED",
-        "RESCHEDULE_REQUESTED"
       ].includes(
         currentLead.status
       )
