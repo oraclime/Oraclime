@@ -10068,6 +10068,111 @@ async function loadActivities() {
     if (error) throw error;
 
     allActivities = Array.isArray(data) ? data : [];
+
+    /*
+       Keep Activity Logs useful even when audit_logs is empty.
+       We do not change any other module or write synthetic rows back
+       to the database. We only build a read-only fallback feed from
+       existing operational records.
+    */
+    if (!allActivities.length) {
+      const fallback = [];
+
+      const [leadsResult, assignmentsResult, paymentsResult, correctionsResult] =
+        await Promise.allSettled([
+          supabaseClient
+            .from("leads")
+            .select("id,lead_number,created_at,updated_at,status")
+            .order("created_at", { ascending: false })
+            .limit(100),
+          supabaseClient
+            .from("lead_assignments")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(100),
+          supabaseClient
+            .from("payments")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(100),
+          supabaseClient
+            .from("correction_requests")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(100)
+        ]);
+
+      if (leadsResult.status === "fulfilled" && !leadsResult.value.error) {
+        (leadsResult.value.data || []).forEach(function(row) {
+          fallback.push({
+            id: "lead-created-" + row.id,
+            actor_role: "SYSTEM",
+            action: "LEAD_CREATED",
+            entity_type: "lead",
+            entity_id: row.lead_number || row.id,
+            reason: row.status ? "Current status: " + row.status : "",
+            created_at: row.created_at
+          });
+        });
+      }
+
+      if (assignmentsResult.status === "fulfilled" && !assignmentsResult.value.error) {
+        (assignmentsResult.value.data || []).forEach(function(row) {
+          const createdAt = row.created_at || row.assigned_at || row.updated_at;
+          fallback.push({
+            id: "assignment-" + (row.id || Math.random()),
+            actor_role: "SYSTEM",
+            action: "TECHNICIAN_ASSIGNED",
+            entity_type: "lead",
+            entity_id: row.lead_id || row.id || "",
+            reason: row.technician_id ? "Technician assigned" : "Assignment record",
+            created_at: createdAt
+          });
+        });
+      }
+
+      if (paymentsResult.status === "fulfilled" && !paymentsResult.value.error) {
+        (paymentsResult.value.data || []).forEach(function(row) {
+          const createdAt = row.created_at || row.paid_at || row.payment_date;
+          fallback.push({
+            id: "payment-" + (row.id || Math.random()),
+            actor_role: "SYSTEM",
+            action: "PAYMENT_RECEIVED",
+            entity_type: "payment",
+            entity_id: row.id || row.lead_id || "",
+            reason: row.amount_collected != null
+              ? "Amount: ₹" + row.amount_collected
+              : (row.payment_mode ? "Mode: " + row.payment_mode : "Payment recorded"),
+            created_at: createdAt
+          });
+        });
+      }
+
+      if (correctionsResult.status === "fulfilled" && !correctionsResult.value.error) {
+        (correctionsResult.value.data || []).forEach(function(row) {
+          fallback.push({
+            id: "correction-" + (row.id || Math.random()),
+            actor_role: "SYSTEM",
+            action: "CORRECTION_REQUESTED",
+            entity_type: "lead",
+            entity_id: row.lead_id || row.id || "",
+            reason: row.reason || row.status || "Correction request recorded",
+            created_at: row.created_at || row.updated_at
+          });
+        });
+      }
+
+      allActivities = fallback.filter(function(item) {
+        return item.created_at;
+      });
+
+      allActivities.sort(function(a, b) {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
+      allActivities = allActivities.slice(0, 200);
+    }
+
     renderActivities();
   } catch (error) {
     console.error("Activity logs load error:", error);
@@ -11267,7 +11372,10 @@ initializeDashboard();
 </script>
 
 </body>
-</html>/* =====================================================
+</html>
+
+
+/* =====================================================
    LEAD LIST AUTO-REFRESH
    ===================================================== */
 
