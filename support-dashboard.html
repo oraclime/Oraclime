@@ -2111,6 +2111,115 @@
 
 
     <!-- =================================================
+         PAYMENTS SECTION
+         ================================================= -->
+
+    <section
+      id="paymentsSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+
+        <div>
+          <div class="eyebrow">ORACLIME Operations</div>
+          <h1>Payments</h1>
+          <p>View payment collections recorded against service orders.</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn" type="button" id="paymentsRefreshButton">
+            Refresh
+          </button>
+        </div>
+
+      </div>
+
+      <div id="paymentsNotice" class="dashboard-notice"></div>
+
+      <div class="stats-grid" id="paymentsStatsGrid">
+        <div class="stat-card">
+          <div class="stat-label">Total Collected</div>
+          <div class="stat-number" id="paymentsTotalCollected">₹0.00</div>
+          <div class="stat-note">All recorded payments</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Cash</div>
+          <div class="stat-number" id="paymentsCashTotal">₹0.00</div>
+          <div class="stat-note">Cash collections</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">UPI</div>
+          <div class="stat-number" id="paymentsUpiTotal">₹0.00</div>
+          <div class="stat-note">UPI collections</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Transactions</div>
+          <div class="stat-number" id="paymentsTransactionCount">0</div>
+          <div class="stat-note">Recorded payment entries</div>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <div class="technician-toolbar">
+          <input
+            class="technician-search"
+            type="search"
+            id="paymentSearch"
+            placeholder="Search by lead, customer, mobile or payment mode"
+            autocomplete="off"
+          >
+
+          <select id="paymentModeFilter" aria-label="Payment mode">
+            <option value="ALL">All Modes</option>
+            <option value="CASH">Cash</option>
+            <option value="UPI">UPI</option>
+          </select>
+        </div>
+
+        <div id="paymentsLoading" class="small" style="padding:20px 0;">
+          Loading payments...
+        </div>
+
+        <div
+          id="paymentsTableWrap"
+          class="technician-table-wrap"
+          style="display:none;"
+        >
+          <table class="technician-table">
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Mode</th>
+                <th>Status</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTableBody"></tbody>
+          </table>
+        </div>
+
+        <div
+          id="paymentsEmpty"
+          class="technician-empty"
+          style="display:none;"
+        >
+          No payments found.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
          TECHNICIANS SECTION
          ================================================= -->
 
@@ -2968,6 +3077,9 @@ let filteredTechnicians = [];
 let allPartners = [];
 let filteredPartners = [];
 
+let allPayments = [];
+let filteredPayments = [];
+
 
 /* =====================================================
    3. DOM
@@ -3020,6 +3132,45 @@ const partnerStatusFilter =
 
 const partnersRefreshButton =
   document.getElementById("partnersRefreshButton");
+
+const paymentsSection =
+  document.getElementById("paymentsSection");
+
+const paymentsNotice =
+  document.getElementById("paymentsNotice");
+
+const paymentsLoading =
+  document.getElementById("paymentsLoading");
+
+const paymentsTableWrap =
+  document.getElementById("paymentsTableWrap");
+
+const paymentsTableBody =
+  document.getElementById("paymentsTableBody");
+
+const paymentsEmpty =
+  document.getElementById("paymentsEmpty");
+
+const paymentSearch =
+  document.getElementById("paymentSearch");
+
+const paymentModeFilter =
+  document.getElementById("paymentModeFilter");
+
+const paymentsRefreshButton =
+  document.getElementById("paymentsRefreshButton");
+
+const paymentsTotalCollected =
+  document.getElementById("paymentsTotalCollected");
+
+const paymentsCashTotal =
+  document.getElementById("paymentsCashTotal");
+
+const paymentsUpiTotal =
+  document.getElementById("paymentsUpiTotal");
+
+const paymentsTransactionCount =
+  document.getElementById("paymentsTransactionCount");
 
 const techniciansNotice =
   document.getElementById("techniciansNotice");
@@ -7391,6 +7542,278 @@ async function updatePartnerStatus(
 
 
 /* =====================================================
+   PAYMENTS MODULE
+   ===================================================== */
+
+function paymentModeClass(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+}
+
+
+function formatPaymentMode(value) {
+  const mode = String(value || "").toUpperCase();
+
+  if (mode === "CASH") return "Cash";
+  if (mode === "UPI") return "UPI";
+
+  return value || "—";
+}
+
+
+function paymentMatchesFilter(payment) {
+
+  const search =
+    (paymentSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const mode =
+    paymentModeFilter?.value || "ALL";
+
+  if (
+    mode !== "ALL" &&
+    String(payment.payment_mode || "").toUpperCase() !== mode
+  ) {
+    return false;
+  }
+
+  if (!search) {
+    return true;
+  }
+
+  const haystack = [
+    payment.lead_number,
+    payment.customer_name,
+    payment.mobile,
+    payment.payment_mode,
+    payment.service_order_id
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(search);
+}
+
+
+function renderPayments() {
+
+  filteredPayments =
+    allPayments.filter(paymentMatchesFilter);
+
+  paymentsTableBody.innerHTML = "";
+
+  if (!filteredPayments.length) {
+    paymentsTableWrap.style.display = "none";
+    paymentsEmpty.style.display = "block";
+    return;
+  }
+
+  paymentsEmpty.style.display = "none";
+  paymentsTableWrap.style.display = "block";
+
+  paymentsTableBody.innerHTML =
+    filteredPayments.map(function(payment) {
+
+      const mode =
+        String(payment.payment_mode || "").toUpperCase();
+
+      const modeClass =
+        paymentModeClass(mode);
+
+      return `
+        <tr>
+          <td>
+            <div class="technician-name">
+              ${escapeHtml(payment.lead_number || "—")}
+            </div>
+            <div class="technician-sub">
+              ${escapeHtml(payment.service_order_id || "—")}
+            </div>
+          </td>
+
+          <td>
+            <div class="technician-name">
+              ${escapeHtml(payment.customer_name || "—")}
+            </div>
+            <div class="technician-sub">
+              ${escapeHtml(payment.mobile || "—")}
+            </div>
+          </td>
+
+          <td>
+            <strong>${escapeHtml(formatAmount(payment.amount_collected))}</strong>
+          </td>
+
+          <td>
+            <span class="status-pill ${modeClass}">
+              ${escapeHtml(formatPaymentMode(payment.payment_mode))}
+            </span>
+          </td>
+
+          <td>
+            <span class="status-pill available">Collected</span>
+          </td>
+
+          <td>
+            ${escapeHtml(formatDate(payment.updated_at || payment.created_at))}
+          </td>
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+async function loadPayments() {
+
+  paymentsLoading.style.display = "block";
+  paymentsTableWrap.style.display = "none";
+  paymentsEmpty.style.display = "none";
+
+  hideNotice(paymentsNotice);
+
+  try {
+
+    const {
+      data: paymentRows,
+      error: paymentError
+    } = await supabaseClient
+      .from("payments")
+      .select("id,service_order_id,amount_collected,payment_mode,created_at,updated_at")
+      .order("created_at", { ascending: false });
+
+    if (paymentError) {
+      throw new Error("Unable to load payments: " + paymentError.message);
+    }
+
+    const rows = paymentRows || [];
+    const serviceOrderIds = [
+      ...new Set(
+        rows
+          .map(function(row) { return row.service_order_id; })
+          .filter(Boolean)
+      )
+    ];
+
+    const serviceOrderMap = {};
+
+    if (serviceOrderIds.length) {
+      const {
+        data: serviceOrders,
+        error: serviceOrderError
+      } = await supabaseClient
+        .from("service_orders")
+        .select("id,lead_id")
+        .in("id", serviceOrderIds);
+
+      if (serviceOrderError) {
+        throw new Error("Unable to load payment service orders: " + serviceOrderError.message);
+      }
+
+      (serviceOrders || []).forEach(function(order) {
+        serviceOrderMap[order.id] = order;
+      });
+    }
+
+    const leadIds = [
+      ...new Set(
+        Object.values(serviceOrderMap)
+          .map(function(order) { return order.lead_id; })
+          .filter(Boolean)
+      )
+    ];
+
+    const leadMap = {};
+
+    if (leadIds.length) {
+      const {
+        data: leads,
+        error: leadsError
+      } = await supabaseClient
+        .from("leads")
+        .select("id,lead_number,customer_name,mobile")
+        .in("id", leadIds);
+
+      if (leadsError) {
+        throw new Error("Unable to load payment lead details: " + leadsError.message);
+      }
+
+      (leads || []).forEach(function(lead) {
+        leadMap[lead.id] = lead;
+      });
+    }
+
+    allPayments = rows.map(function(row) {
+
+      const order =
+        serviceOrderMap[row.service_order_id] || {};
+
+      const lead =
+        leadMap[order.lead_id] || {};
+
+      return {
+        id: row.id,
+        service_order_id: row.service_order_id,
+        amount_collected: Number(row.amount_collected || 0),
+        payment_mode: row.payment_mode,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        lead_number: lead.lead_number,
+        customer_name: lead.customer_name,
+        mobile: lead.mobile
+      };
+
+    });
+
+    const total =
+      allPayments.reduce(function(sum, payment) {
+        return sum + (Number(payment.amount_collected) || 0);
+      }, 0);
+
+    const cash =
+      allPayments.reduce(function(sum, payment) {
+        return String(payment.payment_mode || "").toUpperCase() === "CASH"
+          ? sum + (Number(payment.amount_collected) || 0)
+          : sum;
+      }, 0);
+
+    const upi =
+      allPayments.reduce(function(sum, payment) {
+        return String(payment.payment_mode || "").toUpperCase() === "UPI"
+          ? sum + (Number(payment.amount_collected) || 0)
+          : sum;
+      }, 0);
+
+    paymentsTotalCollected.textContent = formatAmount(total);
+    paymentsCashTotal.textContent = formatAmount(cash);
+    paymentsUpiTotal.textContent = formatAmount(upi);
+    paymentsTransactionCount.textContent = String(allPayments.length);
+
+    paymentsLoading.style.display = "none";
+    renderPayments();
+
+  } catch (error) {
+
+    console.error("Payments load error:", error);
+
+    paymentsLoading.style.display = "none";
+    paymentsTableWrap.style.display = "none";
+    paymentsEmpty.style.display = "block";
+
+    showNotice(
+      error.message || "Unable to load payments.",
+      "error",
+      paymentsNotice
+    );
+
+  }
+}
+
+
+/* =====================================================
    38. NAVIGATION
    ===================================================== */
 
@@ -7493,6 +7916,9 @@ function activateSection(section) {
     partnersSection.style.display =
       "none";
 
+    paymentsSection.style.display =
+      "none";
+
     hideNotice(leadsNotice);
 
     window.scrollTo({
@@ -7520,6 +7946,9 @@ function activateSection(section) {
       "none";
 
     partnersSection.style.display =
+      "none";
+
+    paymentsSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -7551,6 +7980,9 @@ function activateSection(section) {
       "none";
 
     partnersSection.style.display =
+      "none";
+
+    paymentsSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -7585,12 +8017,53 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    paymentsSection.style.display =
+      "none";
+
     hideNotice(dashboardNotice);
     hideNotice(leadsNotice);
     hideNotice(assignmentsNotice);
     hideNotice(techniciansNotice);
 
     loadPartners();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    return;
+
+  }
+
+
+  if (section === "payments") {
+
+    dashboardSection.style.display =
+      "none";
+
+    leadsSection.style.display =
+      "none";
+
+    assignmentsSection.style.display =
+      "none";
+
+    partnersSection.style.display =
+      "none";
+
+    techniciansSection.style.display =
+      "none";
+
+    paymentsSection.style.display =
+      "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(partnersNotice);
+
+    loadPayments();
 
     window.scrollTo({
       top:0,
@@ -7617,6 +8090,9 @@ function activateSection(section) {
       "block";
 
     partnersSection.style.display =
+      "none";
+
+    paymentsSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -7648,6 +8124,9 @@ function activateSection(section) {
     "none";
 
   partnersSection.style.display =
+    "none";
+
+  paymentsSection.style.display =
     "none";
 
 
@@ -8010,6 +8489,37 @@ if (requestCorrectionButton) {
     "click",
     requestCompletionCorrection
   );
+}
+
+
+/* =====================================================
+   PAYMENTS EVENTS
+   ===================================================== */
+
+if (paymentSearch) {
+  paymentSearch.addEventListener("input", renderPayments);
+}
+
+if (paymentModeFilter) {
+  paymentModeFilter.addEventListener("change", renderPayments);
+}
+
+if (paymentsRefreshButton) {
+  paymentsRefreshButton.addEventListener("click", async function() {
+
+    paymentsRefreshButton.disabled = true;
+
+    const original = paymentsRefreshButton.textContent;
+    paymentsRefreshButton.textContent = "Refreshing...";
+
+    try {
+      await loadPayments();
+    } finally {
+      paymentsRefreshButton.disabled = false;
+      paymentsRefreshButton.textContent = original;
+    }
+
+  });
 }
 
 
