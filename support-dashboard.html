@@ -11373,24 +11373,3 @@ initializeDashboard();
 
 </body>
 </html>
-
-
-/* =====================================================
-   LEAD LIST AUTO-REFRESH
-   ===================================================== */
-
-setInterval(function() {
-
-  if (
-    dashboardReady &&
-    leadsSection &&
-    leadsSection.style.display !== "none" &&
-    !isCreatingLead &&
-    !leadsLoadInProgress
-  ) {
-    loadLeads(true);
-  }
-
-}, 15000);
-
-
