@@ -9,9 +9,6 @@
   <link rel="stylesheet" href="assets/style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     
@@ -979,302 +976,6 @@
 .leads-table td:last-child .table-action {
   min-width: 126px;
 }
-
-
-/* =====================================================
-   REPORTS MODULE
-   ===================================================== */
-
-.reports-toolbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-}
-
-.reports-actions {
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.reports-summary {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:16px;
-  margin-top:18px;
-}
-
-.report-stat {
-  padding:20px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--surface);
-}
-
-.report-stat-label {
-  color:var(--muted);
-  font-size:12px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.05em;
-}
-
-.report-stat-value {
-  margin-top:8px;
-  color:var(--text);
-  font-size:28px;
-  font-weight:800;
-}
-
-.report-export-note {
-  margin-top:14px;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.6;
-}
-
-.reports-table-wrap {
-  overflow-x:auto;
-}
-
-.reports-table {
-  width:100%;
-  min-width:620px;
-  border-collapse:collapse;
-}
-
-.reports-table th,
-.reports-table td {
-  padding:14px 12px;
-  border-bottom:1px solid var(--line);
-  text-align:left;
-  vertical-align:top;
-}
-
-.reports-table th {
-  color:var(--muted);
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.05em;
-}
-
-.report-ready {
-  color:var(--green);
-  font-weight:700;
-}
-
-.report-warning {
-  color:#f0b35a;
-  font-weight:700;
-}
-
-@media (max-width:900px) {
-  .reports-summary {
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-}
-
-@media (max-width:600px) {
-  .reports-summary {
-    grid-template-columns:1fr;
-  }
-
-  .reports-actions {
-    width:100%;
-  }
-
-  .reports-actions .btn {
-    flex:1 1 150px;
-  }
-}
-
-  
-
-/* =====================================================
-   NOTIFICATIONS MODULE
-   ===================================================== */
-
-.notifications-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.notifications-filters {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.notifications-list {
-  display: grid;
-  gap: 12px;
-}
-
-.notification-card {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(10,27,45,.72);
-}
-
-.notification-card:hover {
-  border-color: rgba(53,209,170,.35);
-}
-
-.notification-main {
-  min-width: 0;
-  flex: 1;
-}
-
-.notification-topline {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  flex-wrap: wrap;
-  margin-bottom: 7px;
-}
-
-.notification-badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: rgba(53,209,170,.10);
-  border: 1px solid rgba(53,209,170,.24);
-  color: var(--green);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-}
-
-.notification-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.notification-message {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.notification-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 9px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.notification-action {
-  flex: 0 0 auto;
-}
-
-@media (max-width:600px) {
-  .notification-card {
-    display: block;
-  }
-
-  .notification-action {
-    margin-top: 12px;
-  }
-}
-
-
-
-/* =====================================================
-   ACTIVITY LOGS
-   ===================================================== */
-.activity-toolbar {
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:16px;
-  flex-wrap:wrap;
-}
-.activity-filters {
-  display:flex;
-  gap:10px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-.activity-filters input,
-.activity-filters select {
-  min-height:42px;
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:var(--surface);
-  color:var(--text);
-  font:inherit;
-  outline:none;
-}
-.activity-filters input { min-width:240px; }
-.activity-list { display:flex; flex-direction:column; gap:10px; }
-.activity-item {
-  display:grid;
-  grid-template-columns:48px minmax(0,1fr) auto;
-  gap:14px;
-  align-items:start;
-  padding:15px;
-  border:1px solid var(--line);
-  border-radius:12px;
-  background:rgba(14,31,51,.72);
-}
-.activity-icon {
-  width:42px;
-  height:42px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  background:rgba(53,209,170,.10);
-  border:1px solid rgba(53,209,170,.22);
-  color:var(--green);
-  font-size:18px;
-  font-weight:800;
-}
-.activity-title { font-weight:800; margin-bottom:5px; }
-.activity-meta { display:flex; flex-wrap:wrap; gap:7px 12px; color:var(--muted); font-size:12px; }
-.activity-reason { margin-top:8px; color:var(--muted); font-size:13px; line-height:1.5; }
-.activity-time { color:var(--muted); font-size:12px; white-space:nowrap; }
-.activity-badge {
-  display:inline-flex;
-  align-items:center;
-  min-height:25px;
-  padding:4px 8px;
-  border-radius:999px;
-  background:rgba(53,209,170,.10);
-  border:1px solid rgba(53,209,170,.20);
-  color:var(--green);
-  font-size:11px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.4px;
-}
-@media (max-width:760px) {
-  .activity-item { grid-template-columns:42px minmax(0,1fr); }
-  .activity-time { grid-column:2; }
-  .activity-filters input { min-width:0; width:100%; }
-  .activity-filters { width:100%; }
-  .activity-filters select { flex:1; min-width:0; }
-}
-
 </style>
 </head>
 
@@ -1328,7 +1029,7 @@
     <option value="assignments">Assignments</option>
     <option value="partners">Partners</option>
     <option value="technicians">Technicians</option>
-    <option value="customers">Customers</option>
+    <option value="leadControl">Lead Control</option>
     <option value="services">Services</option>
     <option value="payments">Payments</option>
     <option value="reports">Reports</option>
@@ -1409,8 +1110,8 @@
         Technicians
       </button>
 
-      <button data-section="customers">
-        Customers
+      <button data-section="leadControl">
+        Lead Control
       </button>
 
       <button data-section="services">
@@ -1770,18 +1471,18 @@
           </a>
 
 
-          <a href="#" class="quick-card" data-section-link="customers">
+          <a href="#" class="quick-card" data-section-link="leadControl">
 
             <div class="quick-icon">
-              C
+              ↔
             </div>
 
             <h3>
-              Customers
+              Lead Control
             </h3>
 
             <p>
-              View customer details and service history.
+              Change the assigned technician or unassign an active lead.
             </p>
 
           </a>
@@ -2327,11 +2028,11 @@
 
 
     <!-- =================================================
-         PARTNERS SECTION
+         LEAD CONTROL SECTION
          ================================================= -->
 
     <section
-      id="partnersSection"
+      id="leadControlSection"
       class="dashboard-section"
       style="display:none;"
     >
@@ -2340,639 +2041,49 @@
 
         <div>
           <div class="eyebrow">ORACLIME Operations</div>
-          <h1>Partners</h1>
-          <p>Manage businesses and partners sending service leads.</p>
+          <h1>Lead Control</h1>
+          <p>Change the assigned technician or unassign an active service lead.</p>
         </div>
 
         <div class="header-actions">
-          <button class="btn" type="button" id="partnersRefreshButton">
+          <button class="btn" type="button" id="leadControlRefreshButton">
             Refresh
           </button>
         </div>
 
       </div>
 
-      <div id="partnersNotice" class="dashboard-notice"></div>
+      <div id="leadControlNotice" class="dashboard-notice"></div>
 
       <div class="card">
 
-        <div class="technician-toolbar">
-          <input
-            class="technician-search"
-            type="search"
-            id="partnerSearch"
-            placeholder="Search by business, partner code, contact, mobile or city"
-            autocomplete="off"
-          >
-
-          <select id="partnerStatusFilter" aria-label="Partner status">
-            <option value="ALL">All Status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
-        </div>
-
-        <div id="partnersLoading" class="small" style="padding:20px 0;">
-          Loading partners...
-        </div>
-
-        <div
-          id="partnersTableWrap"
-          class="technician-table-wrap"
-          style="display:none;"
-        >
-          <table class="technician-table">
-            <thead>
-              <tr>
-                <th>Partner</th>
-                <th>Contact</th>
-                <th>Mobile</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="partnersTableBody"></tbody>
-          </table>
-        </div>
-
-        <div
-          id="partnersEmpty"
-          class="technician-empty"
-          style="display:none;"
-        >
-          No partners found.
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =================================================
-         SERVICES SECTION
-         ================================================= -->
-
-    <section
-      id="servicesSection"
-      class="dashboard-section"
-      style="display:none;"
-    >
-      <div class="dashboard-header">
-        <div>
-          <div class="eyebrow">ORACLIME Operations</div>
-          <h1>Services</h1>
-          <p>View service types being requested and handled across ORACLIME operations.</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn" type="button" id="servicesRefreshButton">Refresh</button>
-        </div>
-      </div>
-
-      <div id="servicesNotice" class="dashboard-notice"></div>
-
-      <div class="stats-grid" style="margin-bottom:20px;">
-        <div class="stat-card"><div class="stat-label">Service Types</div><div class="stat-number" id="serviceTypeCount">0</div><div class="stat-note">Distinct services</div></div>
-        <div class="stat-card"><div class="stat-label">Total Requests</div><div class="stat-number" id="serviceRequestCount">0</div><div class="stat-note">All service requests</div></div>
-        <div class="stat-card"><div class="stat-label">Active Requests</div><div class="stat-number" id="serviceActiveCount">0</div><div class="stat-note">Currently in operation</div></div>
-        <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-number" id="serviceCompletedCount">0</div><div class="stat-note">Completed service jobs</div></div>
-      </div>
-
-      <div class="card">
-        <div class="technician-toolbar">
-          <input class="technician-search" type="search" id="serviceSearch" placeholder="Search service type" autocomplete="off">
-        </div>
-        <div id="servicesLoading" class="small" style="padding:20px 0;">Loading services...</div>
-        <div id="servicesTableWrap" class="technician-table-wrap" style="display:none;">
-          <table class="technician-table">
-            <thead><tr><th>Service</th><th>Requests</th><th>Active</th><th>Completed</th><th>Latest Request</th></tr></thead>
-            <tbody id="servicesTableBody"></tbody>
-          </table>
-        </div>
-        <div id="servicesEmpty" class="technician-empty" style="display:none;">No service types found.</div>
-      </div>
-    </section>
-
-
-    <!-- =================================================
-         PAYMENTS SECTION
-         ================================================= -->
-
-    <section
-      id="paymentsSection"
-      class="dashboard-section"
-      style="display:none;"
-    >
-
-      <div class="dashboard-header">
-
-        <div>
-          <div class="eyebrow">ORACLIME Operations</div>
-          <h1>Payments</h1>
-          <p>View payment collections recorded against service orders.</p>
-        </div>
-
-        <div class="header-actions">
-          <button class="btn" type="button" id="paymentsRefreshButton">
-            Refresh
-          </button>
-        </div>
-
-      </div>
-
-      <div id="paymentsNotice" class="dashboard-notice"></div>
-
-      <div class="stats-grid" id="paymentsStatsGrid">
-        <div class="stat-card">
-          <div class="stat-label">Total Collected</div>
-          <div class="stat-number" id="paymentsTotalCollected">₹0.00</div>
-          <div class="stat-note">All recorded payments</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Cash</div>
-          <div class="stat-number" id="paymentsCashTotal">₹0.00</div>
-          <div class="stat-note">Cash collections</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">UPI</div>
-          <div class="stat-number" id="paymentsUpiTotal">₹0.00</div>
-          <div class="stat-note">UPI collections</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Transactions</div>
-          <div class="stat-number" id="paymentsTransactionCount">0</div>
-          <div class="stat-note">Recorded payment entries</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Today Collected</div>
-          <div class="stat-number" id="paymentsTodayTotal">₹0.00</div>
-          <div class="stat-note">Payments recorded today</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Today Transactions</div>
-          <div class="stat-number" id="paymentsTodayCount">0</div>
-          <div class="stat-note">Today's payment entries</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom:16px;">
-
-        <div class="section-title-row" style="margin-bottom:12px;">
-          <h2>Today's Technician Collection</h2>
-          <span class="small">Technician-wise payment summary</span>
-        </div>
-
-        <div id="technicianPaymentsEmpty" class="technician-empty" style="display:none;">
-          No technician collections recorded today.
-        </div>
-
-        <div id="technicianPaymentsTableWrap" class="technician-table-wrap" style="display:none;">
-          <table class="technician-table">
-            <thead>
-              <tr>
-                <th>Technician</th>
-                <th>Transactions</th>
-                <th>Cash</th>
-                <th>UPI</th>
-                <th>Total Collected</th>
-              </tr>
-            </thead>
-            <tbody id="technicianPaymentsTableBody"></tbody>
-          </table>
-        </div>
-
-      </div>
-
-      <div class="card">
-
-        <div class="technician-toolbar">
-          <input
-            class="technician-search"
-            type="search"
-            id="paymentSearch"
-            placeholder="Search by lead, customer, mobile or payment mode"
-            autocomplete="off"
-          >
-
-          <select id="paymentModeFilter" aria-label="Payment mode">
-            <option value="ALL">All Modes</option>
-            <option value="CASH">Cash</option>
-            <option value="UPI">UPI</option>
-          </select>
-        </div>
-
-        <div id="paymentsLoading" class="small" style="padding:20px 0;">
-          Loading payments...
-        </div>
-
-        <div
-          id="paymentsTableWrap"
-          class="technician-table-wrap"
-          style="display:none;"
-        >
-          <table class="technician-table">
-            <thead>
-              <tr>
-                <th>Lead</th>
-                <th>Customer</th>
-                <th>Technician</th>
-                <th>Amount</th>
-                <th>Mode</th>
-                <th>Status</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-            <tbody id="paymentsTableBody"></tbody>
-          </table>
-        </div>
-
-        <div
-          id="paymentsEmpty"
-          class="technician-empty"
-          style="display:none;"
-        >
-          No payments found.
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =================================================
-         REPORTS SECTION
-         ================================================= -->
-
-    <section
-      id="reportsSection"
-      class="dashboard-section"
-      style="display:none;"
-    >
-
-      <div class="dashboard-header">
-        <div>
-          <div class="eyebrow">ORACLIME OPERATIONS</div>
-          <h1>Reports</h1>
-          <p>Download complete operational data for Excel or PDF.</p>
-        </div>
-
-        <div class="reports-actions">
-          <button class="btn" type="button" id="reportsRefreshButton">Refresh Data</button>
-          <button class="btn primary" type="button" id="reportsExcelButton">Download Excel</button>
-          <button class="btn" type="button" id="reportsPdfButton">Download PDF</button>
-        </div>
-      </div>
-
-      <div id="reportsNotice" class="dashboard-notice"></div>
-
-      <div class="card">
-        <div class="reports-toolbar">
-          <div>
-            <h2 style="margin:0;">Complete Data Export</h2>
-            <p class="small" style="margin:7px 0 0;">One export contains the available operational tables used by Support.</p>
-          </div>
-        </div>
-
-        <div class="reports-summary">
-          <div class="report-stat">
-            <div class="report-stat-label">Total Records</div>
-            <div class="report-stat-value" id="reportTotalRecords">0</div>
-          </div>
-          <div class="report-stat">
-            <div class="report-stat-label">Data Sets</div>
-            <div class="report-stat-value" id="reportDatasetCount">0</div>
-          </div>
-          <div class="report-stat">
-            <div class="report-stat-label">Payments</div>
-            <div class="report-stat-value" id="reportPaymentCount">0</div>
-          </div>
-          <div class="report-stat">
-            <div class="report-stat-label">Leads</div>
-            <div class="report-stat-value" id="reportLeadCount">0</div>
-          </div>
-        </div>
-
-        <div class="report-export-note">
-          Excel contains separate sheets for each data set. PDF contains the same report data in printable tables.
-          Sensitive completion-code hashes are intentionally excluded from exports.
-        </div>
-      </div>
-
-      <div class="card">
         <div class="section-title-row">
-          <h2>Report Data Sets</h2>
-          <span class="small" id="reportsLastUpdated">Not loaded</span>
+          <h2>Assigned Leads</h2>
+          <span class="small" id="leadControlCount">0 leads</span>
         </div>
 
-        <div class="reports-table-wrap">
-          <table class="reports-table">
-            <thead>
-              <tr>
-                <th>Data Set</th>
-                <th>Records</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="reportsDatasetBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-
-
-
-
-
-
-    <!-- =================================================
-         NOTIFICATIONS SECTION
-         ================================================= -->
-
-    <section
-      id="notificationsSection"
-      class="dashboard-section"
-      style="display:none;"
-    >
-
-      <div class="dashboard-header">
-        <div>
-          <div class="eyebrow">ORACLIME OPERATIONS</div>
-          <h1>Notifications</h1>
-          <p>Stay updated with the latest service activity and actions that need Support attention.</p>
-        </div>
-
-        <div class="header-actions">
-          <button class="btn" type="button" id="notificationsRefreshButton">
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      <div id="notificationsNotice" class="dashboard-notice"></div>
-
-      <div class="stats-grid" style="margin-bottom:20px;">
-        <div class="stat-card">
-          <div class="stat-label">New Alerts</div>
-          <div class="stat-number" id="notificationTotalCount">0</div>
-          <div class="stat-note">Latest operational updates</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Service Updates</div>
-          <div class="stat-number" id="notificationServiceCount">0</div>
-          <div class="stat-note">Lead and service activity</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Completion Alerts</div>
-          <div class="stat-number" id="notificationCompletionCount">0</div>
-          <div class="stat-note">Completion review activity</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Follow-up</div>
-          <div class="stat-number" id="notificationFollowupCount">0</div>
-          <div class="stat-note">Pending or rescheduled work</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="notifications-toolbar">
-          <div>
-            <h2 style="margin:0;">Recent Activity</h2>
-            <p class="small" style="margin:6px 0 0;">Notifications are generated from current lead and service status updates.</p>
-          </div>
-
-          <div class="notifications-filters">
-            <input
-              class="technician-search"
-              type="search"
-              id="notificationSearch"
-              placeholder="Search notifications"
-              autocomplete="off"
-            >
-            <select id="notificationFilter" aria-label="Notification filter">
-              <option value="ALL">All Notifications</option>
-              <option value="SERVICE">Service Updates</option>
-              <option value="COMPLETION">Completion</option>
-              <option value="FOLLOWUP">Follow-up</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="notificationsLoading" class="small" style="padding:20px 0;">
-          Loading notifications...
+        <div id="leadControlLoading" class="small" style="padding:25px 0;">
+          Loading assigned leads...
         </div>
 
         <div
-          id="notificationsList"
-          class="notifications-list"
+          id="leadControlEmpty"
+          class="assignment-empty"
+          style="display:none;"
+        >
+          No active assigned leads right now.
+        </div>
+
+        <div
+          id="leadControlList"
+          class="assignment-grid"
           style="display:none;"
         ></div>
 
-        <div
-          id="notificationsEmpty"
-          class="technician-empty"
-          style="display:none;"
-        >
-          No notifications found.
-        </div>
       </div>
 
     </section>
 
-
-
-    <!-- =================================================
-         ACTIVITY LOGS SECTION
-         ================================================= -->
-
-    <section
-      id="activitySection"
-      class="dashboard-section"
-      style="display:none;"
-    >
-
-      <div class="dashboard-header">
-        <div>
-          <div class="eyebrow">ORACLIME OPERATIONS</div>
-          <h1>Activity Logs</h1>
-          <p>Track important actions performed across Support operations.</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn" type="button" id="activityRefreshButton">Refresh</button>
-        </div>
-      </div>
-
-      <div id="activityNotice" class="dashboard-notice"></div>
-
-      <div class="stats-grid" style="margin-bottom:20px;">
-        <div class="stat-card">
-          <div class="stat-label">Total Activities</div>
-          <div class="stat-number" id="activityTotalCount">0</div>
-          <div class="stat-note">Recent system actions</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Today</div>
-          <div class="stat-number" id="activityTodayCount">0</div>
-          <div class="stat-note">Actions recorded today</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Support Actions</div>
-          <div class="stat-number" id="activitySupportCount">0</div>
-          <div class="stat-note">Actions by Support</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Latest Action</div>
-          <div class="stat-number" id="activityLatestLabel" style="font-size:18px;line-height:1.3;">—</div>
-          <div class="stat-note">Most recent recorded event</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="activity-toolbar">
-          <div>
-            <h2 style="margin:0;">Recent Activity</h2>
-            <p class="small" style="margin:6px 0 0;">Audit history from Support and service operations.</p>
-          </div>
-          <div class="activity-filters">
-            <input type="search" id="activitySearch" placeholder="Search activity" autocomplete="off">
-            <select id="activityFilter" aria-label="Activity filter">
-              <option value="ALL">All Actions</option>
-              <option value="LEAD">Lead Activity</option>
-              <option value="COMPLETION">Completion</option>
-              <option value="ASSIGNMENT">Assignment</option>
-              <option value="CORRECTION">Correction</option>
-              <option value="PAYMENT">Payment</option>
-            </select>
-          </div>
-        </div>
-        <div id="activityLoading" class="small" style="padding:20px 0;">Loading activity...</div>
-        <div id="activityList" class="activity-list" style="display:none;"></div>
-        <div id="activityEmpty" class="technician-empty" style="display:none;">No activity found.</div>
-      </div>
-
-    </section>
-
-<!-- =================================================
-     SETTINGS SECTION
-     ================================================= -->
-
-<section id="settingsSection" class="dashboard-section" style="display:none;">
-
-  <div class="dashboard-header">
-    <div>
-      <div class="eyebrow">ORACLIME ACCOUNT</div>
-      <h1>Settings</h1>
-      <p>Manage your Support account and security settings.</p>
-    </div>
-  </div>
-
-  <div id="settingsNotice" class="dashboard-notice"></div>
-
-  <div class="card" style="margin-bottom:18px;">
-    <div class="section-title-row">
-      <h2>Account</h2>
-      <span class="small">Support profile</span>
-    </div>
-
-    <div class="stats-grid" style="margin-top:16px;">
-      <div class="stat-card">
-        <div class="stat-label">Full Name</div>
-        <div class="stat-number" id="settingsFullName" style="font-size:22px;">—</div>
-        <div class="stat-note">Your Support account name</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Email</div>
-        <div class="stat-number" id="settingsEmail" style="font-size:18px;word-break:break-word;">—</div>
-        <div class="stat-note">Registered account email</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Support Code</div>
-        <div class="stat-number" id="settingsSupportCode" style="font-size:22px;">—</div>
-        <div class="stat-note">Your ORACLIME Support ID</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Account Status</div>
-        <div class="stat-number" id="settingsStatus" style="font-size:22px;">—</div>
-        <div class="stat-note">Current access status</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:18px;">
-    <div class="section-title-row">
-      <h2>New Service Completion Code</h2>
-      <span class="small">Generate a fresh code for an existing lead</span>
-    </div>
-
-    <div style="padding-top:8px;max-width:720px;">
-      <p class="small" style="margin-bottom:18px;">
-        Select a lead and generate a new 6-digit Service Completion Code. The existing secure Supabase completion-code workflow will invalidate the previous active code and store only the new code hash.
-      </p>
-
-      <label for="settingsCompletionLead" style="display:block;margin-bottom:8px;font-weight:700;">
-        Lead
-      </label>
-
-      <select
-        id="settingsCompletionLead"
-        class="technician-search"
-        style="width:100%;margin-bottom:14px;"
-      >
-        <option value="">Select a lead</option>
-      </select>
-
-      <button
-        class="btn primary"
-        type="button"
-        id="settingsGenerateCompletionCodeButton"
-      >
-        Generate New Service Completion Code
-      </button>
-
-      <div
-        id="settingsCompletionCodeResult"
-        class="card"
-        style="display:none;margin-top:18px;padding:18px;max-width:420px;"
-      >
-        <div class="small">New Service Completion Code</div>
-        <div
-          id="settingsCompletionCodeValue"
-          style="font-size:34px;font-weight:800;letter-spacing:6px;margin-top:6px;"
-        >
-          —
-        </div>
-        <div
-          id="settingsCompletionCodeExpiry"
-          class="small"
-          style="margin-top:8px;"
-        ></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="section-title-row">
-      <h2>Security</h2>
-      <span class="small">Keep your account secure</span>
-    </div>
-
-    <div style="padding-top:8px;max-width:720px;">
-      <h3 style="margin-bottom:8px;">Reset Password</h3>
-      <p class="small" style="margin-bottom:18px;">
-        We will send a password-reset link to your registered Support email address.
-      </p>
-      <button class="btn primary" type="button" id="settingsResetPasswordButton">
-        Send Password Reset Email
-      </button>
-    </div>
-  </div>
-
-</section>
 
     <!-- =================================================
          TECHNICIANS SECTION
@@ -3454,6 +2565,71 @@
 
 
 <!-- =====================================================
+     LEAD CONTROL MODAL
+     ===================================================== -->
+
+<div
+  id="leadControlModal"
+  class="modal-overlay"
+>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="leadControlModalTitle"
+  >
+
+    <div class="modal-header">
+      <div>
+        <h2 id="leadControlModalTitle">Change Technician</h2>
+        <p>Select another active technician for this lead.</p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="closeLeadControlModal"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div id="leadControlSummary" class="assignment-summary"></div>
+
+      <div class="lead-form-field">
+        <label for="leadControlTechnicianSelect">Technician</label>
+        <select id="leadControlTechnicianSelect">
+          <option value="">Loading technicians...</option>
+        </select>
+      </div>
+
+      <div
+        id="leadControlModalError"
+        class="field-error"
+        role="alert"
+      ></div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn" id="cancelLeadControlButton">
+        Cancel
+      </button>
+      <button type="button" class="btn primary" id="saveLeadControlButton">
+        Change Technician
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
      ADD TECHNICIAN MODAL
      ===================================================== -->
 
@@ -3528,28 +2704,13 @@
           </div>
 
           <div class="lead-form-field">
-            <label for="technicianEmail">Email *</label>
+            <label for="technicianEmail">Email</label>
             <input
               type="email"
               id="technicianEmail"
               maxlength="160"
               autocomplete="email"
-              required
             >
-          </div>
-
-          <div class="lead-form-field">
-            <label for="technicianPassword">Temporary Password *</label>
-            <input
-              type="password"
-              id="technicianPassword"
-              minlength="8"
-              maxlength="72"
-              autocomplete="new-password"
-              value="Admin@9009"
-              required
-            >
-            <div class="form-help">Default: Admin@9009. You can change it before creating the account.</div>
           </div>
 
           <div class="lead-form-field">
@@ -3844,22 +3005,9 @@ let selectedAssignmentLead = null;
 let allTechnicians = [];
 let filteredTechnicians = [];
 
-let allPartners = [];
-let filteredPartners = [];
-
-let allPayments = [];
-let allServices = [];
-let filteredServices = [];
-let filteredPayments = [];
-
-let reportsData = {};
-let reportsLoadInProgress = false;
-
-let allNotifications = [];
-let filteredNotifications = [];
-
-let allActivities = [];
-let filteredActivities = [];
+let leadControlLeads = [];
+let leadControlTechnicians = [];
+let selectedLeadControlLead = null;
 
 
 /* =====================================================
@@ -3887,263 +3035,29 @@ const assignmentsNotice =
 const techniciansSection =
   document.getElementById("techniciansSection");
 
-const partnersSection =
-  document.getElementById("partnersSection");
+const leadControlSection =
+  document.getElementById("leadControlSection");
 
-const partnersNotice =
-  document.getElementById("partnersNotice");
+const leadControlNotice =
+  document.getElementById("leadControlNotice");
 
-const partnersLoading =
-  document.getElementById("partnersLoading");
+const leadControlRefreshButton =
+  document.getElementById("leadControlRefreshButton");
 
-const partnersTableWrap =
-  document.getElementById("partnersTableWrap");
+const leadControlModal =
+  document.getElementById("leadControlModal");
 
-const partnersTableBody =
-  document.getElementById("partnersTableBody");
+const leadControlSummary =
+  document.getElementById("leadControlSummary");
 
-const partnersEmpty =
-  document.getElementById("partnersEmpty");
+const leadControlTechnicianSelect =
+  document.getElementById("leadControlTechnicianSelect");
 
-const partnerSearch =
-  document.getElementById("partnerSearch");
+const leadControlModalError =
+  document.getElementById("leadControlModalError");
 
-const partnerStatusFilter =
-  document.getElementById("partnerStatusFilter");
-
-const partnersRefreshButton =
-  document.getElementById("partnersRefreshButton");
-
-const servicesSection =
-  document.getElementById("servicesSection");
-
-const servicesNotice =
-  document.getElementById("servicesNotice");
-
-const servicesLoading =
-  document.getElementById("servicesLoading");
-
-const servicesTableWrap =
-  document.getElementById("servicesTableWrap");
-
-const servicesTableBody =
-  document.getElementById("servicesTableBody");
-
-const servicesEmpty =
-  document.getElementById("servicesEmpty");
-
-const serviceSearch =
-  document.getElementById("serviceSearch");
-
-const servicesRefreshButton =
-  document.getElementById("servicesRefreshButton");
-
-const serviceTypeCount =
-  document.getElementById("serviceTypeCount");
-
-const serviceRequestCount =
-  document.getElementById("serviceRequestCount");
-
-const serviceActiveCount =
-  document.getElementById("serviceActiveCount");
-
-const serviceCompletedCount =
-  document.getElementById("serviceCompletedCount");
-
-const paymentsSection =
-  document.getElementById("paymentsSection");
-
-const reportsSection =
-  document.getElementById("reportsSection");
-
-const reportsNotice =
-  document.getElementById("reportsNotice");
-
-const reportsRefreshButton =
-  document.getElementById("reportsRefreshButton");
-
-const reportsExcelButton =
-  document.getElementById("reportsExcelButton");
-
-const reportsPdfButton =
-  document.getElementById("reportsPdfButton");
-
-const reportTotalRecords =
-  document.getElementById("reportTotalRecords");
-
-const reportDatasetCount =
-  document.getElementById("reportDatasetCount");
-
-const reportPaymentCount =
-  document.getElementById("reportPaymentCount");
-
-const reportLeadCount =
-  document.getElementById("reportLeadCount");
-
-const reportsDatasetBody =
-  document.getElementById("reportsDatasetBody");
-
-const reportsLastUpdated =
-  document.getElementById("reportsLastUpdated");
-
-const notificationsSection =
-  document.getElementById("notificationsSection");
-
-const notificationsNotice =
-  document.getElementById("notificationsNotice");
-
-const notificationsRefreshButton =
-  document.getElementById("notificationsRefreshButton");
-
-const notificationsLoading =
-  document.getElementById("notificationsLoading");
-
-const notificationsList =
-  document.getElementById("notificationsList");
-
-const notificationsEmpty =
-  document.getElementById("notificationsEmpty");
-
-const notificationSearch =
-  document.getElementById("notificationSearch");
-
-const notificationFilter =
-  document.getElementById("notificationFilter");
-
-const notificationTotalCount =
-  document.getElementById("notificationTotalCount");
-
-const notificationServiceCount =
-  document.getElementById("notificationServiceCount");
-
-const notificationCompletionCount =
-  document.getElementById("notificationCompletionCount");
-
-const notificationFollowupCount =
-  document.getElementById("notificationFollowupCount");
-
-const activitySection =
-  document.getElementById("activitySection");
-
-const activityNotice =
-  document.getElementById("activityNotice");
-
-const activityRefreshButton =
-  document.getElementById("activityRefreshButton");
-
-const activityLoading =
-  document.getElementById("activityLoading");
-
-const activityList =
-  document.getElementById("activityList");
-
-const activityEmpty =
-  document.getElementById("activityEmpty");
-
-const activitySearch =
-  document.getElementById("activitySearch");
-
-const activityFilter =
-  document.getElementById("activityFilter");
-
-const activityTotalCount =
-  document.getElementById("activityTotalCount");
-
-const activityTodayCount =
-  document.getElementById("activityTodayCount");
-
-const activitySupportCount =
-  document.getElementById("activitySupportCount");
-
-const activityLatestLabel =
-  document.getElementById("activityLatestLabel");
-
-const settingsSection =
-  document.getElementById("settingsSection");
-
-const settingsNotice =
-  document.getElementById("settingsNotice");
-
-const settingsFullName =
-  document.getElementById("settingsFullName");
-
-const settingsEmail =
-  document.getElementById("settingsEmail");
-
-const settingsSupportCode =
-  document.getElementById("settingsSupportCode");
-
-const settingsStatus =
-  document.getElementById("settingsStatus");
-
-const settingsResetPasswordButton =
-  document.getElementById("settingsResetPasswordButton");
-
-const settingsCompletionLead =
-  document.getElementById("settingsCompletionLead");
-
-const settingsGenerateCompletionCodeButton =
-  document.getElementById("settingsGenerateCompletionCodeButton");
-
-const settingsCompletionCodeResult =
-  document.getElementById("settingsCompletionCodeResult");
-
-const settingsCompletionCodeValue =
-  document.getElementById("settingsCompletionCodeValue");
-
-const settingsCompletionCodeExpiry =
-  document.getElementById("settingsCompletionCodeExpiry");
-
-const paymentsNotice =
-  document.getElementById("paymentsNotice");
-
-const paymentsLoading =
-  document.getElementById("paymentsLoading");
-
-const paymentsTableWrap =
-  document.getElementById("paymentsTableWrap");
-
-const paymentsTableBody =
-  document.getElementById("paymentsTableBody");
-
-const paymentsEmpty =
-  document.getElementById("paymentsEmpty");
-
-const paymentSearch =
-  document.getElementById("paymentSearch");
-
-const paymentModeFilter =
-  document.getElementById("paymentModeFilter");
-
-const paymentsRefreshButton =
-  document.getElementById("paymentsRefreshButton");
-
-const paymentsTotalCollected =
-  document.getElementById("paymentsTotalCollected");
-
-const paymentsCashTotal =
-  document.getElementById("paymentsCashTotal");
-
-const paymentsUpiTotal =
-  document.getElementById("paymentsUpiTotal");
-
-const paymentsTransactionCount =
-  document.getElementById("paymentsTransactionCount");
-
-const paymentsTodayTotal =
-  document.getElementById("paymentsTodayTotal");
-
-const paymentsTodayCount =
-  document.getElementById("paymentsTodayCount");
-
-const technicianPaymentsTableWrap =
-  document.getElementById("technicianPaymentsTableWrap");
-
-const technicianPaymentsTableBody =
-  document.getElementById("technicianPaymentsTableBody");
-
-const technicianPaymentsEmpty =
-  document.getElementById("technicianPaymentsEmpty");
+const saveLeadControlButton =
+  document.getElementById("saveLeadControlButton");
 
 const techniciansNotice =
   document.getElementById("techniciansNotice");
@@ -6555,6 +5469,352 @@ if (assignmentModal) {
 
 
 /* =====================================================
+   LEAD CONTROL MODULE
+   ===================================================== */
+
+function showLeadControlNotice(message, type) {
+
+  if (!leadControlNotice) {
+    return;
+  }
+
+  leadControlNotice.textContent = message || "";
+  leadControlNotice.className = "dashboard-notice";
+
+  if (type === "error") {
+    leadControlNotice.classList.add("error");
+  } else if (message) {
+    leadControlNotice.style.display = "block";
+    leadControlNotice.style.borderColor = "rgba(53,209,170,.35)";
+  } else {
+    leadControlNotice.style.display = "none";
+  }
+
+}
+
+
+function hideLeadControlNotice() {
+  if (!leadControlNotice) return;
+  leadControlNotice.textContent = "";
+  leadControlNotice.className = "dashboard-notice";
+  leadControlNotice.style.display = "none";
+}
+
+
+async function loadLeadControlTechnicians() {
+
+  const { data, error } = await supabaseClient
+    .from("technicians")
+    .select("id,technician_code,full_name,status,availability_status")
+    .eq("status", "ACTIVE")
+    .order("full_name", { ascending:true });
+
+  if (error) {
+    console.error("Lead control technicians error:", error);
+    throw error;
+  }
+
+  leadControlTechnicians = Array.isArray(data) ? data : [];
+}
+
+
+async function loadLeadControl() {
+
+  if (!dashboardReady) {
+    return;
+  }
+
+  const loading = document.getElementById("leadControlLoading");
+  const empty = document.getElementById("leadControlEmpty");
+  const list = document.getElementById("leadControlList");
+  const count = document.getElementById("leadControlCount");
+
+  loading.style.display = "block";
+  empty.style.display = "none";
+  list.style.display = "none";
+  hideLeadControlNotice();
+
+  const { data, error } = await supabaseClient
+    .from("leads")
+    .select(`
+      id,
+      lead_number,
+      customer_name,
+      mobile,
+      city,
+      state,
+      service_type,
+      preferred_date,
+      preferred_time,
+      status,
+      assigned_technician_id,
+      updated_at
+    `)
+    .not("assigned_technician_id", "is", null)
+    .order("updated_at", { ascending:false });
+
+  loading.style.display = "none";
+
+  if (error) {
+    console.error("Lead control leads error:", error);
+    leadControlLeads = [];
+    count.textContent = "0 leads";
+    empty.textContent = "Unable to load assigned leads. Please check database access.";
+    empty.style.display = "block";
+    showLeadControlNotice("Assigned leads could not be loaded.", "error");
+    return;
+  }
+
+  leadControlLeads = (data || []).filter(function(lead) {
+    return !["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(lead.status);
+  });
+
+  try {
+    await loadLeadControlTechnicians();
+  } catch (error) {
+    leadControlTechnicians = [];
+    console.error(error);
+  }
+
+  const techMap = {};
+  leadControlTechnicians.forEach(function(tech) {
+    techMap[tech.id] = tech;
+  });
+
+  count.textContent = leadControlLeads.length + (leadControlLeads.length === 1 ? " lead" : " leads");
+
+  if (!leadControlLeads.length) {
+    empty.textContent = "No active assigned leads right now.";
+    empty.style.display = "block";
+    return;
+  }
+
+  list.innerHTML = leadControlLeads.map(function(lead) {
+    const tech = techMap[lead.assigned_technician_id];
+    const preferred = [
+      lead.preferred_date ? formatDate(lead.preferred_date) : "",
+      lead.preferred_time || ""
+    ].filter(Boolean).join(" • ") || "Not scheduled";
+
+    return `
+      <div class="assignment-card">
+        <div>
+          <h3>${escapeHtml(lead.lead_number)}</h3>
+          <div class="assignment-meta">
+            <span>${escapeHtml(lead.customer_name || "Customer")}</span>
+            <span>${escapeHtml(lead.service_type || "AC")}</span>
+            <span>${escapeHtml(getLeadLocation(lead))}</span>
+            <span>${escapeHtml(preferred)}</span>
+            <span>${escapeHtml(formatStatus(lead.status))}</span>
+            <span>Technician: ${escapeHtml(tech ? tech.full_name : "Unknown")}</span>
+          </div>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn primary" data-change-lead="${escapeHtml(lead.id)}">
+            Change Technician
+          </button>
+          <button type="button" class="btn" data-unassign-lead="${escapeHtml(lead.id)}">
+            Unassign
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  list.style.display = "grid";
+
+  list.querySelectorAll("[data-change-lead]").forEach(function(button) {
+    button.addEventListener("click", function() {
+      const lead = leadControlLeads.find(function(row) { return row.id === button.dataset.changeLead; });
+      if (lead) openLeadControlModal(lead);
+    });
+  });
+
+  list.querySelectorAll("[data-unassign-lead]").forEach(function(button) {
+    button.addEventListener("click", function() {
+      const lead = leadControlLeads.find(function(row) { return row.id === button.dataset.unassignLead; });
+      if (lead) unassignLead(lead);
+    });
+  });
+}
+
+
+function openLeadControlModal(lead) {
+
+  selectedLeadControlLead = lead;
+  leadControlModalError.textContent = "";
+  leadControlSummary.innerHTML = `
+    <strong>${escapeHtml(lead.lead_number)}</strong>
+    <div class="small">${escapeHtml(lead.customer_name || "Customer")} • ${escapeHtml(lead.service_type || "AC")}</div>
+    <div class="small">Current technician: ${escapeHtml((leadControlTechnicians.find(function(t) { return t.id === lead.assigned_technician_id; }) || {}).full_name || "Unknown")}</div>
+  `;
+
+  leadControlTechnicianSelect.innerHTML = '<option value="">Select technician</option>' +
+    leadControlTechnicians.map(function(tech) {
+      const meta = [tech.technician_code, tech.availability_status ? formatAvailability(tech.availability_status) : ""].filter(Boolean).join(" • ");
+      return `<option value="${escapeHtml(tech.id)}">${escapeHtml(tech.full_name || "Technician")} — ${escapeHtml(meta)}</option>`;
+    }).join("");
+
+  leadControlTechnicianSelect.value = lead.assigned_technician_id || "";
+  leadControlModal.classList.add("open");
+}
+
+
+function closeLeadControlModal() {
+  if (!leadControlModal) return;
+  leadControlModal.classList.remove("open");
+  selectedLeadControlLead = null;
+  leadControlModalError.textContent = "";
+}
+
+
+async function saveLeadControlChange() {
+
+  if (!selectedLeadControlLead) return;
+
+  const technicianId = leadControlTechnicianSelect.value;
+  if (!technicianId) {
+    leadControlModalError.textContent = "Please select a technician.";
+    return;
+  }
+
+  if (technicianId === selectedLeadControlLead.assigned_technician_id) {
+    leadControlModalError.textContent = "Please select a different technician.";
+    return;
+  }
+
+  const technician = leadControlTechnicians.find(function(t) { return t.id === technicianId; });
+  if (!technician) {
+    leadControlModalError.textContent = "Selected technician was not found.";
+    return;
+  }
+
+  saveLeadControlButton.disabled = true;
+  saveLeadControlButton.textContent = "Changing...";
+  leadControlModalError.textContent = "";
+
+  try {
+    const { data: currentLead, error: checkError } = await supabaseClient
+      .from("leads")
+      .select("id,lead_number,status,assigned_technician_id")
+      .eq("id", selectedLeadControlLead.id)
+      .single();
+
+    if (checkError) throw checkError;
+    if (!currentLead.assigned_technician_id) {
+      throw new Error("This lead is already unassigned.");
+    }
+    if (["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(currentLead.status)) {
+      throw new Error("This lead can no longer be reassigned from Lead Control.");
+    }
+
+    const { error: updateError } = await supabaseClient
+      .from("leads")
+      .update({
+        assigned_technician_id: technician.id,
+        updated_by: currentAuthUser.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", selectedLeadControlLead.id)
+      .eq("assigned_technician_id", currentLead.assigned_technician_id);
+
+    if (updateError) throw updateError;
+
+    closeLeadControlModal();
+    showLeadControlNotice("Lead " + currentLead.lead_number + " moved to " + technician.full_name + ".", "success");
+    await loadLeadControl();
+    await loadLeads(true);
+    await loadDashboardData();
+  } catch (error) {
+    console.error("Lead reassignment error:", error);
+    leadControlModalError.textContent = error.message || "Unable to change technician.";
+  } finally {
+    saveLeadControlButton.disabled = false;
+    saveLeadControlButton.textContent = "Change Technician";
+  }
+}
+
+
+async function unassignLead(lead) {
+
+  if (!window.confirm("Remove " + lead.lead_number + " from the current technician and return it to Unassigned Leads?")) {
+    return;
+  }
+
+  try {
+    const { data: currentLead, error: checkError } = await supabaseClient
+      .from("leads")
+      .select("id,lead_number,status,assigned_technician_id")
+      .eq("id", lead.id)
+      .single();
+
+    if (checkError) throw checkError;
+    if (!currentLead.assigned_technician_id) {
+      throw new Error("This lead is already unassigned.");
+    }
+    if (["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(currentLead.status)) {
+      throw new Error("This lead can no longer be unassigned from Lead Control.");
+    }
+
+    const { error: updateError } = await supabaseClient
+      .from("leads")
+      .update({
+        assigned_technician_id: null,
+        status: "NEW",
+        updated_by: currentAuthUser.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", lead.id)
+      .eq("assigned_technician_id", currentLead.assigned_technician_id);
+
+    if (updateError) throw updateError;
+
+    showLeadControlNotice("Lead " + currentLead.lead_number + " is now unassigned.", "success");
+    await loadLeadControl();
+    await loadUnassignedLeads();
+    await loadLeads(true);
+    await loadDashboardData();
+  } catch (error) {
+    console.error("Lead unassign error:", error);
+    showLeadControlNotice(error.message || "Unable to unassign lead.", "error");
+  }
+}
+
+
+if (leadControlRefreshButton) {
+  leadControlRefreshButton.addEventListener("click", async function() {
+    leadControlRefreshButton.disabled = true;
+    const original = leadControlRefreshButton.textContent;
+    leadControlRefreshButton.textContent = "Refreshing...";
+    try {
+      await loadLeadControl();
+    } finally {
+      leadControlRefreshButton.disabled = false;
+      leadControlRefreshButton.textContent = original;
+    }
+  });
+}
+
+if (saveLeadControlButton) {
+  saveLeadControlButton.addEventListener("click", saveLeadControlChange);
+}
+
+if (document.getElementById("closeLeadControlModal")) {
+  document.getElementById("closeLeadControlModal").addEventListener("click", closeLeadControlModal);
+}
+
+if (document.getElementById("cancelLeadControlButton")) {
+  document.getElementById("cancelLeadControlButton").addEventListener("click", closeLeadControlModal);
+}
+
+if (leadControlModal) {
+  leadControlModal.addEventListener("click", function(event) {
+    if (event.target === leadControlModal) closeLeadControlModal();
+  });
+}
+
+
+/* =====================================================
    TECHNICIANS MODULE
    ===================================================== */
 
@@ -6995,12 +6255,7 @@ async function createTechnician(event) {
   const email =
     document.getElementById(
       "technicianEmail"
-    ).value.trim().toLowerCase();
-
-  const password =
-    document.getElementById(
-      "technicianPassword"
-    ).value;
+    ).value.trim();
 
   const city =
     document.getElementById(
@@ -7094,18 +6349,6 @@ async function createTechnician(event) {
     invalid = true;
   }
 
-  if (!email) {
-    technicianFormError.textContent =
-      "Email is required because the technician needs a login account.";
-    invalid = true;
-  }
-
-  if (!password || password.length < 8) {
-    technicianFormError.textContent =
-      "Temporary password must contain at least 8 characters.";
-    invalid = true;
-  }
-
   if (!/^\d{10}$/.test(cleanMobile)) {
     technicianSetError(
       "technicianMobile",
@@ -7174,45 +6417,48 @@ async function createTechnician(event) {
 
   try {
 
-    const {
-      data: createdTechnician,
-      error: createError
-    } = await supabaseClient.functions.invoke(
-      "create-technician",
-      {
-        body: {
-          fullName,
-          mobile: cleanMobile,
-          alternateMobile: cleanAlternateMobile || null,
-          email,
-          password,
-          city: city || null,
-          state: state || null,
-          pincode: cleanPincode || null,
-          serviceArea: serviceArea || null,
-          skills,
-          status,
-          availability,
-          address: address || null,
-          notes: notes || null
-        }
-      }
-    );
-
-    if (createError) {
-      throw createError;
-    }
-
-    if (!createdTechnician?.success) {
-      throw new Error(
-        createdTechnician?.error ||
-        "Unable to create technician account."
-      );
-    }
-
     const technicianCode =
-      createdTechnician.technician?.technician_code ||
-      "Technician";
+      await generateTechnicianCode();
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("technicians")
+        .insert({
+          technician_code:
+            technicianCode,
+          full_name:
+            fullName,
+          mobile:
+            cleanMobile,
+          alternate_mobile:
+            cleanAlternateMobile || null,
+          email:
+            email || null,
+          address:
+            address || null,
+          city:
+            city || null,
+          state:
+            state || null,
+          pincode:
+            cleanPincode || null,
+          service_area:
+            serviceArea || null,
+          skills:
+            skills,
+          status:
+            status,
+          availability_status:
+            availability,
+          notes:
+            notes || null
+        });
+
+    if (error) {
+      throw error;
+    }
 
     closeTechnicianModal();
 
@@ -7478,30 +6724,6 @@ document
     "click",
     loadTechnicians
   );
-
-
-if (partnerSearch) {
-  partnerSearch.addEventListener(
-    "input",
-    renderPartners
-  );
-}
-
-
-if (partnerStatusFilter) {
-  partnerStatusFilter.addEventListener(
-    "change",
-    renderPartners
-  );
-}
-
-
-if (partnersRefreshButton) {
-  partnersRefreshButton.addEventListener(
-    "click",
-    loadPartners
-  );
-}
 
 
 /* =====================================================
@@ -8218,2002 +7440,6 @@ function normalizeLeadCompletionActions() {
 
 
 /* =====================================================
-   PARTNERS MODULE
-   ===================================================== */
-
-function partnerStatusClass(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-}
-
-
-function formatPartnerStatus(value) {
-  return value === "ACTIVE"
-    ? "Active"
-    : "Inactive";
-}
-
-
-function partnerMatchesFilter(partner) {
-
-  const search =
-    (partnerSearch?.value || "")
-      .trim()
-      .toLowerCase();
-
-  const status =
-    partnerStatusFilter?.value || "ALL";
-
-  if (
-    status !== "ALL" &&
-    partner.status !== status
-  ) {
-    return false;
-  }
-
-  if (!search) {
-    return true;
-  }
-
-  const haystack = [
-    partner.business_name,
-    partner.company_name,
-    partner.partner_code,
-    partner.contact_person,
-    partner.mobile,
-    partner.alternate_mobile,
-    partner.email,
-    partner.city,
-    partner.state,
-    partner.pincode
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  return haystack.includes(search);
-}
-
-
-function renderPartners() {
-
-  filteredPartners =
-    allPartners.filter(
-      partnerMatchesFilter
-    );
-
-  partnersTableBody.innerHTML = "";
-
-  if (!filteredPartners.length) {
-    partnersTableWrap.style.display = "none";
-    partnersEmpty.style.display = "block";
-    return;
-  }
-
-  partnersEmpty.style.display = "none";
-  partnersTableWrap.style.display = "block";
-
-  partnersTableBody.innerHTML =
-    filteredPartners.map(function(partner) {
-
-      const businessName =
-        partner.business_name ||
-        partner.company_name ||
-        "Unnamed Partner";
-
-      const location = [
-        partner.city,
-        partner.state
-      ]
-        .filter(Boolean)
-        .join(", ") || "—";
-
-      const statusClass =
-        partnerStatusClass(partner.status);
-
-      return `
-        <tr>
-          <td>
-            <div class="technician-name">
-              ${escapeHtml(businessName)}
-            </div>
-            <div class="technician-sub">
-              ${escapeHtml(partner.partner_code || "No code")}
-            </div>
-          </td>
-
-          <td>
-            ${escapeHtml(partner.contact_person || "—")}
-          </td>
-
-          <td>
-            ${escapeHtml(partner.mobile || "—")}
-          </td>
-
-          <td>
-            ${escapeHtml(location)}
-          </td>
-
-          <td>
-            <span class="status-pill ${statusClass}">
-              ${escapeHtml(formatPartnerStatus(partner.status))}
-            </span>
-          </td>
-
-          <td>
-            <div class="technician-actions">
-              ${
-                partner.status === "ACTIVE"
-                  ? `
-                    <button
-                      type="button"
-                      class="btn"
-                      data-toggle-partner="${escapeHtml(partner.id)}"
-                      data-next-status="INACTIVE"
-                    >
-                      Deactivate
-                    </button>
-                  `
-                  : `
-                    <button
-                      type="button"
-                      class="btn"
-                      data-toggle-partner="${escapeHtml(partner.id)}"
-                      data-next-status="ACTIVE"
-                    >
-                      Activate
-                    </button>
-                  `
-              }
-            </div>
-          </td>
-        </tr>
-      `;
-
-    }).join("");
-
-  partnersTableBody
-    .querySelectorAll("[data-toggle-partner]")
-    .forEach(function(button) {
-
-      button.addEventListener(
-        "click",
-        function() {
-          updatePartnerStatus(
-            button.dataset.togglePartner,
-            button.dataset.nextStatus
-          );
-        }
-      );
-
-    });
-}
-
-
-async function loadPartners() {
-
-  partnersLoading.style.display = "block";
-  partnersTableWrap.style.display = "none";
-  partnersEmpty.style.display = "none";
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("partners")
-      .select(`
-        id,
-        user_id,
-        partner_code,
-        business_name,
-        contact_person,
-        email,
-        mobile,
-        alternate_mobile,
-        address,
-        city,
-        state,
-        pincode,
-        status,
-        notes,
-        company_name,
-        created_at,
-        updated_at
-      `)
-      .order(
-        "created_at",
-        { ascending: false }
-      );
-
-  partnersLoading.style.display = "none";
-
-  if (error) {
-    console.error("Partners load error:", error);
-
-    showNotice(
-      "Unable to load partners. Please check the browser console.",
-      "error",
-      partnersNotice
-    );
-
-    partnersEmpty.textContent =
-      "Unable to load partners.";
-
-    partnersEmpty.style.display = "block";
-    return;
-  }
-
-  hideNotice(partnersNotice);
-
-  allPartners =
-    Array.isArray(data)
-      ? data
-      : [];
-
-  renderPartners();
-}
-
-
-async function updatePartnerStatus(
-  partnerId,
-  nextStatus
-) {
-
-  const partner =
-    allPartners.find(
-      row => row.id === partnerId
-    );
-
-  if (!partner) {
-    return;
-  }
-
-  const partnerName =
-    partner.business_name ||
-    partner.company_name ||
-    partner.partner_code ||
-    "this partner";
-
-  const action =
-    nextStatus === "ACTIVE"
-      ? "activate"
-      : "deactivate";
-
-  if (
-    !window.confirm(
-      "Are you sure you want to " +
-      action +
-      " " +
-      partnerName +
-      "?"
-    )
-  ) {
-    return;
-  }
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("partners")
-      .update({
-        status: nextStatus
-      })
-      .eq("id", partnerId);
-
-  if (error) {
-    console.error("Partner status error:", error);
-
-    showNotice(
-      error.message ||
-      "Unable to update partner status.",
-      "error",
-      partnersNotice
-    );
-
-    return;
-  }
-
-  showNotice(
-    partnerName +
-    " is now " +
-    (nextStatus === "ACTIVE" ? "active." : "inactive."),
-    "success",
-    partnersNotice
-  );
-
-  await loadPartners();
-}
-
-
-/* =====================================================
-   SERVICES MODULE
-   ===================================================== */
-
-function formatServiceDate(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
-}
-
-function renderServices() {
-  const search = String(serviceSearch?.value || "").trim().toLowerCase();
-  filteredServices = allServices.filter(function(service) {
-    return !search || service.service_type.toLowerCase().includes(search);
-  });
-  if (!filteredServices.length) {
-    servicesTableWrap.style.display = "none";
-    servicesEmpty.style.display = "block";
-    servicesTableBody.innerHTML = "";
-    return;
-  }
-  servicesEmpty.style.display = "none";
-  servicesTableWrap.style.display = "block";
-  servicesTableBody.innerHTML = filteredServices.map(function(service) {
-    return `<tr><td><strong>${escapeHtml(service.service_type)}</strong></td><td>${service.requests}</td><td>${service.active}</td><td>${service.completed}</td><td>${escapeHtml(formatServiceDate(service.latest_request))}</td></tr>`;
-  }).join("");
-}
-
-async function loadServices() {
-  servicesLoading.style.display = "block";
-  servicesTableWrap.style.display = "none";
-  servicesEmpty.style.display = "none";
-  const { data, error } = await supabaseClient.from("leads").select("service_type,status,created_at").order("created_at", { ascending:false });
-  servicesLoading.style.display = "none";
-  if (error) {
-    console.error("Services load error:", error);
-    showNotice(error.message || "Unable to load services.", "error", servicesNotice);
-    servicesEmpty.textContent = "Unable to load services.";
-    servicesEmpty.style.display = "block";
-    return;
-  }
-  hideNotice(servicesNotice);
-  const rows = Array.isArray(data) ? data : [];
-  const activeStatuses = ["NEW","ASSIGNED","ACCEPTED","EN_ROUTE","ARRIVED","IN_PROGRESS","COMPLETION_SUBMITTED","CORRECTION_REQUIRED","RESCHEDULED"];
-  const grouped = new Map();
-  rows.forEach(function(row) {
-    const name = String(row.service_type || "Other Service").trim() || "Other Service";
-    if (!grouped.has(name)) grouped.set(name, { service_type:name, requests:0, active:0, completed:0, latest_request:row.created_at || null });
-    const item = grouped.get(name);
-    item.requests += 1;
-    if (activeStatuses.includes(row.status)) item.active += 1;
-    if (row.status === "COMPLETED") item.completed += 1;
-    if (row.created_at && (!item.latest_request || row.created_at > item.latest_request)) item.latest_request = row.created_at;
-  });
-  allServices = Array.from(grouped.values()).sort(function(a,b) { return b.requests - a.requests || a.service_type.localeCompare(b.service_type); });
-  serviceTypeCount.textContent = String(allServices.length);
-  serviceRequestCount.textContent = String(rows.length);
-  serviceActiveCount.textContent = String(rows.filter(function(row) { return activeStatuses.includes(row.status); }).length);
-  serviceCompletedCount.textContent = String(rows.filter(function(row) { return row.status === "COMPLETED"; }).length);
-  renderServices();
-}
-
-if (serviceSearch) serviceSearch.addEventListener("input", renderServices);
-if (servicesRefreshButton) servicesRefreshButton.addEventListener("click", loadServices);
-
-
-/* =====================================================
-   PAYMENTS MODULE
-   ===================================================== */
-
-function paymentModeClass(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/[^a-z]/g, "");
-}
-
-
-function formatPaymentMode(value) {
-  const mode = String(value || "").toUpperCase();
-
-  if (mode === "CASH") return "Cash";
-  if (mode === "UPI") return "UPI";
-
-  return value || "—";
-}
-
-
-function paymentMatchesFilter(payment) {
-
-  const search =
-    (paymentSearch?.value || "")
-      .trim()
-      .toLowerCase();
-
-  const mode =
-    paymentModeFilter?.value || "ALL";
-
-  if (
-    mode !== "ALL" &&
-    String(payment.payment_mode || "").toUpperCase() !== mode
-  ) {
-    return false;
-  }
-
-  if (!search) {
-    return true;
-  }
-
-  const haystack = [
-    payment.lead_number,
-    payment.customer_name,
-    payment.mobile,
-    payment.payment_mode,
-    payment.service_order_id
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  return haystack.includes(search);
-}
-
-
-function renderPayments() {
-
-  filteredPayments =
-    allPayments.filter(paymentMatchesFilter);
-
-  paymentsTableBody.innerHTML = "";
-
-  if (!filteredPayments.length) {
-    paymentsTableWrap.style.display = "none";
-    paymentsEmpty.style.display = "block";
-    return;
-  }
-
-  paymentsEmpty.style.display = "none";
-  paymentsTableWrap.style.display = "block";
-
-  paymentsTableBody.innerHTML =
-    filteredPayments.map(function(payment) {
-
-      const mode =
-        String(payment.payment_mode || "").toUpperCase();
-
-      const modeClass =
-        paymentModeClass(mode);
-
-      return `
-        <tr>
-          <td>
-            <div class="technician-name">
-              ${escapeHtml(payment.lead_number || "—")}
-            </div>
-            <div class="technician-sub">
-              ${escapeHtml(payment.service_order_id || "—")}
-            </div>
-          </td>
-
-          <td>
-            <div class="technician-name">
-              ${escapeHtml(payment.customer_name || "—")}
-            </div>
-            <div class="technician-sub">
-              ${escapeHtml(payment.mobile || "—")}
-            </div>
-          </td>
-
-          <td>
-            <div class="technician-name">
-              ${escapeHtml(payment.technician_name || "Technician not linked")}
-            </div>
-            <div class="technician-sub">
-              ${escapeHtml(payment.technician_code || "—")}
-            </div>
-          </td>
-
-          <td>
-            <strong>${escapeHtml(formatAmount(payment.amount_collected))}</strong>
-          </td>
-
-          <td>
-            <span class="status-pill ${modeClass}">
-              ${escapeHtml(formatPaymentMode(payment.payment_mode))}
-            </span>
-          </td>
-
-          <td>
-            <span class="status-pill available">Collected</span>
-          </td>
-
-          <td>
-            ${escapeHtml(formatDate(payment.updated_at || payment.created_at))}
-          </td>
-        </tr>
-      `;
-
-    }).join("");
-}
-
-
-function isPaymentToday(value) {
-
-  if (!value) return false;
-
-  const date = new Date(value);
-  const now = new Date();
-
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate()
-  );
-}
-
-
-function renderTechnicianPaymentSummary() {
-
-  const todayPayments = allPayments.filter(function(payment) {
-    return isPaymentToday(payment.created_at);
-  });
-
-  const technicianMap = {};
-
-  todayPayments.forEach(function(payment) {
-
-    const key = payment.technician_id || "UNASSIGNED";
-
-    if (!technicianMap[key]) {
-      technicianMap[key] = {
-        technician_id: payment.technician_id || null,
-        technician_name: payment.technician_name || "Technician not linked",
-        technician_code: payment.technician_code || "—",
-        transactions: 0,
-        cash: 0,
-        upi: 0,
-        total: 0
-      };
-    }
-
-    const amount = Number(payment.amount_collected) || 0;
-    const mode = String(payment.payment_mode || "").toUpperCase();
-
-    technicianMap[key].transactions += 1;
-    technicianMap[key].total += amount;
-
-    if (mode === "CASH") {
-      technicianMap[key].cash += amount;
-    } else if (mode === "UPI") {
-      technicianMap[key].upi += amount;
-    }
-
-  });
-
-  const summary = Object.values(technicianMap).sort(function(a,b) {
-    return b.total - a.total;
-  });
-
-  if (!summary.length) {
-    technicianPaymentsTableWrap.style.display = "none";
-    technicianPaymentsEmpty.style.display = "block";
-    technicianPaymentsTableBody.innerHTML = "";
-    return;
-  }
-
-  technicianPaymentsEmpty.style.display = "none";
-  technicianPaymentsTableWrap.style.display = "block";
-
-  technicianPaymentsTableBody.innerHTML = summary.map(function(item) {
-    return `
-      <tr>
-        <td>
-          <div class="technician-name">${escapeHtml(item.technician_name)}</div>
-          <div class="technician-sub">${escapeHtml(item.technician_code)}</div>
-        </td>
-        <td>${escapeHtml(String(item.transactions))}</td>
-        <td><strong>${escapeHtml(formatAmount(item.cash))}</strong></td>
-        <td><strong>${escapeHtml(formatAmount(item.upi))}</strong></td>
-        <td><strong>${escapeHtml(formatAmount(item.total))}</strong></td>
-      </tr>
-    `;
-  }).join("");
-}
-
-
-async function loadPayments() {
-
-  paymentsLoading.style.display = "block";
-  paymentsTableWrap.style.display = "none";
-  paymentsEmpty.style.display = "none";
-
-  hideNotice(paymentsNotice);
-
-  try {
-
-    const {
-      data: paymentRows,
-      error: paymentError
-    } = await supabaseClient
-      .from("payments")
-      .select("id,service_order_id,amount_collected,payment_mode,created_at,updated_at")
-      .order("created_at", { ascending: false });
-
-    if (paymentError) {
-      throw new Error("Unable to load payments: " + paymentError.message);
-    }
-
-    const rows = paymentRows || [];
-    const serviceOrderIds = [
-      ...new Set(
-        rows
-          .map(function(row) { return row.service_order_id; })
-          .filter(Boolean)
-      )
-    ];
-
-    const serviceOrderMap = {};
-
-    if (serviceOrderIds.length) {
-      const {
-        data: serviceOrders,
-        error: serviceOrderError
-      } = await supabaseClient
-        .from("service_orders")
-        .select("id,lead_id")
-        .in("id", serviceOrderIds);
-
-      if (serviceOrderError) {
-        throw new Error("Unable to load payment service orders: " + serviceOrderError.message);
-      }
-
-      (serviceOrders || []).forEach(function(order) {
-        serviceOrderMap[order.id] = order;
-      });
-    }
-
-    const visitMap = {};
-
-    if (serviceOrderIds.length) {
-      const {
-        data: visits,
-        error: visitError
-      } = await supabaseClient
-        .from("visits")
-        .select("id,service_order_id,technician_id,visit_number,created_at")
-        .in("service_order_id", serviceOrderIds)
-        .order("visit_number", { ascending: false });
-
-      if (visitError) {
-        throw new Error("Unable to load payment technician details: " + visitError.message);
-      }
-
-      (visits || []).forEach(function(visit) {
-        if (!visitMap[visit.service_order_id]) {
-          visitMap[visit.service_order_id] = visit;
-        }
-      });
-    }
-
-    const technicianIds = [
-      ...new Set(
-        Object.values(visitMap)
-          .map(function(visit) { return visit.technician_id; })
-          .filter(Boolean)
-      )
-    ];
-
-    const technicianMap = {};
-
-    if (technicianIds.length) {
-      const {
-        data: technicians,
-        error: technicianError
-      } = await supabaseClient
-        .from("technicians")
-        .select("id,technician_code,full_name")
-        .in("id", technicianIds);
-
-      if (technicianError) {
-        throw new Error("Unable to load technician payment details: " + technicianError.message);
-      }
-
-      (technicians || []).forEach(function(technician) {
-        technicianMap[technician.id] = technician;
-      });
-    }
-
-    const leadIds = [
-      ...new Set(
-        Object.values(serviceOrderMap)
-          .map(function(order) { return order.lead_id; })
-          .filter(Boolean)
-      )
-    ];
-
-    const leadMap = {};
-
-    if (leadIds.length) {
-      const {
-        data: leads,
-        error: leadsError
-      } = await supabaseClient
-        .from("leads")
-        .select("id,lead_number,customer_name,mobile")
-        .in("id", leadIds);
-
-      if (leadsError) {
-        throw new Error("Unable to load payment lead details: " + leadsError.message);
-      }
-
-      (leads || []).forEach(function(lead) {
-        leadMap[lead.id] = lead;
-      });
-    }
-
-    allPayments = rows.map(function(row) {
-
-      const order =
-        serviceOrderMap[row.service_order_id] || {};
-
-      const lead =
-        leadMap[order.lead_id] || {};
-
-      const visit =
-        visitMap[row.service_order_id] || {};
-
-      const technician =
-        technicianMap[visit.technician_id] || {};
-
-      return {
-        id: row.id,
-        service_order_id: row.service_order_id,
-        amount_collected: Number(row.amount_collected || 0),
-        payment_mode: row.payment_mode,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-        lead_number: lead.lead_number,
-        customer_name: lead.customer_name,
-        mobile: lead.mobile,
-        technician_id: visit.technician_id || null,
-        technician_name: technician.full_name || "Technician not linked",
-        technician_code: technician.technician_code || "—"
-      };
-
-    });
-
-    const total =
-      allPayments.reduce(function(sum, payment) {
-        return sum + (Number(payment.amount_collected) || 0);
-      }, 0);
-
-    const cash =
-      allPayments.reduce(function(sum, payment) {
-        return String(payment.payment_mode || "").toUpperCase() === "CASH"
-          ? sum + (Number(payment.amount_collected) || 0)
-          : sum;
-      }, 0);
-
-    const upi =
-      allPayments.reduce(function(sum, payment) {
-        return String(payment.payment_mode || "").toUpperCase() === "UPI"
-          ? sum + (Number(payment.amount_collected) || 0)
-          : sum;
-      }, 0);
-
-    const todayPayments =
-      allPayments.filter(function(payment) {
-        return isPaymentToday(payment.created_at);
-      });
-
-    const todayTotal =
-      todayPayments.reduce(function(sum, payment) {
-        return sum + (Number(payment.amount_collected) || 0);
-      }, 0);
-
-    paymentsTotalCollected.textContent = formatAmount(total);
-    paymentsCashTotal.textContent = formatAmount(cash);
-    paymentsUpiTotal.textContent = formatAmount(upi);
-    paymentsTransactionCount.textContent = String(allPayments.length);
-    paymentsTodayTotal.textContent = formatAmount(todayTotal);
-    paymentsTodayCount.textContent = String(todayPayments.length);
-
-    paymentsLoading.style.display = "none";
-    renderTechnicianPaymentSummary();
-    renderPayments();
-
-  } catch (error) {
-
-    console.error("Payments load error:", error);
-
-    paymentsLoading.style.display = "none";
-    paymentsTableWrap.style.display = "none";
-    paymentsEmpty.style.display = "block";
-
-    showNotice(
-      error.message || "Unable to load payments.",
-      "error",
-      paymentsNotice
-    );
-
-  }
-}
-
-
-/* =====================================================
-   REPORTS MODULE
-   ===================================================== */
-
-const REPORT_DATASETS = [
-  { key: "leads", label: "Leads" },
-  { key: "partners", label: "Partners" },
-  { key: "technicians", label: "Technicians" },
-  { key: "service_orders", label: "Service Orders" },
-  { key: "visits", label: "Visits" },
-  { key: "payments", label: "Payments" },
-  { key: "correction_requests", label: "Correction Requests" }
-];
-
-function reportSafeRows(rows) {
-  return (rows || []).map(function(row) {
-    const clean = {};
-
-    Object.keys(row || {}).forEach(function(key) {
-      const lower = String(key).toLowerCase();
-
-      if (
-        lower.includes("code_hash") ||
-        lower === "completion_code" ||
-        lower.includes("password") ||
-        lower.includes("secret") ||
-        lower.includes("token")
-      ) {
-        return;
-      }
-
-      clean[key] = row[key];
-    });
-
-    return clean;
-  });
-}
-
-async function fetchReportTable(tableName) {
-  const pageSize = 1000;
-  let offset = 0;
-  let allRows = [];
-
-  while (true) {
-    const result = await supabaseClient
-      .from(tableName)
-      .select("*")
-      .range(offset, offset + pageSize - 1);
-
-    if (result.error) {
-      throw new Error(result.error.message || ("Unable to load " + tableName));
-    }
-
-    const rows = result.data || [];
-    allRows = allRows.concat(rows);
-
-    if (rows.length < pageSize) {
-      break;
-    }
-
-    offset += pageSize;
-  }
-
-  return reportSafeRows(allRows);
-}
-
-function reportCellValue(value) {
-  if (value === null || value === undefined || value === "") {
-    return "—";
-  }
-
-  if (typeof value === "object") {
-    try {
-      return JSON.stringify(value);
-    } catch (error) {
-      return String(value);
-    }
-  }
-
-  return String(value);
-}
-
-function renderReports() {
-  const entries = REPORT_DATASETS.map(function(dataset) {
-    const rows = reportsData[dataset.key];
-    const failed = rows && rows.__error;
-
-    return {
-      ...dataset,
-      rows: failed ? [] : (rows || []),
-      error: failed ? rows.__error : null
-    };
-  });
-
-  const totalRecords = entries.reduce(function(sum, item) {
-    return sum + item.rows.length;
-  }, 0);
-
-  reportTotalRecords.textContent = String(totalRecords);
-  reportDatasetCount.textContent = String(entries.length);
-  reportPaymentCount.textContent = String(
-    (reportsData.payments || []).__error
-      ? 0
-      : (reportsData.payments || []).length
-  );
-  reportLeadCount.textContent = String(
-    (reportsData.leads || []).__error
-      ? 0
-      : (reportsData.leads || []).length
-  );
-
-  reportsDatasetBody.innerHTML = entries.map(function(item) {
-    const status = item.error
-      ? "Unavailable"
-      : "Ready";
-
-    const statusClass = item.error
-      ? "report-warning"
-      : "report-ready";
-
-    return `
-      <tr>
-        <td><strong>${escapeHtml(item.label)}</strong></td>
-        <td>${escapeHtml(String(item.rows.length))}</td>
-        <td>
-          <span class="${statusClass}">
-            ${escapeHtml(status)}${item.error ? " — " + escapeHtml(item.error) : ""}
-          </span>
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  reportsLastUpdated.textContent =
-    "Updated " + new Date().toLocaleString();
-}
-
-async function loadReports() {
-  if (reportsLoadInProgress) return;
-
-  reportsLoadInProgress = true;
-
-  if (reportsRefreshButton) {
-    reportsRefreshButton.disabled = true;
-    reportsRefreshButton.textContent = "Loading...";
-  }
-
-  hideNotice(reportsNotice);
-
-  reportsData = {};
-
-  try {
-    const results = await Promise.all(
-      REPORT_DATASETS.map(async function(dataset) {
-        try {
-          return {
-            key: dataset.key,
-            rows: await fetchReportTable(dataset.key),
-            error: null
-          };
-        } catch (error) {
-          console.error("Reports load error for " + dataset.key + ":", error);
-          return {
-            key: dataset.key,
-            rows: [],
-            error: error.message || "Unable to load data."
-          };
-        }
-      })
-    );
-
-    results.forEach(function(result) {
-      if (result.error) {
-        const failedRows = [];
-        failedRows.__error = result.error;
-        reportsData[result.key] = failedRows;
-      } else {
-        reportsData[result.key] = result.rows;
-      }
-    });
-
-    renderReports();
-
-    const failed = results.filter(function(item) {
-      return Boolean(item.error);
-    });
-
-    if (failed.length) {
-      showNotice(
-        failed.length + " report dataset(s) could not be loaded. Available data is still ready for export.",
-        "error",
-        reportsNotice
-      );
-    } else {
-      showNotice(
-        "All report data loaded successfully.",
-        "success",
-        reportsNotice
-      );
-    }
-
-  } catch (error) {
-    console.error("Reports load error:", error);
-
-    showNotice(
-      error.message || "Unable to load reports.",
-      "error",
-      reportsNotice
-    );
-
-    reportsLastUpdated.textContent = "Load failed";
-    renderReports();
-
-  } finally {
-    reportsLoadInProgress = false;
-
-    if (reportsRefreshButton) {
-      reportsRefreshButton.disabled = false;
-      reportsRefreshButton.textContent = "Refresh Data";
-    }
-  }
-}
-
-function reportSheetName(label, usedNames) {
-  let base = String(label || "Data")
-    .replace(/[\\/?*\[\]:]/g, "")
-    .slice(0, 31) || "Data";
-
-  let name = base;
-  let index = 2;
-
-  while (usedNames[name]) {
-    const suffix = " " + index++;
-    name = base.slice(0, 31 - suffix.length) + suffix;
-  }
-
-  usedNames[name] = true;
-  return name;
-}
-
-function downloadReportsExcel() {
-  if (typeof XLSX === "undefined") {
-    showNotice("Excel export library is not available.", "error", reportsNotice);
-    return;
-  }
-
-  if (!Object.keys(reportsData).length) {
-    showNotice("Load the report data first.", "error", reportsNotice);
-    return;
-  }
-
-  try {
-    const workbook = XLSX.utils.book_new();
-    const usedNames = {};
-
-    REPORT_DATASETS.forEach(function(dataset) {
-      const rawRows = reportsData[dataset.key];
-      if (!rawRows || rawRows.__error) return;
-
-      const rows = rawRows.map(function(row) {
-        const output = {};
-        Object.keys(row).forEach(function(key) {
-          output[key] = reportCellValue(row[key]);
-        });
-        return output;
-      });
-
-      const worksheet = rows.length
-        ? XLSX.utils.json_to_sheet(rows)
-        : XLSX.utils.aoa_to_sheet([["No records"]]);
-
-      worksheet["!cols"] = Object.keys(rows[0] || { "No records": "" }).map(function() {
-        return { wch: 22 };
-      });
-
-      XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        reportSheetName(dataset.label, usedNames)
-      );
-    });
-
-    XLSX.writeFile(
-      workbook,
-      "ORACLIME-Support-Report-" + new Date().toISOString().slice(0, 10) + ".xlsx"
-    );
-
-    showNotice("Excel report downloaded successfully.", "success", reportsNotice);
-  } catch (error) {
-    console.error("Excel export error:", error);
-    showNotice(error.message || "Unable to create Excel report.", "error", reportsNotice);
-  }
-}
-
-function downloadReportsPdf() {
-  const pdfLib = window.jspdf;
-
-  if (!pdfLib || !pdfLib.jsPDF) {
-    showNotice("PDF export library is not available.", "error", reportsNotice);
-    return;
-  }
-
-  if (!Object.keys(reportsData).length) {
-    showNotice("Load the report data first.", "error", reportsNotice);
-    return;
-  }
-
-  try {
-    const doc = new pdfLib.jsPDF({
-      orientation: "landscape",
-      unit: "pt",
-      format: "a4"
-    });
-
-    const generated = new Date().toLocaleString();
-
-    doc.setFontSize(18);
-    doc.text("ORACLIME Support Operational Report", 36, 38);
-    doc.setFontSize(9);
-    doc.text("Generated: " + generated, 36, 54);
-
-    let firstTable = true;
-
-    REPORT_DATASETS.forEach(function(dataset) {
-      const rawRows = reportsData[dataset.key];
-      if (!rawRows || rawRows.__error) return;
-
-      if (!firstTable) {
-        doc.addPage();
-      }
-      firstTable = false;
-
-      const rows = rawRows;
-      const columns = rows.length
-        ? Object.keys(rows[0])
-        : ["Records"];
-
-      const body = rows.length
-        ? rows.map(function(row) {
-            return columns.map(function(column) {
-              return reportCellValue(row[column]);
-            });
-          })
-        : [["No records"]];
-
-      doc.setFontSize(13);
-      doc.text(dataset.label, 36, 78);
-
-      if (typeof doc.autoTable === "function") {
-        doc.autoTable({
-          startY: 90,
-          head: [columns],
-          body: body,
-          styles: {
-            fontSize: 6,
-            cellPadding: 3,
-            overflow: "linebreak"
-          },
-          headStyles: {
-            fontSize: 6
-          },
-          margin: {
-            left: 36,
-            right: 36
-          }
-        });
-      } else {
-        let y = 94;
-        doc.setFontSize(6);
-        body.slice(0, 40).forEach(function(row) {
-          doc.text(row.join(" | ").slice(0, 180), 36, y);
-          y += 9;
-        });
-      }
-    });
-
-    doc.save(
-      "ORACLIME-Support-Report-" + new Date().toISOString().slice(0, 10) + ".pdf"
-    );
-
-    showNotice("PDF report downloaded successfully.", "success", reportsNotice);
-  } catch (error) {
-    console.error("PDF export error:", error);
-    showNotice(error.message || "Unable to create PDF report.", "error", reportsNotice);
-  }
-}
-
-/* =====================================================
-   SETTINGS MODULE
-   ===================================================== */
-
-async function loadSettingsCompletionLeads() {
-  if (!settingsCompletionLead) return;
-
-  settingsCompletionLead.innerHTML =
-    '<option value="">Loading leads...</option>';
-
-  try {
-    const { data, error } =
-      await supabaseClient
-        .from("leads")
-        .select("id,lead_number,customer_name,status")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-      throw new Error(error.message || "Unable to load leads.");
-    }
-
-    settingsCompletionLead.innerHTML =
-      '<option value="">Select a lead</option>';
-
-    const activeLeads = (data || []).filter(function(lead) {
-      const status = String(lead.status || "").toUpperCase();
-      return ["NEW", "ASSIGNED", "IN_PROGRESS"].includes(status);
-    });
-
-    activeLeads.forEach(function(lead) {
-      const option = document.createElement("option");
-      option.value = lead.id;
-      option.textContent =
-        (lead.lead_number || "Lead") +
-        " — " +
-        (lead.customer_name || "Customer") +
-        " [" +
-        formatStatus(lead.status) +
-        "]";
-      settingsCompletionLead.appendChild(option);
-    });
-
-    if (!activeLeads.length) {
-      settingsCompletionLead.innerHTML =
-        '<option value="">No leads found</option>';
-    }
-  } catch (error) {
-    console.error("Settings completion leads error:", error);
-    settingsCompletionLead.innerHTML =
-      '<option value="">Unable to load leads</option>';
-    showNotice(
-      error.message || "Unable to load leads.",
-      "error",
-      settingsNotice
-    );
-  }
-}
-
-function renderSettings() {
-  const user = currentAppUser || {};
-
-  if (settingsFullName) {
-    settingsFullName.textContent = user.full_name || "ORACLIME Support";
-  }
-  if (settingsEmail) {
-    settingsEmail.textContent = user.email || currentAuthUser?.email || "—";
-  }
-  if (settingsSupportCode) {
-    settingsSupportCode.textContent = user.support_code || "SUPPORT";
-  }
-  if (settingsStatus) {
-    settingsStatus.textContent = user.status || "ACTIVE";
-  }
-
-  loadSettingsCompletionLeads();
-}
-
-async function generateSettingsCompletionCode() {
-  if (!settingsCompletionLead?.value) {
-    showNotice(
-      "Please select a lead first.",
-      "error",
-      settingsNotice
-    );
-    return;
-  }
-
-  if (!settingsGenerateCompletionCodeButton) return;
-
-  const leadId = settingsCompletionLead.value;
-  const selectedOption =
-    settingsCompletionLead.options[settingsCompletionLead.selectedIndex];
-
-  const confirmed = window.confirm(
-    "Generate a new Service Completion Code for " +
-    (selectedOption?.textContent || "this lead") +
-    "?\n\nThe previous active code will be invalidated."
-  );
-
-  if (!confirmed) return;
-
-  const originalText =
-    settingsGenerateCompletionCodeButton.textContent;
-
-  settingsGenerateCompletionCodeButton.disabled = true;
-  settingsGenerateCompletionCodeButton.textContent = "Generating...";
-
-  if (settingsCompletionCodeResult) {
-    settingsCompletionCodeResult.style.display = "none";
-  }
-
-  try {
-    /*
-      Use the existing secure Supabase RPC already used by the
-      working completion-correction flow. This keeps the raw code
-      out of the database and lets the database invalidate the
-      previous active code before returning the new 6-digit code.
-    */
-    const { data: newCode, error: codeError } =
-      await supabaseClient.rpc(
-        "issue_service_completion_code",
-        { p_lead_id: leadId }
-      );
-
-    if (codeError) {
-      throw new Error(
-        "Unable to generate the new Service Completion Code: " +
-        codeError.message
-      );
-    }
-
-    const cleanCode = String(newCode || "").trim();
-
-    if (!/^\d{6}$/.test(cleanCode)) {
-      throw new Error(
-        "The new Service Completion Code was not generated correctly."
-      );
-    }
-
-    const { data: serviceOrder, error: serviceOrderError } =
-      await supabaseClient
-        .from("service_orders")
-        .select("id")
-        .eq("lead_id", leadId)
-        .maybeSingle();
-
-    if (serviceOrderError) {
-      console.warn(
-        "Unable to load service order for code expiry:",
-        serviceOrderError
-      );
-    }
-
-    let expiresAt = null;
-
-    if (serviceOrder?.id) {
-      const { data: latestCodeRow, error: latestCodeError } =
-        await supabaseClient
-          .from("service_completion_codes")
-          .select("expires_at")
-          .eq("service_order_id", serviceOrder.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-      if (latestCodeError) {
-        console.warn(
-          "Unable to load new code expiry:",
-          latestCodeError
-        );
-      } else {
-        expiresAt = latestCodeRow?.expires_at || null;
-      }
-    }
-
-    if (settingsCompletionCodeValue) {
-      settingsCompletionCodeValue.textContent = cleanCode;
-    }
-
-    if (settingsCompletionCodeExpiry) {
-      settingsCompletionCodeExpiry.textContent =
-        expiresAt
-          ? "Expires: " + new Date(expiresAt).toLocaleString("en-IN", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit"
-            })
-          : "Code generated successfully. Expires after 24 hours.";
-    }
-
-    if (settingsCompletionCodeResult) {
-      settingsCompletionCodeResult.style.display = "block";
-    }
-
-    showNotice(
-      "New Service Completion Code generated successfully. Save/share it securely with the technician.",
-      "success",
-      settingsNotice
-    );
-  } catch (error) {
-    console.error("Settings completion code error:", error);
-    showNotice(
-      error.message || "Unable to generate Service Completion Code.",
-      "error",
-      settingsNotice
-    );
-  } finally {
-    settingsGenerateCompletionCodeButton.disabled = false;
-    settingsGenerateCompletionCodeButton.textContent = originalText;
-  }
-}
-
-async function sendSettingsPasswordReset() {
-  if (!currentAuthUser?.email) {
-    showNotice("Registered email address could not be found.", "error", settingsNotice);
-    return;
-  }
-
-  if (!settingsResetPasswordButton) return;
-
-  const originalText = settingsResetPasswordButton.textContent;
-  settingsResetPasswordButton.disabled = true;
-  settingsResetPasswordButton.textContent = "Sending...";
-
-  try {
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(
-      currentAuthUser.email,
-      {
-        redirectTo: window.location.origin + "/support-login.html"
-      }
-    );
-
-    if (error) {
-      throw new Error(error.message || "Unable to send password reset email.");
-    }
-
-    showNotice(
-      "Password reset email sent to " + currentAuthUser.email + ".",
-      "success",
-      settingsNotice
-    );
-  } catch (error) {
-    console.error("Password reset error:", error);
-    showNotice(
-      error.message || "Unable to send password reset email.",
-      "error",
-      settingsNotice
-    );
-  } finally {
-    settingsResetPasswordButton.disabled = false;
-    settingsResetPasswordButton.textContent = originalText;
-  }
-}
-
-if (settingsResetPasswordButton) {
-  settingsResetPasswordButton.addEventListener("click", sendSettingsPasswordReset);
-}
-
-if (settingsGenerateCompletionCodeButton) {
-  settingsGenerateCompletionCodeButton.addEventListener(
-    "click",
-    generateSettingsCompletionCode
-  );
-}
-
-
-
-/* =====================================================
-   37B. NOTIFICATIONS
-   ===================================================== */
-
-function getNotificationDetails(lead) {
-
-  const status = String(lead.status || "").toUpperCase();
-
-  const map = {
-    NEW: {
-      category: "SERVICE",
-      badge: "New Lead",
-      title: "New service request received",
-      message: "A new service request from " + (lead.customer_name || "customer") + " is waiting for Support action."
-    },
-    ASSIGNED: {
-      category: "SERVICE",
-      badge: "Assignment",
-      title: "Technician assignment updated",
-      message: "Lead " + (lead.lead_number || "") + " has been assigned and is awaiting service progress."
-    },
-    ACCEPTED: {
-      category: "SERVICE",
-      badge: "Accepted",
-      title: "Technician accepted the job",
-      message: "The assigned technician has accepted lead " + (lead.lead_number || "") + "."
-    },
-    IN_PROGRESS: {
-      category: "SERVICE",
-      badge: "In Progress",
-      title: "Service is in progress",
-      message: "Lead " + (lead.lead_number || "") + " is currently being handled by the technician."
-    },
-    COMPLETION_SUBMITTED: {
-      category: "COMPLETION",
-      badge: "Completion",
-      title: "Completion submitted for review",
-      message: "Lead " + (lead.lead_number || "") + " has submitted completion details and needs Support review."
-    },
-    CORRECTION_REQUIRED: {
-      category: "COMPLETION",
-      badge: "Correction",
-      title: "Correction requested",
-      message: "Lead " + (lead.lead_number || "") + " requires a new completion submission."
-    },
-    COMPLETED: {
-      category: "COMPLETION",
-      badge: "Completed",
-      title: "Service completed",
-      message: "Lead " + (lead.lead_number || "") + " has been marked as completed."
-    },
-    RESCHEDULED: {
-      category: "FOLLOWUP",
-      badge: "Rescheduled",
-      title: "Service rescheduled",
-      message: "Lead " + (lead.lead_number || "") + " has been rescheduled and needs follow-up."
-    },
-    RESCHEDULE_REQUESTED: {
-      category: "FOLLOWUP",
-      badge: "Follow-up",
-      title: "Reschedule requested",
-      message: "Lead " + (lead.lead_number || "") + " has requested a schedule change."
-    },
-    PAYMENT_PENDING: {
-      category: "FOLLOWUP",
-      badge: "Payment",
-      title: "Payment is pending",
-      message: "Payment follow-up is required for lead " + (lead.lead_number || "") + "."
-    },
-    CANCELLED: {
-      category: "FOLLOWUP",
-      badge: "Cancelled",
-      title: "Service lead cancelled",
-      message: "Lead " + (lead.lead_number || "") + " has been cancelled."
-    }
-  };
-
-  return map[status] || {
-    category: "SERVICE",
-    badge: "Service Update",
-    title: "Service status updated",
-    message: "Lead " + (lead.lead_number || "") + " has a new service status: " + formatStatus(status) + "."
-  };
-}
-
-function formatNotificationTime(value) {
-  if (!value) return "Recently";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Recently";
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
-function updateNotificationStats(list) {
-  if (notificationTotalCount) notificationTotalCount.textContent = String(list.length);
-  if (notificationServiceCount) notificationServiceCount.textContent = String(list.filter(item => item.category === "SERVICE").length);
-  if (notificationCompletionCount) notificationCompletionCount.textContent = String(list.filter(item => item.category === "COMPLETION").length);
-  if (notificationFollowupCount) notificationFollowupCount.textContent = String(list.filter(item => item.category === "FOLLOWUP").length);
-}
-
-function renderNotifications() {
-
-  const query = String(notificationSearch?.value || "").trim().toLowerCase();
-  const filter = notificationFilter?.value || "ALL";
-
-  filteredNotifications = allNotifications.filter(function(item) {
-    const matchesFilter = filter === "ALL" || item.category === filter;
-    const haystack = [
-      item.title,
-      item.message,
-      item.badge,
-      item.lead_number,
-      item.customer_name,
-      item.service_type
-    ].join(" ").toLowerCase();
-    return matchesFilter && (!query || haystack.includes(query));
-  });
-
-  updateNotificationStats(allNotifications);
-
-  if (notificationsLoading) notificationsLoading.style.display = "none";
-
-  if (!filteredNotifications.length) {
-    if (notificationsList) {
-      notificationsList.innerHTML = "";
-      notificationsList.style.display = "none";
-    }
-    if (notificationsEmpty) notificationsEmpty.style.display = "block";
-    return;
-  }
-
-  if (notificationsEmpty) notificationsEmpty.style.display = "none";
-  if (notificationsList) {
-    notificationsList.style.display = "grid";
-    notificationsList.innerHTML = filteredNotifications.map(function(item) {
-      return `
-        <article class="notification-card">
-          <div class="notification-main">
-            <div class="notification-topline">
-              <span class="notification-badge">${escapeHtml(item.badge)}</span>
-              <span class="small">${escapeHtml(formatNotificationTime(item.updated_at))}</span>
-            </div>
-            <h3 class="notification-title">${escapeHtml(item.title)}</h3>
-            <p class="notification-message">${escapeHtml(item.message)}</p>
-            <div class="notification-meta">
-              <span>${escapeHtml(item.lead_number || "Lead")}</span>
-              <span>•</span>
-              <span>${escapeHtml(item.customer_name || "Customer")}</span>
-              ${item.service_type ? `<span>•</span><span>${escapeHtml(item.service_type)}</span>` : ""}
-            </div>
-          </div>
-          <div class="notification-action">
-            <button class="table-action" type="button" data-notification-lead="${escapeHtml(item.id)}">Open Lead</button>
-          </div>
-        </article>
-      `;
-    }).join("");
-
-    notificationsList.querySelectorAll("[data-notification-lead]").forEach(function(button) {
-      button.addEventListener("click", function() {
-        activateSection("leads");
-      });
-    });
-  }
-}
-
-async function loadNotifications() {
-
-  if (!notificationsSection) return;
-
-  if (notificationsLoading) notificationsLoading.style.display = "block";
-  if (notificationsList) notificationsList.style.display = "none";
-  if (notificationsEmpty) notificationsEmpty.style.display = "none";
-
-  try {
-    const { data, error } = await supabaseClient
-      .from("leads")
-      .select("id,lead_number,customer_name,service_type,status,created_at,updated_at")
-      .order("updated_at", { ascending: false })
-      .limit(50);
-
-    if (error) throw error;
-
-    allNotifications = (Array.isArray(data) ? data : []).map(function(lead) {
-      const details = getNotificationDetails(lead);
-      return {
-        ...lead,
-        ...details,
-        updated_at: lead.updated_at || lead.created_at
-      };
-    });
-
-    renderNotifications();
-
-  } catch (error) {
-    console.error("Notifications load error:", error);
-    allNotifications = [];
-    updateNotificationStats([]);
-    if (notificationsLoading) notificationsLoading.style.display = "none";
-    if (notificationsEmpty) {
-      notificationsEmpty.textContent = "Unable to load notifications. Please check database access.";
-      notificationsEmpty.style.display = "block";
-    }
-    showNotice(
-      "Notifications could not be loaded. " + (error.message || ""),
-      "error",
-      notificationsNotice
-    );
-  }
-}
-
-if (notificationSearch) {
-  notificationSearch.addEventListener("input", renderNotifications);
-}
-
-if (notificationFilter) {
-  notificationFilter.addEventListener("change", renderNotifications);
-}
-
-if (notificationsRefreshButton) {
-  notificationsRefreshButton.addEventListener("click", async function() {
-    const original = notificationsRefreshButton.textContent;
-    notificationsRefreshButton.disabled = true;
-    notificationsRefreshButton.textContent = "Refreshing...";
-    try {
-      await loadNotifications();
-    } finally {
-      notificationsRefreshButton.disabled = false;
-      notificationsRefreshButton.textContent = original;
-    }
-  });
-}
-
-
-
-
-/* =====================================================
-   ACTIVITY LOGS
-   ===================================================== */
-
-function activityCategory(action) {
-  const value = String(action || "").toUpperCase();
-  if (value.includes("COMPLETION")) return "COMPLETION";
-  if (value.includes("ASSIGN")) return "ASSIGNMENT";
-  if (value.includes("CORRECTION")) return "CORRECTION";
-  if (value.includes("PAYMENT")) return "PAYMENT";
-  if (value.includes("LEAD") || value.includes("STATUS")) return "LEAD";
-  return "LEAD";
-}
-
-function activityIcon(action) {
-  const category = activityCategory(action);
-  return category === "COMPLETION" ? "✓" :
-         category === "ASSIGNMENT" ? "↗" :
-         category === "CORRECTION" ? "!" :
-         category === "PAYMENT" ? "₹" : "•";
-}
-
-function formatActivityAction(action) {
-  return formatStatus(String(action || "Activity"));
-}
-
-function formatActivityTime(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return date.toLocaleString("en-IN", {
-    day:"2-digit", month:"short", year:"numeric",
-    hour:"2-digit", minute:"2-digit"
-  });
-}
-
-function renderActivityStats(items) {
-  const list = Array.isArray(items) ? items : [];
-  const todayKey = new Date().toLocaleDateString("en-CA");
-  const today = list.filter(function(item) {
-    if (!item.created_at) return false;
-    return new Date(item.created_at).toLocaleDateString("en-CA") === todayKey;
-  }).length;
-  const support = list.filter(function(item) {
-    return String(item.actor_role || "").toUpperCase() === "SUPPORT";
-  }).length;
-
-  if (activityTotalCount) activityTotalCount.textContent = String(list.length);
-  if (activityTodayCount) activityTodayCount.textContent = String(today);
-  if (activitySupportCount) activitySupportCount.textContent = String(support);
-  if (activityLatestLabel) {
-    activityLatestLabel.textContent = list.length
-      ? formatActivityAction(list[0].action)
-      : "—";
-  }
-}
-
-function renderActivities() {
-  const query = String(activitySearch?.value || "").trim().toLowerCase();
-  const category = String(activityFilter?.value || "ALL");
-
-  filteredActivities = allActivities.filter(function(item) {
-    const itemCategory = activityCategory(item.action);
-    const haystack = [
-      item.action,
-      item.actor_role,
-      item.entity_type,
-      item.entity_id,
-      item.reason,
-      item.id
-    ].map(function(value){ return String(value || "").toLowerCase(); }).join(" ");
-
-    return (category === "ALL" || itemCategory === category) &&
-           (!query || haystack.includes(query));
-  });
-
-  renderActivityStats(allActivities);
-
-  if (activityLoading) activityLoading.style.display = "none";
-
-  if (!filteredActivities.length) {
-    if (activityList) activityList.style.display = "none";
-    if (activityEmpty) {
-      activityEmpty.textContent = allActivities.length ? "No activity matches your filter." : "No activity found.";
-      activityEmpty.style.display = "block";
-    }
-    return;
-  }
-
-  if (activityEmpty) activityEmpty.style.display = "none";
-  if (!activityList) return;
-
-  activityList.style.display = "flex";
-  activityList.innerHTML = filteredActivities.map(function(item) {
-    const action = formatActivityAction(item.action);
-    const category = activityCategory(item.action);
-    const entity = item.entity_type ? formatStatus(item.entity_type) : "System";
-    const reason = item.reason ? escapeHtml(item.reason) : "";
-    const actor = item.actor_role ? formatStatus(item.actor_role) : "System";
-    const entityId = item.entity_id ? escapeHtml(item.entity_id) : "—";
-
-    return `
-      <div class="activity-item">
-        <div class="activity-icon">${activityIcon(item.action)}</div>
-        <div>
-          <div class="activity-title">${escapeHtml(action)}</div>
-          <div class="activity-meta">
-            <span class="activity-badge">${escapeHtml(category)}</span>
-            <span>${escapeHtml(actor)}</span>
-            <span>${escapeHtml(entity)}</span>
-            <span>ID: ${entityId}</span>
-          </div>
-          ${reason ? `<div class="activity-reason">${reason}</div>` : ""}
-        </div>
-        <div class="activity-time">${escapeHtml(formatActivityTime(item.created_at))}</div>
-      </div>
-    `;
-  }).join("");
-}
-
-async function loadActivities() {
-  if (activityLoading) {
-    activityLoading.style.display = "block";
-    activityLoading.textContent = "Loading activity...";
-  }
-  if (activityList) activityList.style.display = "none";
-  if (activityEmpty) activityEmpty.style.display = "none";
-
-  try {
-    const { data, error } = await supabaseClient
-      .from("audit_logs")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(200);
-
-    if (error) throw error;
-
-    allActivities = Array.isArray(data) ? data : [];
-
-    /*
-       Keep Activity Logs useful even when audit_logs is empty.
-       We do not change any other module or write synthetic rows back
-       to the database. We only build a read-only fallback feed from
-       existing operational records.
-    */
-    if (!allActivities.length) {
-      const fallback = [];
-
-      const [leadsResult, assignmentsResult, paymentsResult, correctionsResult] =
-        await Promise.allSettled([
-          supabaseClient
-            .from("leads")
-            .select("id,lead_number,created_at,updated_at,status")
-            .order("created_at", { ascending: false })
-            .limit(100),
-          supabaseClient
-            .from("lead_assignments")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(100),
-          supabaseClient
-            .from("payments")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(100),
-          supabaseClient
-            .from("correction_requests")
-            .select("*")
-            .order("created_at", { ascending: false })
-            .limit(100)
-        ]);
-
-      if (leadsResult.status === "fulfilled" && !leadsResult.value.error) {
-        (leadsResult.value.data || []).forEach(function(row) {
-          fallback.push({
-            id: "lead-created-" + row.id,
-            actor_role: "SYSTEM",
-            action: "LEAD_CREATED",
-            entity_type: "lead",
-            entity_id: row.lead_number || row.id,
-            reason: row.status ? "Current status: " + row.status : "",
-            created_at: row.created_at
-          });
-        });
-      }
-
-      if (assignmentsResult.status === "fulfilled" && !assignmentsResult.value.error) {
-        (assignmentsResult.value.data || []).forEach(function(row) {
-          const createdAt = row.created_at || row.assigned_at || row.updated_at;
-          fallback.push({
-            id: "assignment-" + (row.id || Math.random()),
-            actor_role: "SYSTEM",
-            action: "TECHNICIAN_ASSIGNED",
-            entity_type: "lead",
-            entity_id: row.lead_id || row.id || "",
-            reason: row.technician_id ? "Technician assigned" : "Assignment record",
-            created_at: createdAt
-          });
-        });
-      }
-
-      if (paymentsResult.status === "fulfilled" && !paymentsResult.value.error) {
-        (paymentsResult.value.data || []).forEach(function(row) {
-          const createdAt = row.created_at || row.paid_at || row.payment_date;
-          fallback.push({
-            id: "payment-" + (row.id || Math.random()),
-            actor_role: "SYSTEM",
-            action: "PAYMENT_RECEIVED",
-            entity_type: "payment",
-            entity_id: row.id || row.lead_id || "",
-            reason: row.amount_collected != null
-              ? "Amount: ₹" + row.amount_collected
-              : (row.payment_mode ? "Mode: " + row.payment_mode : "Payment recorded"),
-            created_at: createdAt
-          });
-        });
-      }
-
-      if (correctionsResult.status === "fulfilled" && !correctionsResult.value.error) {
-        (correctionsResult.value.data || []).forEach(function(row) {
-          fallback.push({
-            id: "correction-" + (row.id || Math.random()),
-            actor_role: "SYSTEM",
-            action: "CORRECTION_REQUESTED",
-            entity_type: "lead",
-            entity_id: row.lead_id || row.id || "",
-            reason: row.reason || row.status || "Correction request recorded",
-            created_at: row.created_at || row.updated_at
-          });
-        });
-      }
-
-      allActivities = fallback.filter(function(item) {
-        return item.created_at;
-      });
-
-      allActivities.sort(function(a, b) {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      });
-
-      allActivities = allActivities.slice(0, 200);
-    }
-
-    renderActivities();
-  } catch (error) {
-    console.error("Activity logs load error:", error);
-    allActivities = [];
-    renderActivityStats([]);
-    if (activityLoading) activityLoading.style.display = "none";
-    if (activityEmpty) {
-      activityEmpty.textContent = "Unable to load activity logs. Please check database access.";
-      activityEmpty.style.display = "block";
-    }
-    showNotice(
-      "Activity Logs could not be loaded. " + (error.message || ""),
-      "error",
-      activityNotice
-    );
-  }
-}
-
-if (activitySearch) {
-  activitySearch.addEventListener("input", renderActivities);
-}
-
-if (activityFilter) {
-  activityFilter.addEventListener("change", renderActivities);
-}
-
-if (activityRefreshButton) {
-  activityRefreshButton.addEventListener("click", async function() {
-    const original = activityRefreshButton.textContent;
-    activityRefreshButton.disabled = true;
-    activityRefreshButton.textContent = "Refreshing...";
-    try {
-      await loadActivities();
-    } finally {
-      activityRefreshButton.disabled = false;
-      activityRefreshButton.textContent = original;
-    }
-  });
-}
-
-/* =====================================================
    38. NAVIGATION
    ===================================================== */
 
@@ -10236,8 +7462,8 @@ function sectionLabel(section) {
     technicians:
       "Technicians",
 
-    customers:
-      "Customers",
+    leadControl:
+      "Lead Control",
 
     services:
       "Services",
@@ -10276,22 +7502,6 @@ function activateSection(section) {
     return;
   }
 
-  if (reportsSection) {
-    reportsSection.style.display = "none";
-  }
-
-  if (settingsSection) {
-    settingsSection.style.display = "none";
-  }
-
-  if (notificationsSection) {
-    notificationsSection.style.display = "none";
-  }
-
-  if (activitySection) {
-    activitySection.style.display = "none";
-  }
-
 
   document
     .querySelectorAll(
@@ -10326,16 +7536,10 @@ function activateSection(section) {
     assignmentsSection.style.display =
       "none";
 
+    leadControlSection.style.display =
+      "none";
+
     techniciansSection.style.display =
-      "none";
-
-    servicesSection.style.display =
-      "none";
-
-    partnersSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
       "none";
 
     hideNotice(leadsNotice);
@@ -10361,16 +7565,10 @@ function activateSection(section) {
     assignmentsSection.style.display =
       "none";
 
+    leadControlSection.style.display =
+      "none";
+
     techniciansSection.style.display =
-      "none";
-
-    servicesSection.style.display =
-      "none";
-
-    partnersSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -10398,16 +7596,10 @@ function activateSection(section) {
     assignmentsSection.style.display =
       "block";
 
+    leadControlSection.style.display =
+      "none";
+
     techniciansSection.style.display =
-      "none";
-
-    servicesSection.style.display =
-      "none";
-
-    partnersSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -10425,7 +7617,7 @@ function activateSection(section) {
   }
 
 
-  if (section === "partners") {
+  if (section === "leadControl") {
 
     dashboardSection.style.display =
       "none";
@@ -10436,24 +7628,17 @@ function activateSection(section) {
     assignmentsSection.style.display =
       "none";
 
-    partnersSection.style.display =
+    leadControlSection.style.display =
       "block";
 
     techniciansSection.style.display =
       "none";
 
-    servicesSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
-      "none";
-
     hideNotice(dashboardNotice);
     hideNotice(leadsNotice);
     hideNotice(assignmentsNotice);
-    hideNotice(techniciansNotice);
 
-    loadPartners();
+    loadLeadControl();
 
     window.scrollTo({
       top:0,
@@ -10464,66 +7649,6 @@ function activateSection(section) {
 
   }
 
-
-  if (section === "payments") {
-
-    dashboardSection.style.display =
-      "none";
-
-    leadsSection.style.display =
-      "none";
-
-    assignmentsSection.style.display =
-      "none";
-
-    partnersSection.style.display =
-      "none";
-
-    techniciansSection.style.display =
-      "none";
-
-    servicesSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
-      "block";
-
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(partnersNotice);
-
-    loadPayments();
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-    return;
-
-  }
-
-
-  if (section === "services") {
-    dashboardSection.style.display = "none";
-    leadsSection.style.display = "none";
-    assignmentsSection.style.display = "none";
-    partnersSection.style.display = "none";
-    techniciansSection.style.display = "none";
-    servicesSection.style.display = "block";
-    paymentsSection.style.display = "none";
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(partnersNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(paymentsNotice);
-    loadServices();
-    window.scrollTo({ top:0, behavior:"smooth" });
-    return;
-  }
 
   if (section === "technicians") {
 
@@ -10536,14 +7661,11 @@ function activateSection(section) {
     assignmentsSection.style.display =
       "none";
 
+    leadControlSection.style.display =
+      "none";
+
     techniciansSection.style.display =
       "block";
-
-    partnersSection.style.display =
-      "none";
-
-    paymentsSection.style.display =
-      "none";
 
     hideNotice(dashboardNotice);
     hideNotice(leadsNotice);
@@ -10561,135 +7683,6 @@ function activateSection(section) {
   }
 
 
-  if (section === "reports") {
-
-    dashboardSection.style.display = "none";
-    leadsSection.style.display = "none";
-    assignmentsSection.style.display = "none";
-    partnersSection.style.display = "none";
-    techniciansSection.style.display = "none";
-    servicesSection.style.display = "none";
-    paymentsSection.style.display = "none";
-    reportsSection.style.display = "block";
-
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(partnersNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(servicesNotice);
-    hideNotice(paymentsNotice);
-
-    loadReports();
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-    return;
-
-  }
-
-
-  if (section === "notifications") {
-    dashboardSection.style.display = "none";
-    leadsSection.style.display = "none";
-    assignmentsSection.style.display = "none";
-    partnersSection.style.display = "none";
-    techniciansSection.style.display = "none";
-    servicesSection.style.display = "none";
-    paymentsSection.style.display = "none";
-    reportsSection.style.display = "none";
-    settingsSection.style.display = "none";
-    notificationsSection.style.display = "block";
-
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(partnersNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(servicesNotice);
-    hideNotice(paymentsNotice);
-    hideNotice(reportsNotice);
-    hideNotice(settingsNotice);
-
-    loadNotifications();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-    return;
-  }
-
-
-
-
-  if (section === "activity") {
-    dashboardSection.style.display = "none";
-    leadsSection.style.display = "none";
-    assignmentsSection.style.display = "none";
-    partnersSection.style.display = "none";
-    techniciansSection.style.display = "none";
-    servicesSection.style.display = "none";
-    paymentsSection.style.display = "none";
-    reportsSection.style.display = "none";
-    notificationsSection.style.display = "none";
-    settingsSection.style.display = "none";
-    activitySection.style.display = "block";
-
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(partnersNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(servicesNotice);
-    hideNotice(paymentsNotice);
-    hideNotice(reportsNotice);
-    hideNotice(settingsNotice);
-    hideNotice(notificationsNotice);
-
-    loadActivities();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-    return;
-  }
-
-
-  if (section === "settings") {
-    dashboardSection.style.display = "none";
-    leadsSection.style.display = "none";
-    assignmentsSection.style.display = "none";
-    partnersSection.style.display = "none";
-    techniciansSection.style.display = "none";
-    servicesSection.style.display = "none";
-    paymentsSection.style.display = "none";
-    reportsSection.style.display = "none";
-    settingsSection.style.display = "block";
-
-    hideNotice(dashboardNotice);
-    hideNotice(leadsNotice);
-    hideNotice(assignmentsNotice);
-    hideNotice(partnersNotice);
-    hideNotice(techniciansNotice);
-    hideNotice(servicesNotice);
-    hideNotice(paymentsNotice);
-    hideNotice(reportsNotice);
-
-    renderSettings();
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-    return;
-  }
-
-
   dashboardSection.style.display =
     "block";
 
@@ -10699,22 +7692,11 @@ function activateSection(section) {
   assignmentsSection.style.display =
     "none";
 
+  leadControlSection.style.display =
+    "none";
+
   techniciansSection.style.display =
     "none";
-
-  partnersSection.style.display =
-    "none";
-
-  paymentsSection.style.display =
-    "none";
-
-  if (notificationsSection) {
-    notificationsSection.style.display = "none";
-  }
-
-  if (activitySection) {
-    activitySection.style.display = "none";
-  }
 
 
   showNotice(
@@ -11016,6 +7998,15 @@ if (refreshButton) {
 
         }
 
+        if (
+          leadControlSection.style.display !==
+          "none"
+        ) {
+
+          await loadLeadControl();
+
+        }
+
       } finally {
 
         refreshButton.disabled =
@@ -11076,54 +8067,6 @@ if (requestCorrectionButton) {
     "click",
     requestCompletionCorrection
   );
-}
-
-
-/* =====================================================
-   PAYMENTS EVENTS
-   ===================================================== */
-
-if (paymentSearch) {
-  paymentSearch.addEventListener("input", renderPayments);
-}
-
-if (paymentModeFilter) {
-  paymentModeFilter.addEventListener("change", renderPayments);
-}
-
-if (paymentsRefreshButton) {
-  paymentsRefreshButton.addEventListener("click", async function() {
-
-    paymentsRefreshButton.disabled = true;
-
-    const original = paymentsRefreshButton.textContent;
-    paymentsRefreshButton.textContent = "Refreshing...";
-
-    try {
-      await loadPayments();
-    } finally {
-      paymentsRefreshButton.disabled = false;
-      paymentsRefreshButton.textContent = original;
-    }
-
-  });
-}
-
-
-/* =====================================================
-   REPORTS EVENTS
-   ===================================================== */
-
-if (reportsRefreshButton) {
-  reportsRefreshButton.addEventListener("click", loadReports);
-}
-
-if (reportsExcelButton) {
-  reportsExcelButton.addEventListener("click", downloadReportsExcel);
-}
-
-if (reportsPdfButton) {
-  reportsPdfButton.addEventListener("click", downloadReportsPdf);
 }
 
 
@@ -11372,4 +8315,22 @@ initializeDashboard();
 </script>
 
 </body>
-</html>
+</html>/* =====================================================
+   LEAD LIST AUTO-REFRESH
+   ===================================================== */
+
+setInterval(function() {
+
+  if (
+    dashboardReady &&
+    leadsSection &&
+    leadsSection.style.display !== "none" &&
+    !isCreatingLead &&
+    !leadsLoadInProgress
+  ) {
+    loadLeads(true);
+  }
+
+}, 15000);
+
+
