@@ -2028,6 +2028,89 @@
 
 
     <!-- =================================================
+         PARTNERS SECTION
+         ================================================= -->
+
+    <section
+      id="partnersSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+
+        <div>
+          <div class="eyebrow">ORACLIME Operations</div>
+          <h1>Partners</h1>
+          <p>Manage businesses and partners sending service leads.</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn" type="button" id="partnersRefreshButton">
+            Refresh
+          </button>
+        </div>
+
+      </div>
+
+      <div id="partnersNotice" class="dashboard-notice"></div>
+
+      <div class="card">
+
+        <div class="technician-toolbar">
+          <input
+            class="technician-search"
+            type="search"
+            id="partnerSearch"
+            placeholder="Search by business, partner code, contact, mobile or city"
+            autocomplete="off"
+          >
+
+          <select id="partnerStatusFilter" aria-label="Partner status">
+            <option value="ALL">All Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
+        <div id="partnersLoading" class="small" style="padding:20px 0;">
+          Loading partners...
+        </div>
+
+        <div
+          id="partnersTableWrap"
+          class="technician-table-wrap"
+          style="display:none;"
+        >
+          <table class="technician-table">
+            <thead>
+              <tr>
+                <th>Partner</th>
+                <th>Contact</th>
+                <th>Mobile</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="partnersTableBody"></tbody>
+          </table>
+        </div>
+
+        <div
+          id="partnersEmpty"
+          class="technician-empty"
+          style="display:none;"
+        >
+          No partners found.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
          TECHNICIANS SECTION
          ================================================= -->
 
@@ -2882,6 +2965,9 @@ let selectedAssignmentLead = null;
 let allTechnicians = [];
 let filteredTechnicians = [];
 
+let allPartners = [];
+let filteredPartners = [];
+
 
 /* =====================================================
    3. DOM
@@ -2907,6 +2993,33 @@ const assignmentsNotice =
 
 const techniciansSection =
   document.getElementById("techniciansSection");
+
+const partnersSection =
+  document.getElementById("partnersSection");
+
+const partnersNotice =
+  document.getElementById("partnersNotice");
+
+const partnersLoading =
+  document.getElementById("partnersLoading");
+
+const partnersTableWrap =
+  document.getElementById("partnersTableWrap");
+
+const partnersTableBody =
+  document.getElementById("partnersTableBody");
+
+const partnersEmpty =
+  document.getElementById("partnersEmpty");
+
+const partnerSearch =
+  document.getElementById("partnerSearch");
+
+const partnerStatusFilter =
+  document.getElementById("partnerStatusFilter");
+
+const partnersRefreshButton =
+  document.getElementById("partnersRefreshButton");
 
 const techniciansNotice =
   document.getElementById("techniciansNotice");
@@ -3508,6 +3621,7 @@ async function loadDashboardData() {
       row =>
         [
           "RESCHEDULED",
+          "RESCHEDULE_REQUESTED"
         ].includes(row.status)
     ).length
   );
@@ -3899,7 +4013,7 @@ function renderLeads() {
                         <span class="small">Completed</span>
                       `
                       : !lead.assigned_technician_id &&
-                        ["NEW","RESCHEDULED"].includes(lead.status)
+                        ["NEW","RESCHEDULED","RESCHEDULE_REQUESTED"].includes(lead.status)
                         ? `
                           <button
                             type="button"
@@ -4647,6 +4761,7 @@ async function loadUnassignedLeads() {
         [
           "NEW",
           "RESCHEDULED",
+          "RESCHEDULE_REQUESTED"
         ]
       )
       .order(
@@ -5123,6 +5238,7 @@ async function assignSelectedTechnician() {
       ![
         "NEW",
         "RESCHEDULED",
+        "RESCHEDULE_REQUESTED"
       ].includes(
         currentLead.status
       )
@@ -6226,6 +6342,30 @@ document
   );
 
 
+if (partnerSearch) {
+  partnerSearch.addEventListener(
+    "input",
+    renderPartners
+  );
+}
+
+
+if (partnerStatusFilter) {
+  partnerStatusFilter.addEventListener(
+    "change",
+    renderPartners
+  );
+}
+
+
+if (partnersRefreshButton) {
+  partnersRefreshButton.addEventListener(
+    "click",
+    loadPartners
+  );
+}
+
+
 /* =====================================================
    38. REVIEW COMPLETION
    ===================================================== */
@@ -6940,6 +7080,317 @@ function normalizeLeadCompletionActions() {
 
 
 /* =====================================================
+   PARTNERS MODULE
+   ===================================================== */
+
+function partnerStatusClass(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+}
+
+
+function formatPartnerStatus(value) {
+  return value === "ACTIVE"
+    ? "Active"
+    : "Inactive";
+}
+
+
+function partnerMatchesFilter(partner) {
+
+  const search =
+    (partnerSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const status =
+    partnerStatusFilter?.value || "ALL";
+
+  if (
+    status !== "ALL" &&
+    partner.status !== status
+  ) {
+    return false;
+  }
+
+  if (!search) {
+    return true;
+  }
+
+  const haystack = [
+    partner.business_name,
+    partner.company_name,
+    partner.partner_code,
+    partner.contact_person,
+    partner.mobile,
+    partner.alternate_mobile,
+    partner.email,
+    partner.city,
+    partner.state,
+    partner.pincode
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(search);
+}
+
+
+function renderPartners() {
+
+  filteredPartners =
+    allPartners.filter(
+      partnerMatchesFilter
+    );
+
+  partnersTableBody.innerHTML = "";
+
+  if (!filteredPartners.length) {
+    partnersTableWrap.style.display = "none";
+    partnersEmpty.style.display = "block";
+    return;
+  }
+
+  partnersEmpty.style.display = "none";
+  partnersTableWrap.style.display = "block";
+
+  partnersTableBody.innerHTML =
+    filteredPartners.map(function(partner) {
+
+      const businessName =
+        partner.business_name ||
+        partner.company_name ||
+        "Unnamed Partner";
+
+      const location = [
+        partner.city,
+        partner.state
+      ]
+        .filter(Boolean)
+        .join(", ") || "—";
+
+      const statusClass =
+        partnerStatusClass(partner.status);
+
+      return `
+        <tr>
+          <td>
+            <div class="technician-name">
+              ${escapeHtml(businessName)}
+            </div>
+            <div class="technician-sub">
+              ${escapeHtml(partner.partner_code || "No code")}
+            </div>
+          </td>
+
+          <td>
+            ${escapeHtml(partner.contact_person || "—")}
+          </td>
+
+          <td>
+            ${escapeHtml(partner.mobile || "—")}
+          </td>
+
+          <td>
+            ${escapeHtml(location)}
+          </td>
+
+          <td>
+            <span class="status-pill ${statusClass}">
+              ${escapeHtml(formatPartnerStatus(partner.status))}
+            </span>
+          </td>
+
+          <td>
+            <div class="technician-actions">
+              ${
+                partner.status === "ACTIVE"
+                  ? `
+                    <button
+                      type="button"
+                      class="btn"
+                      data-toggle-partner="${escapeHtml(partner.id)}"
+                      data-next-status="INACTIVE"
+                    >
+                      Deactivate
+                    </button>
+                  `
+                  : `
+                    <button
+                      type="button"
+                      class="btn"
+                      data-toggle-partner="${escapeHtml(partner.id)}"
+                      data-next-status="ACTIVE"
+                    >
+                      Activate
+                    </button>
+                  `
+              }
+            </div>
+          </td>
+        </tr>
+      `;
+
+    }).join("");
+
+  partnersTableBody
+    .querySelectorAll("[data-toggle-partner]")
+    .forEach(function(button) {
+
+      button.addEventListener(
+        "click",
+        function() {
+          updatePartnerStatus(
+            button.dataset.togglePartner,
+            button.dataset.nextStatus
+          );
+        }
+      );
+
+    });
+}
+
+
+async function loadPartners() {
+
+  partnersLoading.style.display = "block";
+  partnersTableWrap.style.display = "none";
+  partnersEmpty.style.display = "none";
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("partners")
+      .select(`
+        id,
+        user_id,
+        partner_code,
+        business_name,
+        contact_person,
+        email,
+        mobile,
+        alternate_mobile,
+        address,
+        city,
+        state,
+        pincode,
+        status,
+        notes,
+        company_name,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+  partnersLoading.style.display = "none";
+
+  if (error) {
+    console.error("Partners load error:", error);
+
+    showNotice(
+      "Unable to load partners. Please check the browser console.",
+      "error",
+      partnersNotice
+    );
+
+    partnersEmpty.textContent =
+      "Unable to load partners.";
+
+    partnersEmpty.style.display = "block";
+    return;
+  }
+
+  hideNotice(partnersNotice);
+
+  allPartners =
+    Array.isArray(data)
+      ? data
+      : [];
+
+  renderPartners();
+}
+
+
+async function updatePartnerStatus(
+  partnerId,
+  nextStatus
+) {
+
+  const partner =
+    allPartners.find(
+      row => row.id === partnerId
+    );
+
+  if (!partner) {
+    return;
+  }
+
+  const partnerName =
+    partner.business_name ||
+    partner.company_name ||
+    partner.partner_code ||
+    "this partner";
+
+  const action =
+    nextStatus === "ACTIVE"
+      ? "activate"
+      : "deactivate";
+
+  if (
+    !window.confirm(
+      "Are you sure you want to " +
+      action +
+      " " +
+      partnerName +
+      "?"
+    )
+  ) {
+    return;
+  }
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("partners")
+      .update({
+        status: nextStatus
+      })
+      .eq("id", partnerId);
+
+  if (error) {
+    console.error("Partner status error:", error);
+
+    showNotice(
+      error.message ||
+      "Unable to update partner status.",
+      "error",
+      partnersNotice
+    );
+
+    return;
+  }
+
+  showNotice(
+    partnerName +
+    " is now " +
+    (nextStatus === "ACTIVE" ? "active." : "inactive."),
+    "success",
+    partnersNotice
+  );
+
+  await loadPartners();
+}
+
+
+/* =====================================================
    38. NAVIGATION
    ===================================================== */
 
@@ -7039,6 +7490,9 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    partnersSection.style.display =
+      "none";
+
     hideNotice(leadsNotice);
 
     window.scrollTo({
@@ -7063,6 +7517,9 @@ function activateSection(section) {
       "none";
 
     techniciansSection.style.display =
+      "none";
+
+    partnersSection.style.display =
       "none";
 
     hideNotice(dashboardNotice);
@@ -7093,10 +7550,47 @@ function activateSection(section) {
     techniciansSection.style.display =
       "none";
 
+    partnersSection.style.display =
+      "none";
+
     hideNotice(dashboardNotice);
     hideNotice(leadsNotice);
 
     loadUnassignedLeads();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    return;
+
+  }
+
+
+  if (section === "partners") {
+
+    dashboardSection.style.display =
+      "none";
+
+    leadsSection.style.display =
+      "none";
+
+    assignmentsSection.style.display =
+      "none";
+
+    partnersSection.style.display =
+      "block";
+
+    techniciansSection.style.display =
+      "none";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(techniciansNotice);
+
+    loadPartners();
 
     window.scrollTo({
       top:0,
@@ -7121,6 +7615,9 @@ function activateSection(section) {
 
     techniciansSection.style.display =
       "block";
+
+    partnersSection.style.display =
+      "none";
 
     hideNotice(dashboardNotice);
     hideNotice(leadsNotice);
@@ -7148,6 +7645,9 @@ function activateSection(section) {
     "none";
 
   techniciansSection.style.display =
+    "none";
+
+  partnersSection.style.display =
     "none";
 
 
