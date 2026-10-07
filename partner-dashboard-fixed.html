@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ORACLIME — Partner Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#06111d;--bg2:#081827;--sidebar:#06101c;--card:#0d2438;--card2:#102b42;--text:#f4f8fb;--muted:#91a6b9;--line:#1b4562;--accent:#27d6bd;--accent2:#1aa893;--success:#42d392;--warning:#f5c35b;--danger:#ff7777;--shadow:0 14px 35px rgba(0,0,0,.22)}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#06111d 0%,#071827 100%);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.topbar{height:72px;background:#06111d;border-bottom:1px solid #17364e;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:20}.brand{font-size:22px;font-weight:850;letter-spacing:3px;color:var(--accent)}.brand span{color:var(--accent)}.top-actions{display:flex;gap:10px;align-items:center}.partner-chip{padding:9px 12px;color:#9eb2c5;font-size:13px}.btn{border-radius:8px;padding:10px 15px;font-weight:700;border:1px solid transparent}.btn-primary{background:var(--accent);color:#04141b}.btn-blue{background:var(--accent);color:#04141b}.btn-light{background:transparent;border-color:#246079;color:#f3f7fa}.btn-light:hover{border-color:var(--accent);color:var(--accent)}.btn-danger{background:transparent;color:var(--danger);border-color:#71404a}
+.layout{display:flex;min-height:calc(100vh - 72px)}.sidebar{width:218px;background:var(--sidebar);color:#fff;padding:24px 14px;flex:none;border-right:1px solid #17364e}.nav-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7891a6;padding:8px 12px 14px}.nav button{width:100%;text-align:left;background:transparent;color:#c4d1dc;border:1px solid transparent;border-radius:9px;padding:11px 12px;margin:2px 0;font-weight:600}.nav button.active{background:#0a2934;border-color:#0e5e63;color:var(--accent)}.nav button:hover{background:#0b2333;color:#fff}.main{flex:1;padding:30px 28px;min-width:0}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.page-head h1{margin:0 0 7px;font-size:30px;letter-spacing:.2px}.page-head p{margin:0;color:#91abc0}.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat{background:linear-gradient(145deg,#0d2539,#0b2032);border:1px solid #1b4a67;border-radius:14px;padding:18px;box-shadow:var(--shadow)}.stat .label{font-size:12px;color:#91a8ba;text-transform:uppercase;letter-spacing:.6px}.stat .value{font-size:28px;font-weight:800;margin-top:8px;color:#f7fbfd}.panel{background:linear-gradient(145deg,#0d2539,#0b2032);border:1px solid #1b4a67;border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.panel-head h2{margin:0;font-size:18px}.filters{display:flex;gap:10px;flex-wrap:wrap}.input,.select,.textarea{width:100%;border:1px solid #315872;border-radius:8px;padding:10px 12px;background:#081b2b;color:#edf5f9;outline:none}.input::placeholder,.textarea::placeholder{color:#6f8799}.input:focus,.select:focus,.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(39,214,189,.12)}.filters .input{max-width:300px}.filters .select{max-width:190px}.table-wrap{overflow:auto;border:1px solid #1b4a67;border-radius:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{padding:13px;border-bottom:1px solid #173d57;text-align:left;font-size:13px;white-space:nowrap}.table th{background:#0b1e30;color:#8fa8ba;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.7px}.table tr:hover td{background:rgba(39,214,189,.035)}.table tr:last-child td{border-bottom:0}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:750;background:#173e56;color:#b7d0df}.status.COMPLETED{background:#103d36;color:#54dfb1}.status.CANCELLED,.status.REJECTED{background:#4a252e;color:#ff9999}.status.IN_PROGRESS{background:#123c54;color:#70c7f1}.status.NEW,.status.PENDING{background:#4a3d1c;color:#f2cb69}.status.COMPLETION_SUBMITTED{background:#34285a;color:#c9b4ff}.empty{text-align:center;padding:35px;color:var(--muted)}.muted{color:var(--muted);font-size:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#dce8ef}.field.full{grid-column:1/-1}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.notice{padding:12px 14px;border-radius:9px;background:#12334a;color:#9fd4ed;font-size:13px;margin-bottom:14px;border:1px solid #22506b}.success{background:#0e382f;color:#72e4bd;border-color:#176454}.error{background:#44252b;color:#ff9d9d;border-color:#713944}.upload-box{border:1px dashed #3a637a;padding:18px;border-radius:10px;background:#091c2c}.upload-box input{margin-top:10px}.result-list{margin-top:12px;max-height:240px;overflow:auto}.result-item{padding:9px 11px;border-bottom:1px solid #173d57;font-size:13px}.result-item:last-child{border:0}.ok{color:var(--success)}.bad{color:var(--danger)}
+.modal{position:fixed;inset:0;background:rgba(1,8,15,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.open{display:flex}.modal-card{background:#0c2235;width:min(760px,100%);max-height:90vh;overflow:auto;border:1px solid #24536e;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.45);padding:22px}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}.modal-head h2{margin:0}.close{border:1px solid #315872;background:#102d43;color:#fff;border-radius:8px;font-size:22px;width:36px;height:36px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{padding:12px;border:1px solid #24506b;border-radius:9px;background:#0a1d2d}.detail small{display:block;color:#829bad;margin-bottom:4px}.detail strong{word-break:break-word;color:#f0f7fa}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 15%,#0d2b3c 0%,#06111d 50%,#040c14 100%)}.login-card{width:min(430px,100%);background:#0d2438;padding:30px;border-radius:14px;box-shadow:var(--shadow);border:1px solid #24536e}.login-card h1{margin:0 0 7px}.login-card p{color:var(--muted);margin:0 0 22px}.toast{position:fixed;right:22px;bottom:22px;background:#0e2739;color:#fff;border:1px solid #2a5c73;padding:12px 16px;border-radius:9px;display:none;z-index:100}.toast.show{display:block}@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.sidebar{display:none}.main{padding:18px}.cards{grid-template-columns:repeat(2,1fr)}.grid2,.detail-grid{grid-template-columns:1fr}.topbar{padding:0 16px}.partner-chip{display:none}}@media(max-width:500px){.cards{grid-template-columns:1fr}.page-head{flex-direction:column}.page-head .btn{width:100%}}
+</style>
+</head>
+<body>
+<div id="loginView" class="login">
+  <div class="login-card">
+    <div class="brand">ORA<span>CLIME</span></div>
+    <h1>Partner Login</h1>
+    <p>Secure access for ORACLIME business partners.</p>
+    <div id="loginError" class="notice error hidden"></div>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input id="loginEmail" class="input" type="email" required autocomplete="email"></div>
+      <div class="field" style="margin-top:12px"><label>Password</label><input id="loginPassword" class="input" type="password" required autocomplete="current-password"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:18px" type="submit">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<div id="appView" class="hidden">
+<header class="topbar">
+  <div class="brand">ORA<span>CLIME</span></div>
+  <div class="top-actions"><div id="partnerChip" class="partner-chip">Partner</div><button id="logoutBtn" class="btn btn-light">Logout</button></div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav-title">Partner Portal</div>
+  <nav class="nav">
+    <button class="active" data-section="overview">Overview</button>
+    <button data-section="jobs">My Jobs</button>
+    <button data-section="create">Create Job</button>
+    <button data-section="bulk">Bulk Excel Upload</button>
+    <button data-section="profile">My Profile</button>
+    <button data-section="support">Support</button>
+  </nav>
+</aside>
+<main class="main">
+<section id="overview" class="section">
+  <div class="page-head"><div><h1>Partner Dashboard</h1><p id="welcomeText">Loading partner profile...</p></div><button class="btn btn-blue" onclick="showSection('create')">+ Create New Job</button></div>
+  <div class="cards">
+    <div class="stat"><div class="label">Total Jobs</div><div id="sTotal" class="value">—</div></div>
+    <div class="stat"><div class="label">New</div><div id="sNew" class="value">—</div></div>
+    <div class="stat"><div class="label">Assigned</div><div id="sAssigned" class="value">—</div></div>
+    <div class="stat"><div class="label">In Progress</div><div id="sProgress" class="value">—</div></div>
+    <div class="stat"><div class="label">Completed</div><div id="sCompleted" class="value">—</div></div>
+  </div>
+  <div class="panel"><div class="panel-head"><h2>Recent Jobs</h2><button class="btn btn-light" onclick="showSection('jobs')">View All</button></div><div id="recentJobs"></div></div>
+</section>
+
+<section id="jobs" class="section hidden">
+  <div class="page-head"><div><h1>My Jobs</h1><p>Only jobs belonging to your partner account are shown.</p></div><button class="btn btn-blue" onclick="showSection('create')">+ Create Job</button></div>
+  <div class="panel">
+    <div class="filters"><input id="jobSearch" class="input" placeholder="Search customer, mobile or lead number"><select id="jobStatus" class="select"><option value="">All Statuses</option></select><button class="btn btn-light" onclick="loadJobs()">Refresh</button></div>
+  </div>
+  <div class="panel"><div id="jobsTable"></div></div>
+</section>
+
+<section id="create" class="section hidden">
+  <div class="page-head"><div><h1>Create New Job</h1><p>Create a service request for your business customer.</p></div></div>
+  <div class="panel">
+    <div id="createMsg" class="notice hidden"></div>
+    <form id="createJobForm">
+      <div class="grid2">
+        <div class="field"><label>Customer Name *</label><input id="cName" class="input" required></div>
+        <div class="field"><label>Customer Mobile *</label><input
+  id="cMobile"
+  class="input"
+  type="tel"
+  inputmode="numeric"
+  maxlength="10"
+  pattern="[6-9][0-9]{9}"
+  autocomplete="tel"
+  required
+></div>
+        <div class="field full"><label>Customer Address *</label><textarea id="cAddress" class="textarea" rows="2" required></textarea></div>
+        <div class="field"><label>City</label><input id="cCity" class="input"></div>
+        <div class="field"><label>Pincode</label><input
+  id="cPincode"
+  class="input"
+  type="text"
+  inputmode="numeric"
+  maxlength="6"
+  pattern="[0-9]{6}"
+  autocomplete="postal-code"
+></div>
+        <div class="field"><label>Service Type *</label><input id="cService" class="input" required list="serviceList" placeholder="Enter the configured service type"><datalist id="serviceList"><option value="INSTALLATION"><option value="SERVICE"><option value="REPAIR"><option value="COMPLAINT"><option value="MAINTENANCE"></datalist><div class="muted" style="margin-top:5px">The value must match an ORACLIME service type configured in the database.</div></div>
+        <div class="field"><label>Preferred Date</label><input id="cDate" class="input" type="date"></div>
+        <div class="field"><label>Preferred Time</label><select id="cTime" class="input">
+  <option value="">Select preferred time</option>
+  <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
+  <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+  <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
+  <option value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM</option>
+  <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
+  <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+  <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM</option>
+</select></div>
+        <div class="field"><label>Completion Code</label><div class="input" style="background:#f9fafb;font-weight:800;letter-spacing:2px" id="generatedCode">Generate on submit</div></div>
+        <div class="field full"><label>Notes</label><textarea id="cNotes" class="textarea" rows="3" placeholder="Additional job information"></textarea></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-light" type="reset">Clear</button><button class="btn btn-primary" type="submit">Create Job & Generate Code</button></div>
+    </form>
+  </div>
+</section>
+
+<section id="bulk" class="section hidden">
+  <div class="page-head"><div><h1>Bulk Excel Upload</h1><p>Upload multiple jobs in one file. No amount column is required.</p></div></div>
+  <div class="panel">
+    <div class="notice">Required columns: <strong>Customer Name, Mobile, Address, Service, Completion Code</strong>. Optional: City, Pincode, Preferred Date, Preferred Time, Notes. For Completion Code use <strong>AUTO</strong> to generate a unique 6-digit code.</div>
+    <div class="upload-box"><strong>Select Excel file</strong><input id="excelFile" type="file" accept=".xlsx,.xls,.csv"></div>
+    <div class="form-actions"><button id="uploadExcelBtn" class="btn btn-primary">Upload & Create Jobs</button></div>
+    <div id="bulkResult" class="result-list"></div>
+  </div>
+</section>
+
+<section id="profile" class="section hidden">
+  <div class="page-head"><div><h1>My Profile</h1><p>Your partner identity and bank information.</p></div></div>
+  <div class="panel"><div id="profileDetails" class="detail-grid"></div></div>
+  <div class="panel"><div class="panel-head"><h2>Bank Information</h2><span class="status">READ ONLY</span></div><div id="bankDetails" class="detail-grid"></div><p class="muted" style="margin-bottom:0">Bank details cannot be edited from the Partner Dashboard. Contact Support if any bank detail needs to be changed.</p></div>
+  <div class="panel"><div class="panel-head"><h2>Request Bank Detail Change</h2></div><form id="bankRequestForm"><div class="grid2"><div class="field full"><label>What needs to change? *</label><textarea id="bankChanges" class="textarea" rows="3" required placeholder="Example: Update IFSC code from ... to ..."></textarea></div><div class="field full"><label>Reason</label><textarea id="bankReason" class="textarea" rows="2"></textarea></div></div><div class="form-actions"><button class="btn btn-primary">Send Request to Support</button></div></form></div>
+</section>
+
+<section id="support" class="section hidden">
+  <div class="page-head"><div><h1>Support</h1><p>Contact ORACLIME Support for account, bank or operational assistance.</p></div></div>
+  <div class="panel"><h2 style="margin-top:0">ORACLIME Support</h2><p>For bank-detail changes, account issues, lead corrections or operational help, contact the ORACLIME Support Team.</p><div class="detail-grid"><div class="detail"><small>WhatsApp</small><strong>+91 9917306492</strong></div><div class="detail"><small>Email</small><strong>Oraclime@gmail.com</strong></div></div></div>
+</section>
+</main></div></div>
+
+<div id="jobModal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><h2 id="jobModalTitle">Job Details</h2><button class="close" onclick="closeModal('jobModal')">×</button></div><div id="jobModalBody"></div></div></div>
+<div id="techModal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><h2>Assigned Technician</h2><button class="close" onclick="closeModal('techModal')">×</button></div><div id="techModalBody"></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+  const SUPABASE_URL = "https://dmygjpkzuewnpxsispcm.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_mQskIlYXBc4v8bXwF1FxmA_HLgigkqi";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+  let currentPartner = null;
+  let currentJobs = [];
+
+  const esc = value =>
+    String(value ?? "—").replace(
+      /[&<>'"]/g,
+      match => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+      }[match])
+    );
+
+  const fmtStatus = value =>
+    String(value || "UNKNOWN").replaceAll("_", " ");
+
+  function toast(message) {
+    const element = document.getElementById("toast");
+    element.textContent = message;
+    element.classList.add("show");
+
+    setTimeout(() => {
+      element.classList.remove("show");
+    }, 2800);
+  }
+
+  function showError(id, message) {
+    const element = document.getElementById(id);
+    element.textContent = message;
+    element.classList.remove("hidden");
+  }
+
+  function showMsg(id, message, type = "notice") {
+    const element = document.getElementById(id);
+
+    element.className =
+      "notice " +
+      (type === "error"
+        ? "error"
+        : type === "success"
+          ? "success"
+          : "");
+
+    element.textContent = message;
+    element.classList.remove("hidden");
+  }
+
+  function hide(id) {
+    document.getElementById(id).classList.add("hidden");
+  }
+
+  function showSection(id) {
+    document
+      .querySelectorAll(".section")
+      .forEach(element => element.classList.add("hidden"));
+
+    document.getElementById(id).classList.remove("hidden");
+
+    document
+      .querySelectorAll(".nav button")
+      .forEach(button =>
+        button.classList.toggle("active", button.dataset.section === id)
+      );
+
+    if (id === "jobs") {
+      renderJobs();
+    }
+  }
+
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  }
+
+  function code6() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  async function uniqueCompletionCode() {
+    for (let i = 0; i < 8; i++) {
+      const code = code6();
+
+      const { data, error } = await supabaseClient
+        .from("job_completion_codes")
+        .select("id")
+        .eq("completion_code", code)
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        return code;
+      }
+    }
+
+    throw new Error(
+      "Could not generate a unique completion code. Please try again."
+    );
+  }
+
+  async function init() {
+    const {
+      data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (session) {
+      await enterApp(session.user);
+    } else {
+      document.getElementById("loginView").classList.remove("hidden");
+    }
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      if (session && event === "SIGNED_IN") {
+        await enterApp(session.user);
+      }
+
+      if (event === "SIGNED_OUT") {
+        currentUser = null;
+        currentPartner = null;
+
+        document.getElementById("appView").classList.add("hidden");
+        document.getElementById("loginView").classList.remove("hidden");
+      }
+    });
+  }
+
+  async function enterApp(user) {
+    currentUser = user;
+
+    const { data, error } = await supabaseClient
+      .from("partners")
+      .select(
+        "id,user_id,partner_code,business_name,contact_person,email,mobile,alternate_mobile,address,city,state,pincode,status,notes,created_at,updated_at,company_name"
+      )
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      showError("loginError", "Unable to load partner profile: " + error.message);
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    if (!data) {
+      showError(
+        "loginError",
+        "This account is not linked to an ORACLIME Partner profile. Please contact Support."
+      );
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    if (data.status !== "ACTIVE") {
+      showError(
+        "loginError",
+        "Your Partner account is not active. Please contact ORACLIME Support."
+      );
+      await supabaseClient.auth.signOut();
+      return;
+    }
+
+    currentPartner = data;
+
+    document.getElementById("loginView").classList.add("hidden");
+    document.getElementById("appView").classList.remove("hidden");
+
+    document.getElementById("partnerChip").textContent =
+      (data.partner_code || "Partner") +
+      " • " +
+      (data.business_name || data.company_name || "");
+
+    document.getElementById("welcomeText").textContent =
+      "Welcome, " +
+      (data.contact_person || data.business_name || "Partner") +
+      ". Your jobs are isolated to this partner account.";
+
+    renderProfile();
+    await loadJobs();
+    await loadBankDetails();
+  }
+
+  async function loadJobs() {
+    if (!currentPartner) {
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from("leads")
+      .select(
+        "id,lead_number,partner_id,customer_id,service_type,customer_name,mobile,alternate_mobile,address,city,state,pincode,preferred_date,preferred_time,notes,status,assigned_technician_id,created_by,updated_by,created_at,updated_at"
+      )
+      .eq("partner_id", currentPartner.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      toast("Unable to load jobs: " + error.message);
+      return;
+    }
+
+    currentJobs = data || [];
+
+    updateStats();
+    populateStatusFilter();
+    renderJobs();
+    renderRecent();
+  }
+
+  function updateStats() {
+    const jobs = currentJobs;
+
+    document.getElementById("sTotal").textContent = jobs.length;
+
+    document.getElementById("sNew").textContent =
+      jobs.filter(job => String(job.status) === "NEW").length;
+
+    document.getElementById("sAssigned").textContent =
+      jobs.filter(job => !!job.assigned_technician_id).length;
+
+    document.getElementById("sProgress").textContent =
+      jobs.filter(job =>
+        ["IN_PROGRESS", "VISITED", "WORK_IN_PROGRESS"].includes(
+          String(job.status)
+        )
+      ).length;
+
+    document.getElementById("sCompleted").textContent =
+      jobs.filter(job => String(job.status) === "COMPLETED").length;
+  }
+
+  function populateStatusFilter() {
+    const select = document.getElementById("jobStatus");
+    const oldValue = select.value;
+
+    const values = [
+      ...new Set(currentJobs.map(job => job.status).filter(Boolean))
+    ].sort();
+
+    select.innerHTML =
+      '<option value="">All Statuses</option>' +
+      values
+        .map(
+          value =>
+            `<option value="${esc(value)}">${esc(fmtStatus(value))}</option>`
+        )
+        .join("");
+
+    select.value = values.includes(oldValue) ? oldValue : "";
+  }
+
+  function renderRecent() {
+    const element = document.getElementById("recentJobs");
+    const rows = currentJobs.slice(0, 6);
+
+    if (!rows.length) {
+      element.innerHTML = '<div class="empty">No jobs yet.</div>';
+      return;
+    }
+
+    element.innerHTML =
+      '<div class="table-wrap">' +
+      '<table class="table">' +
+      "<thead>" +
+      "<tr>" +
+      "<th>Lead</th>" +
+      "<th>Customer</th>" +
+      "<th>Service</th>" +
+      "<th>Status</th>" +
+      "<th>Technician</th>" +
+      "</tr>" +
+      "</thead>" +
+      "<tbody>" +
+      rows.map(jobRow).join("") +
+      "</tbody>" +
+      "</table>" +
+      "</div>";
+  }
+
+  function jobRow(job) {
+    return `
+      <tr>
+        <td>
+          <button
+            class="btn btn-light"
+            style="padding:6px 9px"
+            onclick="viewJob('${job.id}')"
+          >
+            ${esc(job.lead_number)}
+          </button>
+        </td>
+        <td>
+          ${esc(job.customer_name)}
+          <div class="muted">${esc(job.mobile)}</div>
+        </td>
+        <td>${esc(job.service_type)}</td>
+        <td>
+          <span class="status ${esc(job.status)}">
+            ${esc(fmtStatus(job.status))}
+          </span>
+        </td>
+        <td>
+          ${
+            job.assigned_technician_id
+              ? `<button class="btn btn-light" style="padding:6px 9px" onclick="viewTechnician('${job.id}')">View Technician</button>`
+              : "Not assigned"
+          }
+        </td>
+      </tr>
+    `;
+  }
+
+  function renderJobs() {
+    const element = document.getElementById("jobsTable");
+    const query = (document.getElementById("jobSearch").value || "")
+      .trim()
+      .toLowerCase();
+
+    const status = document.getElementById("jobStatus").value;
+
+    const rows = currentJobs.filter(job => {
+      const matchesStatus =
+        !status || String(job.status) === status;
+
+      const matchesSearch =
+        !query ||
+        [job.lead_number, job.customer_name, job.mobile, job.address].some(
+          value =>
+            String(value || "")
+              .toLowerCase()
+              .includes(query)
+        );
+
+      return matchesStatus && matchesSearch;
+    });
+
+    if (!rows.length) {
+      element.innerHTML =
+        '<div class="empty">No matching jobs found.</div>';
+      return;
+    }
+
+    element.innerHTML = `
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Created</th>
+              <th>Status</th>
+              <th>Completion Code</th>
+              <th>Technician</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows
+              .map(
+                job => `
+                  <tr>
+                    <td>
+                      <button
+                        class="btn btn-light"
+                        style="padding:6px 9px"
+                        onclick="viewJob('${job.id}')"
+                      >
+                        ${esc(job.lead_number)}
+                      </button>
+                    </td>
+                    <td>
+                      ${esc(job.customer_name)}
+                      <div class="muted">${esc(job.mobile)}</div>
+                    </td>
+                    <td>${esc(job.service_type)}</td>
+                    <td>${new Date(job.created_at).toLocaleString("en-IN")}</td>
+                    <td>
+                      <span class="status ${esc(job.status)}">
+                        ${esc(fmtStatus(job.status))}
+                      </span>
+                    </td>
+                    <td>
+                      <span id="code-${job.id}">Loading…</span>
+                    </td>
+                    <td>
+                      ${
+                        job.assigned_technician_id
+                          ? `<button class="btn btn-light" style="padding:6px 9px" onclick="viewTechnician('${job.id}')">View</button>`
+                          : "—"
+                      }
+                    </td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    rows.forEach(loadCodeForJob);
+  }
+
+  async function loadCodeForJob(job) {
+    const { data, error } = await supabaseClient
+      .from("job_completion_codes")
+      .select("completion_code,status")
+      .eq("lead_id", job.id)
+      .maybeSingle();
+
+    const element = document.getElementById("code-" + job.id);
+
+    if (!element) {
+      return;
+    }
+
+    element.innerHTML = error
+      ? "—"
+      : data
+        ? `<strong>${esc(data.completion_code)}</strong><div class="muted">${esc(data.status)}</div>`
+        : "—";
+  }
+
+  function viewJob(id) {
+    const job = currentJobs.find(item => item.id === id);
+
+    if (!job) {
+      return;
+    }
+
+    document.getElementById("jobModalTitle").textContent =
+      job.lead_number || "Job Details";
+
+    document.getElementById("jobModalBody").innerHTML = `
+      <div class="detail-grid">
+        <div class="detail">
+          <small>Customer</small>
+          <strong>${esc(job.customer_name)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Mobile</small>
+          <strong>${esc(job.mobile)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Service</small>
+          <strong>${esc(job.service_type)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Status</small>
+          <strong>${esc(fmtStatus(job.status))}</strong>
+        </div>
+
+        <div class="detail" style="grid-column:1/-1">
+          <small>Address</small>
+          <strong>
+            ${esc(job.address)}, ${esc(job.city)}, ${esc(job.state)}
+            ${esc(job.pincode)}
+          </strong>
+        </div>
+
+        <div class="detail">
+          <small>Preferred Date</small>
+          <strong>${esc(job.preferred_date)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Preferred Time</small>
+          <strong>${esc(job.preferred_time)}</strong>
+        </div>
+
+        <div class="detail" style="grid-column:1/-1">
+          <small>Notes</small>
+          <strong>${esc(job.notes)}</strong>
+        </div>
+      </div>
+
+      <div id="jobCodeDetail" style="margin-top:14px"></div>
+    `;
+
+    openModal("jobModal");
+    loadCodeDetail(job.id);
+  }
+
+  async function loadCodeDetail(id) {
+    const { data } = await supabaseClient
+      .from("job_completion_codes")
+      .select("completion_code,status,created_at,used_at")
+      .eq("lead_id", id)
+      .maybeSingle();
+
+    document.getElementById("jobCodeDetail").innerHTML = data
+      ? `
+        <div class="notice success">
+          <strong>Service Completion Code: ${esc(data.completion_code)}</strong>
+          <br>
+          <span class="muted">
+            Status: ${esc(data.status)}
+            ${
+              data.used_at
+                ? " • Used: " +
+                  new Date(data.used_at).toLocaleString("en-IN")
+                : ""
+            }
+          </span>
+        </div>
+      `
+      : '<div class="notice">No completion code found.</div>';
+  }
+
+  async function viewTechnician(jobId) {
+    const job = currentJobs.find(item => item.id === jobId);
+
+    if (!job?.assigned_technician_id) {
+      return;
+    }
+
+    document.getElementById("techModalBody").innerHTML =
+      '<div class="empty">Loading technician…</div>';
+
+    openModal("techModal");
+
+    const { data, error } = await supabaseClient.rpc(
+      "get_partner_assigned_technician",
+      {
+        p_technician_id: job.assigned_technician_id
+      }
+    );
+
+    if (error) {
+      document.getElementById("techModalBody").innerHTML =
+        '<div class="notice error">Technician details are not available: ' +
+        esc(error.message) +
+        "</div>";
+      return;
+    }
+
+    const technician = Array.isArray(data) ? data[0] : data;
+
+    if (!technician) {
+      document.getElementById("techModalBody").innerHTML =
+        '<div class="empty">Technician details not available.</div>';
+      return;
+    }
+
+    document.getElementById("techModalBody").innerHTML = `
+      <div class="detail-grid">
+        <div class="detail">
+          <small>Name</small>
+          <strong>${esc(technician.full_name)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Technician ID</small>
+          <strong>${esc(technician.technician_code)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Mobile</small>
+          <strong>${esc(technician.mobile)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Alternate Mobile</small>
+          <strong>${esc(technician.alternate_mobile)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Status</small>
+          <strong>${esc(technician.status)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Availability</small>
+          <strong>${esc(technician.availability_status)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Service Area</small>
+          <strong>${esc(technician.service_area)}</strong>
+        </div>
+
+        <div class="detail">
+          <small>Skills</small>
+          <strong>
+            ${
+              Array.isArray(technician.skills)
+                ? technician.skills.join(", ")
+                : technician.skills
+            }
+          </strong>
+        </div>
+
+        <div class="detail" style="grid-column:1/-1">
+          <small>Address</small>
+          <strong>
+            ${esc(technician.address)},
+            ${esc(technician.city)},
+            ${esc(technician.state)}
+            ${esc(technician.pincode)}
+          </strong>
+        </div>
+      </div>
+
+      <div class="notice" style="margin-top:14px">
+        Private technician banking/KYC information is not shown here.
+      </div>
+    `;
+  }
+
+  function renderProfile() {
+    const partner = currentPartner;
+
+    const fields = [
+      ["Partner ID", partner.partner_code],
+      ["Business Name", partner.business_name || partner.company_name],
+      ["Contact Person", partner.contact_person],
+      ["Login Email", partner.email],
+      ["Mobile", partner.mobile],
+      ["Alternate Mobile", partner.alternate_mobile],
+      ["Address", partner.address],
+      ["City", partner.city],
+      ["State", partner.state],
+      ["Pincode", partner.pincode],
+      ["Status", partner.status]
+    ];
+
+    document.getElementById("profileDetails").innerHTML = fields
+      .map(
+        ([label, value]) => `
+          <div class="detail">
+            <small>${esc(label)}</small>
+            <strong>${esc(value)}</strong>
+          </div>
+        `
+      )
+      .join("");
+  }
+
+  async function loadBankDetails() {
+    const element = document.getElementById("bankDetails");
+
+    const { data, error } = await supabaseClient
+      .from("partner_bank_details")
+      .select(
+        "account_holder_name,bank_name,account_number,ifsc_code,upi_id"
+      )
+      .eq("partner_id", currentPartner.id)
+      .maybeSingle();
+
+    if (error) {
+      element.innerHTML = `
+        <div class="notice error" style="grid-column:1/-1">
+          Unable to load bank details: ${esc(error.message)}
+        </div>
+      `;
+      return;
+    }
+
+    if (!data) {
+      element.innerHTML = `
+        <div class="notice" style="grid-column:1/-1">
+          Bank details have not yet been added. Please contact ORACLIME Support.
+        </div>
+      `;
+      return;
+    }
+
+    const fields = [
+      ["Account Holder", data.account_holder_name],
+      ["Bank Name", data.bank_name],
+      ["Account Number", data.account_number],
+      ["IFSC", data.ifsc_code],
+      ["UPI ID", data.upi_id]
+    ];
+
+    element.innerHTML = fields
+      .map(
+        ([label, value]) => `
+          <div class="detail">
+            <small>${esc(label)}</small>
+            <strong>${esc(value)}</strong>
+          </div>
+        `
+      )
+      .join("");
+  }
+
+  async function createJob(event) {
+    event.preventDefault();
+
+    hide("createMsg");
+
+    if (!currentPartner) {
+      return;
+    }
+
+    const mobile = document.getElementById("cMobile").value.trim();
+    const pincode = document.getElementById("cPincode").value.trim();
+    const selectedDate = document.getElementById("cDate").value;
+    const selectedTime = document.getElementById("cTime").value;
+
+    if (!/^[6-9][0-9]{9}$/.test(mobile)) {
+      showMsg(
+        "createMsg",
+        "Please enter a valid 10-digit Indian mobile number.",
+        "error"
+      );
+      document.getElementById("cMobile").focus();
+      return;
+    }
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+      showMsg(
+        "createMsg",
+        "Please enter a valid 6-digit pincode.",
+        "error"
+      );
+      document.getElementById("cPincode").focus();
+      return;
+    }
+
+    if (selectedDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const chosenDate = new Date(selectedDate + "T00:00:00");
+
+      if (chosenDate < today) {
+        showMsg(
+          "createMsg",
+          "Preferred date cannot be in the past.",
+          "error"
+        );
+        document.getElementById("cDate").focus();
+        return;
+      }
+    }
+
+    if (!selectedTime) {
+      showMsg(
+        "createMsg",
+        "Please select a preferred time.",
+        "error"
+      );
+      document.getElementById("cTime").focus();
+      return;
+    }
+
+    try {
+      const code = await uniqueCompletionCode();
+
+      document.getElementById("generatedCode").textContent = code;
+
+      const payload = {
+        partner_id: currentPartner.id,
+        created_by: currentUser.id,
+        customer_name: document.getElementById("cName").value.trim(),
+        mobile,
+        address: document.getElementById("cAddress").value.trim(),
+        city:
+          document.getElementById("cCity").value.trim() || null,
+        pincode: pincode || null,
+        service_type:
+          document.getElementById("cService").value.trim(),
+        preferred_date: selectedDate || null,
+        preferred_time: selectedTime.trim() || null,
+        notes:
+          document.getElementById("cNotes").value.trim() || null
+      };
+
+      const { data, error } = await supabaseClient
+        .from("leads")
+        .insert(payload)
+        .select("id")
+        .single();
+
+      if (error) {
+        showMsg(
+          "createMsg",
+          "Unable to create job: " + error.message,
+          "error"
+        );
+        return;
+      }
+
+      const { error: codeError } = await supabaseClient
+        .from("job_completion_codes")
+        .insert({
+          lead_id: data.id,
+          partner_id: currentPartner.id,
+          completion_code: code
+        });
+
+      if (codeError) {
+        showMsg(
+          "createMsg",
+          "Job was created but completion code could not be saved: " +
+            codeError.message,
+          "error"
+        );
+        return;
+      }
+
+      showMsg(
+        "createMsg",
+        "Job created successfully. Completion Code: " + code,
+        "success"
+      );
+
+      event.target.reset();
+      document.getElementById("generatedCode").textContent = code;
+
+      await loadJobs();
+    } catch (error) {
+      console.error("Create job error:", error);
+
+      showMsg(
+        "createMsg",
+        "Unable to create job: " + error.message,
+        "error"
+      );
+    }
+  }
+
+  async function uploadExcel() {
+    const file = document.getElementById("excelFile").files[0];
+    const output = document.getElementById("bulkResult");
+
+    output.innerHTML = "";
+
+    if (!file) {
+      output.innerHTML =
+        '<div class="result-item bad">Please select an Excel/CSV file.</div>';
+      return;
+    }
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+      const rows = XLSX.utils.sheet_to_json(sheet, {
+        defval: ""
+      });
+
+      if (!rows.length) {
+        output.innerHTML =
+          '<div class="result-item bad">The file contains no data rows.</div>';
+        return;
+      }
+
+      let successful = 0;
+      let failed = 0;
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const normalized = {};
+
+        Object.keys(row).forEach(key => {
+          normalized[
+            key.trim().toLowerCase().replace(/\s+/g, " ")
+          ] = String(row[key] ?? "").trim();
+        });
+
+        const name =
+          normalized["customer name"] || normalized["name"];
+
+        const mobile =
+          normalized["mobile"] || normalized["customer mobile"];
+
+        const address =
+          normalized["address"] || normalized["customer address"];
+
+        const service =
+          normalized["service"] || normalized["service type"];
+
+        if (!name || !mobile || !address || !service) {
+          failed++;
+
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<div class="result-item bad">
+              Row ${i + 2}: Missing Customer Name, Mobile, Address or Service.
+            </div>`
+          );
+
+          continue;
+        }
+
+        let code =
+          (normalized["completion code"] || "AUTO").toUpperCase();
+
+        if (code === "AUTO" || !code) {
+          code = await uniqueCompletionCode();
+        } else if (!/^\d{6}$/.test(code)) {
+          failed++;
+
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<div class="result-item bad">
+              Row ${i + 2}: Completion Code must be 6 digits or AUTO.
+            </div>`
+          );
+
+          continue;
+        }
+
+        const payload = {
+          partner_id: currentPartner.id,
+          created_by: currentUser.id,
+          customer_name: name,
+          mobile,
+          address,
+          city: normalized["city"] || null,
+          pincode: normalized["pincode"] || null,
+          service_type: service,
+          preferred_date: normalized["preferred date"] || null,
+          preferred_time: normalized["preferred time"] || null,
+          notes: normalized["notes"] || null
+        };
+
+        const { data, error } = await supabaseClient
+          .from("leads")
+          .insert(payload)
+          .select("id")
+          .single();
+
+        if (error) {
+          failed++;
+
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<div class="result-item bad">
+              Row ${i + 2}: ${esc(error.message)}
+            </div>`
+          );
+
+          continue;
+        }
+
+        const { error: codeError } = await supabaseClient
+          .from("job_completion_codes")
+          .insert({
+            lead_id: data.id,
+            partner_id: currentPartner.id,
+            completion_code: code
+          });
+
+        if (codeError) {
+          failed++;
+
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<div class="result-item bad">
+              Row ${i + 2}: Job created but code failed — ${esc(codeError.message)}
+            </div>`
+          );
+
+          continue;
+        }
+
+        successful++;
+
+        output.insertAdjacentHTML(
+          "beforeend",
+          `<div class="result-item ok">
+            Row ${i + 2}: Created ${esc(name)} — Code ${esc(code)}
+          </div>`
+        );
+      }
+
+      output.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="result-item">
+          <strong>Upload complete:</strong>
+          ${successful} successful, ${failed} failed.
+        </div>`
+      );
+
+      await loadJobs();
+    } catch (error) {
+      output.innerHTML =
+        '<div class="result-item bad">Upload failed: ' +
+        esc(error.message) +
+        "</div>";
+    }
+  }
+
+  async function requestBankChange(event) {
+    event.preventDefault();
+
+    const { error } = await supabaseClient
+      .from("partner_bank_change_requests")
+      .insert({
+        partner_id: currentPartner.id,
+        requested_changes: {
+          request: document
+            .getElementById("bankChanges")
+            .value.trim()
+        },
+        reason:
+          document.getElementById("bankReason").value.trim() || null
+      });
+
+    if (error) {
+      toast("Request failed: " + error.message);
+      return;
+    }
+
+    event.target.reset();
+    toast("Bank change request sent to Support");
+  }
+
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", async event => {
+      event.preventDefault();
+      hide("loginError");
+
+      const { error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: document
+            .getElementById("loginEmail")
+            .value.trim(),
+          password: document.getElementById("loginPassword").value
+        });
+
+      if (error) {
+        showError(
+          "loginError",
+          "Login failed: " + error.message
+        );
+      }
+    });
+
+  document
+    .getElementById("logoutBtn")
+    .addEventListener("click", () =>
+      supabaseClient.auth.signOut()
+    );
+
+  document.querySelectorAll(".nav button").forEach(button => {
+    button.addEventListener("click", () =>
+      showSection(button.dataset.section)
+    );
+  });
+
+  document
+    .getElementById("createJobForm")
+    .addEventListener("submit", createJob);
+
+  document
+    .getElementById("uploadExcelBtn")
+    .addEventListener("click", uploadExcel);
+
+  document
+    .getElementById("bankRequestForm")
+    .addEventListener("submit", requestBankChange);
+
+  document
+    .getElementById("jobSearch")
+    .addEventListener("input", renderJobs);
+
+  document
+    .getElementById("jobStatus")
+    .addEventListener("change", renderJobs);
+
+  const mobileInput = document.getElementById("cMobile");
+  const pincodeInput = document.getElementById("cPincode");
+  const dateInput = document.getElementById("cDate");
+
+  if (mobileInput) {
+    mobileInput.addEventListener("input", () => {
+      mobileInput.value = mobileInput.value
+        .replace(/\D/g, "")
+        .slice(0, 10);
+    });
+  }
+
+  if (pincodeInput) {
+    pincodeInput.addEventListener("input", () => {
+      pincodeInput.value = pincodeInput.value
+        .replace(/\D/g, "")
+        .slice(0, 6);
+    });
+  }
+
+  if (dateInput) {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+
+    dateInput.min = `${year}-${month}-${day}`;
+  }
+
+  init();
+</script>
+</body>
+</html>
