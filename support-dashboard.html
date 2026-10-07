@@ -1328,6 +1328,7 @@
     <option value="assignments">Assignments</option>
     <option value="partners">Partners</option>
     <option value="technicians">Technicians</option>
+    <option value="leadControl">Lead Control</option>
     <option value="customers">Customers</option>
     <option value="services">Services</option>
     <option value="payments">Payments</option>
@@ -1398,7 +1399,7 @@
       </button>
 
       <button data-section="assignments">
-        Lead Control
+        Assignments
       </button>
 
       <button data-section="partners">
@@ -1407,6 +1408,10 @@
 
       <button data-section="technicians">
         Technicians
+      </button>
+
+      <button data-section="leadControl">
+        Lead Control
       </button>
 
       <button data-section="customers">
@@ -1786,6 +1791,22 @@
 
           </a>
 
+
+          <a href="#" class="quick-card" data-section-link="leadControl">
+
+            <div class="quick-icon">
+              ↔
+            </div>
+
+            <h3>
+              Lead Control
+            </h3>
+
+            <p>
+              Change the assigned technician or unassign an active lead.
+            </p>
+
+          </a>
 
           <a href="#" class="quick-card" data-section-link="reports">
 
@@ -2323,6 +2344,66 @@
       </div>
 
     </section>
+
+
+
+    <!-- =================================================
+         LEAD CONTROL SECTION
+         ================================================= -->
+
+    <section
+      id="leadControlSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+
+        <div>
+          <div class="eyebrow">ORACLIME Operations</div>
+          <h1>Lead Control</h1>
+          <p>Change the assigned technician or unassign an active service lead.</p>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn" type="button" id="leadControlRefreshButton">
+            Refresh
+          </button>
+        </div>
+
+      </div>
+
+      <div id="leadControlNotice" class="dashboard-notice"></div>
+
+      <div class="card">
+
+        <div class="section-title-row">
+          <h2>Assigned Leads</h2>
+          <span class="small" id="leadControlCount">0 leads</span>
+        </div>
+
+        <div id="leadControlLoading" class="small" style="padding:25px 0;">
+          Loading assigned leads...
+        </div>
+
+        <div
+          id="leadControlEmpty"
+          class="assignment-empty"
+          style="display:none;"
+        >
+          No active assigned leads right now.
+        </div>
+
+        <div
+          id="leadControlList"
+          class="assignment-grid"
+          style="display:none;"
+        ></div>
+
+      </div>
+
+    </section>
+
 
 
 
@@ -3454,6 +3535,70 @@
 
 
 <!-- =====================================================
+     LEAD CONTROL MODAL
+     ===================================================== -->
+
+<div
+  id="leadControlModal"
+  class="modal-overlay"
+>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="leadControlModalTitle"
+  >
+
+    <div class="modal-header">
+      <div>
+        <h2 id="leadControlModalTitle">Change Technician</h2>
+        <p>Select another active technician for this lead.</p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        id="closeLeadControlModal"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div id="leadControlSummary" class="assignment-summary"></div>
+
+      <div class="lead-form-field">
+        <label for="leadControlTechnicianSelect">Technician</label>
+        <select id="leadControlTechnicianSelect">
+          <option value="">Loading technicians...</option>
+        </select>
+      </div>
+
+      <div
+        id="leadControlModalError"
+        class="field-error"
+        role="alert"
+      ></div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn" id="cancelLeadControlButton">
+        Cancel
+      </button>
+      <button type="button" class="btn primary" id="saveLeadControlButton">
+        Change Technician
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
      ADD TECHNICIAN MODAL
      ===================================================== -->
 
@@ -3841,6 +3986,9 @@ let isCreatingLead = false;
 let unassignedLeads = [];
 let availableTechnicians = [];
 let selectedAssignmentLead = null;
+let leadControlLeads = [];
+let leadControlTechnicians = [];
+let selectedLeadControlLead = null;
 let allTechnicians = [];
 let filteredTechnicians = [];
 
@@ -3886,6 +4034,30 @@ const assignmentsNotice =
 
 const techniciansSection =
   document.getElementById("techniciansSection");
+
+const leadControlSection =
+  document.getElementById("leadControlSection");
+
+const leadControlNotice =
+  document.getElementById("leadControlNotice");
+
+const leadControlRefreshButton =
+  document.getElementById("leadControlRefreshButton");
+
+const leadControlModal =
+  document.getElementById("leadControlModal");
+
+const leadControlSummary =
+  document.getElementById("leadControlSummary");
+
+const leadControlTechnicianSelect =
+  document.getElementById("leadControlTechnicianSelect");
+
+const leadControlModalError =
+  document.getElementById("leadControlModalError");
+
+const saveLeadControlButton =
+  document.getElementById("saveLeadControlButton");
 
 const partnersSection =
   document.getElementById("partnersSection");
@@ -6553,6 +6725,356 @@ if (assignmentModal) {
 }
 
 
+
+/* =====================================================
+   LEAD CONTROL MODULE
+   ===================================================== */
+
+function showLeadControlNotice(message, type) {
+
+  if (!leadControlNotice) {
+    return;
+  }
+
+  leadControlNotice.textContent = message || "";
+  leadControlNotice.className = "dashboard-notice";
+
+  if (type === "error") {
+    leadControlNotice.classList.add("error");
+  } else if (message) {
+    leadControlNotice.style.display = "block";
+    leadControlNotice.style.borderColor = "rgba(53,209,170,.35)";
+  } else {
+    leadControlNotice.style.display = "none";
+  }
+
+}
+
+
+function hideLeadControlNotice() {
+  if (!leadControlNotice) return;
+  leadControlNotice.textContent = "";
+  leadControlNotice.className = "dashboard-notice";
+  leadControlNotice.style.display = "none";
+}
+
+
+async function loadLeadControlTechnicians() {
+
+  const { data, error } = await supabaseClient
+    .from("technicians")
+    .select("id,technician_code,full_name,status,availability_status")
+    .eq("status", "ACTIVE")
+    .order("full_name", { ascending:true });
+
+  if (error) {
+    console.error("Lead control technicians error:", error);
+    throw error;
+  }
+
+  leadControlTechnicians = Array.isArray(data) ? data : [];
+}
+
+
+async function loadLeadControl() {
+
+  if (!dashboardReady) {
+    return;
+  }
+
+  const loading = document.getElementById("leadControlLoading");
+  const empty = document.getElementById("leadControlEmpty");
+  const list = document.getElementById("leadControlList");
+  const count = document.getElementById("leadControlCount");
+
+  loading.style.display = "block";
+  empty.style.display = "none";
+  list.style.display = "none";
+  hideLeadControlNotice();
+
+  const { data, error } = await supabaseClient
+    .from("leads")
+    .select(`
+      id,
+      lead_number,
+      customer_name,
+      mobile,
+      city,
+      state,
+      service_type,
+      preferred_date,
+      preferred_time,
+      status,
+      assigned_technician_id,
+      updated_at
+    `)
+    .not("assigned_technician_id", "is", null)
+    .order("updated_at", { ascending:false });
+
+  loading.style.display = "none";
+
+  if (error) {
+    console.error("Lead control leads error:", error);
+    leadControlLeads = [];
+    count.textContent = "0 leads";
+    empty.textContent = "Unable to load assigned leads. Please check database access.";
+    empty.style.display = "block";
+    showLeadControlNotice("Assigned leads could not be loaded.", "error");
+    return;
+  }
+
+  leadControlLeads = (data || []).filter(function(lead) {
+    return !["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(lead.status);
+  });
+
+  try {
+    await loadLeadControlTechnicians();
+  } catch (error) {
+    leadControlTechnicians = [];
+    console.error(error);
+  }
+
+  const techMap = {};
+  leadControlTechnicians.forEach(function(tech) {
+    techMap[tech.id] = tech;
+  });
+
+  count.textContent = leadControlLeads.length + (leadControlLeads.length === 1 ? " lead" : " leads");
+
+  if (!leadControlLeads.length) {
+    empty.textContent = "No active assigned leads right now.";
+    empty.style.display = "block";
+    return;
+  }
+
+  list.innerHTML = leadControlLeads.map(function(lead) {
+    const tech = techMap[lead.assigned_technician_id];
+    const preferred = [
+      lead.preferred_date ? formatDate(lead.preferred_date) : "",
+      lead.preferred_time || ""
+    ].filter(Boolean).join(" • ") || "Not scheduled";
+
+    return `
+      <div class="assignment-card">
+        <div>
+          <h3>${escapeHtml(lead.lead_number)}</h3>
+          <div class="assignment-meta">
+            <span>${escapeHtml(lead.customer_name || "Customer")}</span>
+            <span>${escapeHtml(lead.service_type || "AC")}</span>
+            <span>${escapeHtml(getLeadLocation(lead))}</span>
+            <span>${escapeHtml(preferred)}</span>
+            <span>${escapeHtml(formatStatus(lead.status))}</span>
+            <span>Technician: ${escapeHtml(tech ? tech.full_name : "Unknown")}</span>
+          </div>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn primary" data-change-lead="${escapeHtml(lead.id)}">
+            Change Technician
+          </button>
+          <button type="button" class="btn" data-unassign-lead="${escapeHtml(lead.id)}">
+            Unassign
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  list.style.display = "grid";
+
+  list.querySelectorAll("[data-change-lead]").forEach(function(button) {
+    button.addEventListener("click", function() {
+      const lead = leadControlLeads.find(function(row) { return row.id === button.dataset.changeLead; });
+      if (lead) openLeadControlModal(lead);
+    });
+  });
+
+  list.querySelectorAll("[data-unassign-lead]").forEach(function(button) {
+    button.addEventListener("click", function() {
+      const lead = leadControlLeads.find(function(row) { return row.id === button.dataset.unassignLead; });
+      if (lead) unassignLead(lead);
+    });
+  });
+}
+
+
+function openLeadControlModal(lead) {
+
+  selectedLeadControlLead = lead;
+  leadControlModalError.textContent = "";
+  leadControlSummary.innerHTML = `
+    <strong>${escapeHtml(lead.lead_number)}</strong>
+    <div class="small">${escapeHtml(lead.customer_name || "Customer")} • ${escapeHtml(lead.service_type || "AC")}</div>
+    <div class="small">Current technician: ${escapeHtml((leadControlTechnicians.find(function(t) { return t.id === lead.assigned_technician_id; }) || {}).full_name || "Unknown")}</div>
+  `;
+
+  leadControlTechnicianSelect.innerHTML = '<option value="">Select technician</option>' +
+    leadControlTechnicians
+      .filter(function(tech) {
+        return tech.id !== lead.assigned_technician_id;
+      })
+      .map(function(tech) {
+        const meta = [tech.technician_code, tech.availability_status ? formatAvailability(tech.availability_status) : ""].filter(Boolean).join(" • ");
+        return `<option value="${escapeHtml(tech.id)}">${escapeHtml(tech.full_name || "Technician")} — ${escapeHtml(meta)}</option>`;
+      }).join("");
+  leadControlModal.classList.add("open");
+}
+
+
+function closeLeadControlModal() {
+  if (!leadControlModal) return;
+  leadControlModal.classList.remove("open");
+  selectedLeadControlLead = null;
+  leadControlModalError.textContent = "";
+}
+
+
+async function saveLeadControlChange() {
+
+  if (!selectedLeadControlLead) return;
+
+  const technicianId = leadControlTechnicianSelect.value;
+  if (!technicianId) {
+    leadControlModalError.textContent = "Please select a technician.";
+    return;
+  }
+
+  if (technicianId === selectedLeadControlLead.assigned_technician_id) {
+    leadControlModalError.textContent = "Please select a different technician.";
+    return;
+  }
+
+  const technician = leadControlTechnicians.find(function(t) { return t.id === technicianId; });
+  if (!technician) {
+    leadControlModalError.textContent = "Selected technician was not found.";
+    return;
+  }
+
+  saveLeadControlButton.disabled = true;
+  saveLeadControlButton.textContent = "Changing...";
+  leadControlModalError.textContent = "";
+
+  try {
+    const { data: currentLead, error: checkError } = await supabaseClient
+      .from("leads")
+      .select("id,lead_number,status,assigned_technician_id")
+      .eq("id", selectedLeadControlLead.id)
+      .single();
+
+    if (checkError) throw checkError;
+    if (!currentLead.assigned_technician_id) {
+      throw new Error("This lead is already unassigned.");
+    }
+    if (technician.id === currentLead.assigned_technician_id) {
+      throw new Error("Please select a different technician.");
+    }
+    if (["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(currentLead.status)) {
+      throw new Error("This lead can no longer be reassigned from Lead Control.");
+    }
+
+    const { error: updateError } = await supabaseClient
+      .from("leads")
+      .update({
+        assigned_technician_id: technician.id,
+        updated_by: currentAuthUser.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", selectedLeadControlLead.id)
+      .eq("assigned_technician_id", currentLead.assigned_technician_id);
+
+    if (updateError) throw updateError;
+
+    closeLeadControlModal();
+    showLeadControlNotice("Lead " + currentLead.lead_number + " moved to " + technician.full_name + ".", "success");
+    await loadLeadControl();
+    await loadLeads(true);
+    await loadDashboardData();
+  } catch (error) {
+    console.error("Lead reassignment error:", error);
+    leadControlModalError.textContent = error.message || "Unable to change technician.";
+  } finally {
+    saveLeadControlButton.disabled = false;
+    saveLeadControlButton.textContent = "Change Technician";
+  }
+}
+
+
+async function unassignLead(lead) {
+
+  if (!window.confirm("Remove " + lead.lead_number + " from the current technician and return it to Unassigned Leads?")) {
+    return;
+  }
+
+  try {
+    const { data: currentLead, error: checkError } = await supabaseClient
+      .from("leads")
+      .select("id,lead_number,status,assigned_technician_id")
+      .eq("id", lead.id)
+      .single();
+
+    if (checkError) throw checkError;
+    if (!currentLead.assigned_technician_id) {
+      throw new Error("This lead is already unassigned.");
+    }
+    if (["COMPLETED", "CANCELLED", "COMPLETION_SUBMITTED"].includes(currentLead.status)) {
+      throw new Error("This lead can no longer be unassigned from Lead Control.");
+    }
+
+    const { error: updateError } = await supabaseClient
+      .from("leads")
+      .update({
+        assigned_technician_id: null,
+        status: "NEW",
+        updated_by: currentAuthUser.id,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", lead.id)
+      .eq("assigned_technician_id", currentLead.assigned_technician_id);
+
+    if (updateError) throw updateError;
+
+    showLeadControlNotice("Lead " + currentLead.lead_number + " is now unassigned.", "success");
+    await loadLeadControl();
+    await loadUnassignedLeads();
+    await loadLeads(true);
+    await loadDashboardData();
+  } catch (error) {
+    console.error("Lead unassign error:", error);
+    showLeadControlNotice(error.message || "Unable to unassign lead.", "error");
+  }
+}
+
+
+if (leadControlRefreshButton) {
+  leadControlRefreshButton.addEventListener("click", async function() {
+    leadControlRefreshButton.disabled = true;
+    const original = leadControlRefreshButton.textContent;
+    leadControlRefreshButton.textContent = "Refreshing...";
+    try {
+      await loadLeadControl();
+    } finally {
+      leadControlRefreshButton.disabled = false;
+      leadControlRefreshButton.textContent = original;
+    }
+  });
+}
+
+if (saveLeadControlButton) {
+  saveLeadControlButton.addEventListener("click", saveLeadControlChange);
+}
+
+if (document.getElementById("closeLeadControlModal")) {
+  document.getElementById("closeLeadControlModal").addEventListener("click", closeLeadControlModal);
+}
+
+if (document.getElementById("cancelLeadControlButton")) {
+  document.getElementById("cancelLeadControlButton").addEventListener("click", closeLeadControlModal);
+}
+
+if (leadControlModal) {
+  leadControlModal.addEventListener("click", function(event) {
+    if (event.target === leadControlModal) closeLeadControlModal();
+  });
+}
 
 /* =====================================================
    TECHNICIANS MODULE
@@ -10131,6 +10653,9 @@ function sectionLabel(section) {
     technicians:
       "Technicians",
 
+    leadControl:
+      "Lead Control",
+
     customers:
       "Customers",
 
@@ -10169,6 +10694,10 @@ function activateSection(section) {
 
   if (!section) {
     return;
+  }
+
+  if (leadControlSection) {
+    leadControlSection.style.display = "none";
   }
 
   if (reportsSection) {
@@ -10309,6 +10838,45 @@ function activateSection(section) {
     hideNotice(leadsNotice);
 
     loadUnassignedLeads();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    return;
+
+  }
+
+
+  if (section === "leadControl") {
+
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "none";
+    paymentsSection.style.display = "none";
+    reportsSection.style.display = "none";
+    notificationsSection.style.display = "none";
+    activitySection.style.display = "none";
+    settingsSection.style.display = "none";
+    leadControlSection.style.display = "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(servicesNotice);
+    hideNotice(paymentsNotice);
+    hideNotice(reportsNotice);
+    hideNotice(settingsNotice);
+    hideNotice(notificationsNotice);
+    hideNotice(activityNotice);
+
+    loadLeadControl();
 
     window.scrollTo({
       top:0,
@@ -10911,6 +11479,16 @@ if (refreshButton) {
 
         }
 
+        if (
+          leadControlSection &&
+          leadControlSection.style.display !==
+          "none"
+        ) {
+
+          await loadLeadControl();
+
+        }
+
       } finally {
 
         refreshButton.disabled =
@@ -11267,4 +11845,22 @@ initializeDashboard();
 </script>
 
 </body>
-</html>
+</html>/* =====================================================
+   LEAD LIST AUTO-REFRESH
+   ===================================================== */
+
+setInterval(function() {
+
+  if (
+    dashboardReady &&
+    leadsSection &&
+    leadsSection.style.display !== "none" &&
+    !isCreatingLead &&
+    !leadsLoadInProgress
+  ) {
+    loadLeads(true);
+  }
+
+}, 15000);
+
+
