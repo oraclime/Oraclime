@@ -1503,10 +1503,10 @@ function updateStats(jobs){
   // Completed is a DAILY metric. Historical completed jobs are opened from the card.
   const today = getIndiaDateKey();
   const completed = jobs.filter(j =>
-    j.status === "COMPLETED" &&
-    j.updated_at &&
-    getIndiaDateKey(j.updated_at) === today
-  ).length;
+  ["COMPLETION_SUBMITTED", "COMPLETED"].includes(j.status) &&
+  j.updated_at &&
+  getIndiaDateKey(j.updated_at) === today
+).length;
 
 
   document.getElementById("statAssigned").textContent =
