@@ -959,7 +959,11 @@ function formatHistoryDate(dateKey){
 }
 
 function getCompletedJobsForDate(dateKey){
-  return currentJobs.filter(job => job.status === "COMPLETED" && job.updated_at && getIndiaDateKey(job.updated_at) === dateKey);
+  return currentJobs.filter(job =>
+    ["COMPLETION_SUBMITTED", "COMPLETED"].includes(job.status) &&
+    job.updated_at &&
+    getIndiaDateKey(job.updated_at) === dateKey
+  );
 }
 
 function renderCompletedHistory(dateKey){
