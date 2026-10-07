@@ -2501,6 +2501,125 @@
     </section>
 
 
+
+
+<!-- =================================================
+     SETTINGS SECTION
+     ================================================= -->
+
+<section id="settingsSection" class="dashboard-section" style="display:none;">
+
+  <div class="dashboard-header">
+    <div>
+      <div class="eyebrow">ORACLIME ACCOUNT</div>
+      <h1>Settings</h1>
+      <p>Manage your Support account and security settings.</p>
+    </div>
+  </div>
+
+  <div id="settingsNotice" class="dashboard-notice"></div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="section-title-row">
+      <h2>Account</h2>
+      <span class="small">Support profile</span>
+    </div>
+
+    <div class="stats-grid" style="margin-top:16px;">
+      <div class="stat-card">
+        <div class="stat-label">Full Name</div>
+        <div class="stat-number" id="settingsFullName" style="font-size:22px;">—</div>
+        <div class="stat-note">Your Support account name</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Email</div>
+        <div class="stat-number" id="settingsEmail" style="font-size:18px;word-break:break-word;">—</div>
+        <div class="stat-note">Registered account email</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Support Code</div>
+        <div class="stat-number" id="settingsSupportCode" style="font-size:22px;">—</div>
+        <div class="stat-note">Your ORACLIME Support ID</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Account Status</div>
+        <div class="stat-number" id="settingsStatus" style="font-size:22px;">—</div>
+        <div class="stat-note">Current access status</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="section-title-row">
+      <h2>New Service Completion Code</h2>
+      <span class="small">Generate a fresh code for an existing lead</span>
+    </div>
+
+    <div style="padding-top:8px;max-width:720px;">
+      <p class="small" style="margin-bottom:18px;">
+        Select a lead and generate a new 6-digit Service Completion Code. The existing secure Supabase completion-code workflow will invalidate the previous active code and store only the new code hash.
+      </p>
+
+      <label for="settingsCompletionLead" style="display:block;margin-bottom:8px;font-weight:700;">
+        Lead
+      </label>
+
+      <select
+        id="settingsCompletionLead"
+        class="technician-search"
+        style="width:100%;margin-bottom:14px;"
+      >
+        <option value="">Select a lead</option>
+      </select>
+
+      <button
+        class="btn primary"
+        type="button"
+        id="settingsGenerateCompletionCodeButton"
+      >
+        Generate New Service Completion Code
+      </button>
+
+      <div
+        id="settingsCompletionCodeResult"
+        class="card"
+        style="display:none;margin-top:18px;padding:18px;max-width:420px;"
+      >
+        <div class="small">New Service Completion Code</div>
+        <div
+          id="settingsCompletionCodeValue"
+          style="font-size:34px;font-weight:800;letter-spacing:6px;margin-top:6px;"
+        >
+          —
+        </div>
+        <div
+          id="settingsCompletionCodeExpiry"
+          class="small"
+          style="margin-top:8px;"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title-row">
+      <h2>Security</h2>
+      <span class="small">Keep your account secure</span>
+    </div>
+
+    <div style="padding-top:8px;max-width:720px;">
+      <h3 style="margin-bottom:8px;">Reset Password</h3>
+      <p class="small" style="margin-bottom:18px;">
+        We will send a password-reset link to your registered Support email address.
+      </p>
+      <button class="btn primary" type="button" id="settingsResetPasswordButton">
+        Send Password Reset Email
+      </button>
+    </div>
+  </div>
+
+</section>
+
     <!-- =================================================
          TECHNICIANS SECTION
          ================================================= -->
@@ -3491,6 +3610,42 @@ const reportsDatasetBody =
 
 const reportsLastUpdated =
   document.getElementById("reportsLastUpdated");
+
+const settingsSection =
+  document.getElementById("settingsSection");
+
+const settingsNotice =
+  document.getElementById("settingsNotice");
+
+const settingsFullName =
+  document.getElementById("settingsFullName");
+
+const settingsEmail =
+  document.getElementById("settingsEmail");
+
+const settingsSupportCode =
+  document.getElementById("settingsSupportCode");
+
+const settingsStatus =
+  document.getElementById("settingsStatus");
+
+const settingsResetPasswordButton =
+  document.getElementById("settingsResetPasswordButton");
+
+const settingsCompletionLead =
+  document.getElementById("settingsCompletionLead");
+
+const settingsGenerateCompletionCodeButton =
+  document.getElementById("settingsGenerateCompletionCodeButton");
+
+const settingsCompletionCodeResult =
+  document.getElementById("settingsCompletionCodeResult");
+
+const settingsCompletionCodeValue =
+  document.getElementById("settingsCompletionCodeValue");
+
+const settingsCompletionCodeExpiry =
+  document.getElementById("settingsCompletionCodeExpiry");
 
 const paymentsNotice =
   document.getElementById("paymentsNotice");
@@ -8805,6 +8960,268 @@ function downloadReportsPdf() {
 }
 
 /* =====================================================
+   SETTINGS MODULE
+   ===================================================== */
+
+async function loadSettingsCompletionLeads() {
+  if (!settingsCompletionLead) return;
+
+  settingsCompletionLead.innerHTML =
+    '<option value="">Loading leads...</option>';
+
+  try {
+    const { data, error } =
+      await supabaseClient
+        .from("leads")
+        .select("id,lead_number,customer_name,status")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+      throw new Error(error.message || "Unable to load leads.");
+    }
+
+    settingsCompletionLead.innerHTML =
+      '<option value="">Select a lead</option>';
+
+    (data || []).forEach(function(lead) {
+      const option = document.createElement("option");
+      option.value = lead.id;
+      option.textContent =
+        (lead.lead_number || "Lead") +
+        " — " +
+        (lead.customer_name || "Customer") +
+        " [" +
+        formatStatus(lead.status) +
+        "]";
+      settingsCompletionLead.appendChild(option);
+    });
+
+    if (!data || !data.length) {
+      settingsCompletionLead.innerHTML =
+        '<option value="">No leads found</option>';
+    }
+  } catch (error) {
+    console.error("Settings completion leads error:", error);
+    settingsCompletionLead.innerHTML =
+      '<option value="">Unable to load leads</option>';
+    showNotice(
+      error.message || "Unable to load leads.",
+      "error",
+      settingsNotice
+    );
+  }
+}
+
+function renderSettings() {
+  const user = currentAppUser || {};
+
+  if (settingsFullName) {
+    settingsFullName.textContent = user.full_name || "ORACLIME Support";
+  }
+  if (settingsEmail) {
+    settingsEmail.textContent = user.email || currentAuthUser?.email || "—";
+  }
+  if (settingsSupportCode) {
+    settingsSupportCode.textContent = user.support_code || "SUPPORT";
+  }
+  if (settingsStatus) {
+    settingsStatus.textContent = user.status || "ACTIVE";
+  }
+
+  loadSettingsCompletionLeads();
+}
+
+async function generateSettingsCompletionCode() {
+  if (!settingsCompletionLead?.value) {
+    showNotice(
+      "Please select a lead first.",
+      "error",
+      settingsNotice
+    );
+    return;
+  }
+
+  if (!settingsGenerateCompletionCodeButton) return;
+
+  const leadId = settingsCompletionLead.value;
+  const selectedOption =
+    settingsCompletionLead.options[settingsCompletionLead.selectedIndex];
+
+  const confirmed = window.confirm(
+    "Generate a new Service Completion Code for " +
+    (selectedOption?.textContent || "this lead") +
+    "?\n\nThe previous active code will be invalidated."
+  );
+
+  if (!confirmed) return;
+
+  const originalText =
+    settingsGenerateCompletionCodeButton.textContent;
+
+  settingsGenerateCompletionCodeButton.disabled = true;
+  settingsGenerateCompletionCodeButton.textContent = "Generating...";
+
+  if (settingsCompletionCodeResult) {
+    settingsCompletionCodeResult.style.display = "none";
+  }
+
+  try {
+    /*
+      Use the existing secure Supabase RPC already used by the
+      working completion-correction flow. This keeps the raw code
+      out of the database and lets the database invalidate the
+      previous active code before returning the new 6-digit code.
+    */
+    const { data: newCode, error: codeError } =
+      await supabaseClient.rpc(
+        "issue_service_completion_code",
+        { p_lead_id: leadId }
+      );
+
+    if (codeError) {
+      throw new Error(
+        "Unable to generate the new Service Completion Code: " +
+        codeError.message
+      );
+    }
+
+    const cleanCode = String(newCode || "").trim();
+
+    if (!/^\d{6}$/.test(cleanCode)) {
+      throw new Error(
+        "The new Service Completion Code was not generated correctly."
+      );
+    }
+
+    const { data: serviceOrder, error: serviceOrderError } =
+      await supabaseClient
+        .from("service_orders")
+        .select("id")
+        .eq("lead_id", leadId)
+        .maybeSingle();
+
+    if (serviceOrderError) {
+      console.warn(
+        "Unable to load service order for code expiry:",
+        serviceOrderError
+      );
+    }
+
+    let expiresAt = null;
+
+    if (serviceOrder?.id) {
+      const { data: latestCodeRow, error: latestCodeError } =
+        await supabaseClient
+          .from("service_completion_codes")
+          .select("expires_at")
+          .eq("service_order_id", serviceOrder.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+      if (latestCodeError) {
+        console.warn(
+          "Unable to load new code expiry:",
+          latestCodeError
+        );
+      } else {
+        expiresAt = latestCodeRow?.expires_at || null;
+      }
+    }
+
+    if (settingsCompletionCodeValue) {
+      settingsCompletionCodeValue.textContent = cleanCode;
+    }
+
+    if (settingsCompletionCodeExpiry) {
+      settingsCompletionCodeExpiry.textContent =
+        expiresAt
+          ? "Expires: " + new Date(expiresAt).toLocaleString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+          : "Code generated successfully. Expires after 24 hours.";
+    }
+
+    if (settingsCompletionCodeResult) {
+      settingsCompletionCodeResult.style.display = "block";
+    }
+
+    showNotice(
+      "New Service Completion Code generated successfully. Save/share it securely with the technician.",
+      "success",
+      settingsNotice
+    );
+  } catch (error) {
+    console.error("Settings completion code error:", error);
+    showNotice(
+      error.message || "Unable to generate Service Completion Code.",
+      "error",
+      settingsNotice
+    );
+  } finally {
+    settingsGenerateCompletionCodeButton.disabled = false;
+    settingsGenerateCompletionCodeButton.textContent = originalText;
+  }
+}
+
+async function sendSettingsPasswordReset() {
+  if (!currentAuthUser?.email) {
+    showNotice("Registered email address could not be found.", "error", settingsNotice);
+    return;
+  }
+
+  if (!settingsResetPasswordButton) return;
+
+  const originalText = settingsResetPasswordButton.textContent;
+  settingsResetPasswordButton.disabled = true;
+  settingsResetPasswordButton.textContent = "Sending...";
+
+  try {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(
+      currentAuthUser.email,
+      {
+        redirectTo: window.location.origin + "/support-login.html"
+      }
+    );
+
+    if (error) {
+      throw new Error(error.message || "Unable to send password reset email.");
+    }
+
+    showNotice(
+      "Password reset email sent to " + currentAuthUser.email + ".",
+      "success",
+      settingsNotice
+    );
+  } catch (error) {
+    console.error("Password reset error:", error);
+    showNotice(
+      error.message || "Unable to send password reset email.",
+      "error",
+      settingsNotice
+    );
+  } finally {
+    settingsResetPasswordButton.disabled = false;
+    settingsResetPasswordButton.textContent = originalText;
+  }
+}
+
+if (settingsResetPasswordButton) {
+  settingsResetPasswordButton.addEventListener("click", sendSettingsPasswordReset);
+}
+
+if (settingsGenerateCompletionCodeButton) {
+  settingsGenerateCompletionCodeButton.addEventListener(
+    "click",
+    generateSettingsCompletionCode
+  );
+}
+
+/* =====================================================
    38. NAVIGATION
    ===================================================== */
 
@@ -8869,6 +9286,10 @@ function activateSection(section) {
 
   if (reportsSection) {
     reportsSection.style.display = "none";
+  }
+
+  if (settingsSection) {
+    settingsSection.style.display = "none";
   }
 
 
@@ -9168,6 +9589,36 @@ function activateSection(section) {
 
     return;
 
+  }
+
+
+  if (section === "settings") {
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "none";
+    paymentsSection.style.display = "none";
+    reportsSection.style.display = "none";
+    settingsSection.style.display = "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(servicesNotice);
+    hideNotice(paymentsNotice);
+    hideNotice(reportsNotice);
+
+    renderSettings();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+    return;
   }
 
 
