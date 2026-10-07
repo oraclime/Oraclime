@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="assets/style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     
@@ -976,7 +979,118 @@
 .leads-table td:last-child .table-action {
   min-width: 126px;
 }
-</style>
+
+
+/* =====================================================
+   REPORTS MODULE
+   ===================================================== */
+
+.reports-toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.reports-actions {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.reports-summary {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+  margin-top:18px;
+}
+
+.report-stat {
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+}
+
+.report-stat-label {
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.report-stat-value {
+  margin-top:8px;
+  color:var(--text);
+  font-size:28px;
+  font-weight:800;
+}
+
+.report-export-note {
+  margin-top:14px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.reports-table-wrap {
+  overflow-x:auto;
+}
+
+.reports-table {
+  width:100%;
+  min-width:620px;
+  border-collapse:collapse;
+}
+
+.reports-table th,
+.reports-table td {
+  padding:14px 12px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  vertical-align:top;
+}
+
+.reports-table th {
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.report-ready {
+  color:var(--green);
+  font-weight:700;
+}
+
+.report-warning {
+  color:#f0b35a;
+  font-weight:700;
+}
+
+@media (max-width:900px) {
+  .reports-summary {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width:600px) {
+  .reports-summary {
+    grid-template-columns:1fr;
+  }
+
+  .reports-actions {
+    width:100%;
+  }
+
+  .reports-actions .btn {
+    flex:1 1 150px;
+  }
+}
+
+  </style>
 </head>
 
 <body>
@@ -2306,6 +2420,88 @@
 
 
     <!-- =================================================
+         REPORTS SECTION
+         ================================================= -->
+
+    <section
+      id="reportsSection"
+      class="dashboard-section"
+      style="display:none;"
+    >
+
+      <div class="dashboard-header">
+        <div>
+          <div class="eyebrow">ORACLIME OPERATIONS</div>
+          <h1>Reports</h1>
+          <p>Download complete operational data for Excel or PDF.</p>
+        </div>
+
+        <div class="reports-actions">
+          <button class="btn" type="button" id="reportsRefreshButton">Refresh Data</button>
+          <button class="btn primary" type="button" id="reportsExcelButton">Download Excel</button>
+          <button class="btn" type="button" id="reportsPdfButton">Download PDF</button>
+        </div>
+      </div>
+
+      <div id="reportsNotice" class="dashboard-notice"></div>
+
+      <div class="card">
+        <div class="reports-toolbar">
+          <div>
+            <h2 style="margin:0;">Complete Data Export</h2>
+            <p class="small" style="margin:7px 0 0;">One export contains the available operational tables used by Support.</p>
+          </div>
+        </div>
+
+        <div class="reports-summary">
+          <div class="report-stat">
+            <div class="report-stat-label">Total Records</div>
+            <div class="report-stat-value" id="reportTotalRecords">0</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">Data Sets</div>
+            <div class="report-stat-value" id="reportDatasetCount">0</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">Payments</div>
+            <div class="report-stat-value" id="reportPaymentCount">0</div>
+          </div>
+          <div class="report-stat">
+            <div class="report-stat-label">Leads</div>
+            <div class="report-stat-value" id="reportLeadCount">0</div>
+          </div>
+        </div>
+
+        <div class="report-export-note">
+          Excel contains separate sheets for each data set. PDF contains the same report data in printable tables.
+          Sensitive completion-code hashes are intentionally excluded from exports.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title-row">
+          <h2>Report Data Sets</h2>
+          <span class="small" id="reportsLastUpdated">Not loaded</span>
+        </div>
+
+        <div class="reports-table-wrap">
+          <table class="reports-table">
+            <thead>
+              <tr>
+                <th>Data Set</th>
+                <th>Records</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportsDatasetBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
          TECHNICIANS SECTION
          ================================================= -->
 
@@ -3168,6 +3364,9 @@ let allServices = [];
 let filteredServices = [];
 let filteredPayments = [];
 
+let reportsData = {};
+let reportsLoadInProgress = false;
+
 
 /* =====================================================
    3. DOM
@@ -3259,6 +3458,39 @@ const serviceCompletedCount =
 
 const paymentsSection =
   document.getElementById("paymentsSection");
+
+const reportsSection =
+  document.getElementById("reportsSection");
+
+const reportsNotice =
+  document.getElementById("reportsNotice");
+
+const reportsRefreshButton =
+  document.getElementById("reportsRefreshButton");
+
+const reportsExcelButton =
+  document.getElementById("reportsExcelButton");
+
+const reportsPdfButton =
+  document.getElementById("reportsPdfButton");
+
+const reportTotalRecords =
+  document.getElementById("reportTotalRecords");
+
+const reportDatasetCount =
+  document.getElementById("reportDatasetCount");
+
+const reportPaymentCount =
+  document.getElementById("reportPaymentCount");
+
+const reportLeadCount =
+  document.getElementById("reportLeadCount");
+
+const reportsDatasetBody =
+  document.getElementById("reportsDatasetBody");
+
+const reportsLastUpdated =
+  document.getElementById("reportsLastUpdated");
 
 const paymentsNotice =
   document.getElementById("paymentsNotice");
@@ -8248,6 +8480,10 @@ function activateSection(section) {
     return;
   }
 
+  if (reportsSection) {
+    reportsSection.style.display = "none";
+  }
+
 
   document
     .querySelectorAll(
@@ -8506,6 +8742,37 @@ function activateSection(section) {
     hideNotice(assignmentsNotice);
 
     loadTechnicians();
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    return;
+
+  }
+
+
+  if (section === "reports") {
+
+    dashboardSection.style.display = "none";
+    leadsSection.style.display = "none";
+    assignmentsSection.style.display = "none";
+    partnersSection.style.display = "none";
+    techniciansSection.style.display = "none";
+    servicesSection.style.display = "none";
+    paymentsSection.style.display = "none";
+    reportsSection.style.display = "block";
+
+    hideNotice(dashboardNotice);
+    hideNotice(leadsNotice);
+    hideNotice(assignmentsNotice);
+    hideNotice(partnersNotice);
+    hideNotice(techniciansNotice);
+    hideNotice(servicesNotice);
+    hideNotice(paymentsNotice);
+
+    loadReports();
 
     window.scrollTo({
       top:0,
