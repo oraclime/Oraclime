@@ -2656,6 +2656,19 @@
       <div class="card" style="margin-bottom:16px;">
 
         <div class="section-title-row" style="margin-bottom:12px;">
+          <h2>Technician Payment History</h2>
+          <span class="small">Filter by date and export payment records</span>
+        </div>
+        <div class="technician-toolbar" style="margin-bottom:14px;">
+          <label class="small">From <input type="date" id="paymentDateFrom" aria-label="Payment history from date"></label>
+          <label class="small">To <input type="date" id="paymentDateTo" aria-label="Payment history to date"></label>
+          <button class="btn" type="button" id="paymentDateApply">Apply Dates</button>
+          <button class="btn" type="button" id="paymentDateClear">Clear Dates</button>
+          <button class="btn primary" type="button" id="paymentDownloadCsv">Download Excel/CSV</button>
+        </div>
+        <div id="paymentHistorySummary" class="small" style="margin-bottom:12px;">Showing all recorded payments.</div>
+
+        <div class="section-title-row" style="margin-bottom:12px;">
           <h2>Today's Technician Collection</h2>
           <span class="small">Technician-wise payment summary</span>
         </div>
@@ -4375,6 +4388,14 @@ const technicianPaymentsTableBody =
 
 const technicianPaymentsEmpty =
   document.getElementById("technicianPaymentsEmpty");
+const paymentDateFrom = document.getElementById("paymentDateFrom");
+const paymentDateTo = document.getElementById("paymentDateTo");
+const paymentDateApply = document.getElementById("paymentDateApply");
+const paymentDateClear = document.getElementById("paymentDateClear");
+const paymentDownloadCsv = document.getElementById("paymentDownloadCsv");
+const paymentHistorySummary = document.getElementById("paymentHistorySummary");
+let paymentHistoryFrom = "";
+let paymentHistoryTo = "";
 
 const techniciansNotice =
   document.getElementById("techniciansNotice");
@@ -8820,6 +8841,16 @@ function partnerMatchesFilter(partner) {
     return false;
   }
 
+  const paymentDate = new Date(payment.created_at || payment.updated_at || 0);
+  if (paymentHistoryFrom) {
+    const fromDate = new Date(paymentHistoryFrom + "T00:00:00");
+    if (paymentDate < fromDate) return false;
+  }
+  if (paymentHistoryTo) {
+    const toDate = new Date(paymentHistoryTo + "T23:59:59.999");
+    if (paymentDate > toDate) return false;
+  }
+
   if (!search) {
     return true;
   }
@@ -9316,7 +9347,10 @@ function isPaymentToday(value) {
 function renderTechnicianPaymentSummary() {
 
   const todayPayments = allPayments.filter(function(payment) {
-    return isPaymentToday(payment.created_at);
+    const date = new Date(payment.created_at || payment.updated_at || 0);
+    if (paymentHistoryFrom && date < new Date(paymentHistoryFrom + "T00:00:00")) return false;
+    if (paymentHistoryTo && date > new Date(paymentHistoryTo + "T23:59:59.999")) return false;
+    return true;
   });
 
   const technicianMap = {};
@@ -9354,6 +9388,11 @@ function renderTechnicianPaymentSummary() {
   const summary = Object.values(technicianMap).sort(function(a,b) {
     return b.total - a.total;
   });
+
+  if (paymentHistorySummary) {
+    const total = todayPayments.reduce(function(sum, payment) { return sum + (Number(payment.amount_collected) || 0); }, 0);
+    paymentHistorySummary.textContent = "" + todayPayments.length + " transactions • Total: " + formatAmount(total) + (paymentHistoryFrom || paymentHistoryTo ? " • Filtered dates: " + (paymentHistoryFrom || "Beginning") + " to " + (paymentHistoryTo || "Today") : " • All dates");
+  }
 
   if (!summary.length) {
     technicianPaymentsTableWrap.style.display = "none";
@@ -11654,6 +11693,46 @@ if (requestCorrectionButton) {
 /* =====================================================
    PAYMENTS EVENTS
    ===================================================== */
+
+function applyPaymentDateFilters() {
+  paymentHistoryFrom = paymentDateFrom?.value || "";
+  paymentHistoryTo = paymentDateTo?.value || "";
+  if (paymentHistoryFrom && paymentHistoryTo && paymentHistoryFrom > paymentHistoryTo) {
+    showNotice("From date must be before or equal to To date.", "error", paymentsNotice);
+    return;
+  }
+  renderTechnicianPaymentSummary();
+  renderPayments();
+}
+
+if (paymentDateApply) paymentDateApply.addEventListener("click", applyPaymentDateFilters);
+if (paymentDateClear) paymentDateClear.addEventListener("click", function() {
+  if (paymentDateFrom) paymentDateFrom.value = "";
+  if (paymentDateTo) paymentDateTo.value = "";
+  paymentHistoryFrom = "";
+  paymentHistoryTo = "";
+  renderTechnicianPaymentSummary();
+  renderPayments();
+});
+if (paymentDownloadCsv) paymentDownloadCsv.addEventListener("click", function() {
+  const rows = allPayments.filter(paymentMatchesFilter);
+  if (!rows.length) {
+    showNotice("No payment records match the selected filters.", "error", paymentsNotice);
+    return;
+  }
+  const columns = ["Date", "Lead", "Customer", "Mobile", "Technician", "Technician Code", "Amount", "Mode", "Service Order", "Payment ID"];
+  const quote = function(value) { return '"' + String(value == null ? "" : value).replace(/"/g, '""') + '"'; };
+  const csv = [columns.map(quote).join(",")].concat(rows.map(function(p) {
+    return [p.created_at || p.updated_at, p.lead_number, p.customer_name, p.mobile, p.technician_name, p.technician_code, p.amount_collected, p.payment_mode, p.service_order_id, p.id].map(quote).join(",");
+  })).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "ORACLIME-Payment-History-" + (paymentHistoryFrom || "all") + "-to-" + (paymentHistoryTo || "all") + ".csv";
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  showNotice("Filtered payment history downloaded.", "success", paymentsNotice);
+});
 
 if (paymentSearch) {
   paymentSearch.addEventListener("input", renderPayments);
