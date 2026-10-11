@@ -8831,16 +8831,6 @@ function partnerMatchesFilter(partner) {
     return false;
   }
 
-  const paymentDate = new Date(payment.created_at || payment.updated_at || 0);
-  if (paymentHistoryFrom) {
-    const fromDate = new Date(paymentHistoryFrom + "T00:00:00");
-    if (paymentDate < fromDate) return false;
-  }
-  if (paymentHistoryTo) {
-    const toDate = new Date(paymentHistoryTo + "T23:59:59.999");
-    if (paymentDate > toDate) return false;
-  }
-
   if (!search) {
     return true;
   }
@@ -9891,10 +9881,23 @@ function downloadReportsExcel() {
       const rawRows = reportsData[dataset.key];
       if (!rawRows || rawRows.__error) return;
 
+      // Excel limits each cell to 32,767 characters. Split oversized values
+      // across continuation columns so the export succeeds without discarding data.
+      const EXCEL_CELL_LIMIT = 32000;
       const rows = rawRows.map(function(row) {
         const output = {};
         Object.keys(row).forEach(function(key) {
-          output[key] = reportCellValue(row[key]);
+          const value = reportCellValue(row[key]);
+          if (value.length <= EXCEL_CELL_LIMIT) {
+            output[key] = value;
+            return;
+          }
+          let part = 1;
+          for (let start = 0; start < value.length; start += EXCEL_CELL_LIMIT) {
+            const columnName = part === 1 ? key : key + " (continued " + part + ")";
+            output[columnName] = value.slice(start, start + EXCEL_CELL_LIMIT);
+            part += 1;
+          }
         });
         return output;
       });
@@ -11891,9 +11894,7 @@ function showAccessDenied(message) {
 }
 
 
-/* =====================================================
-   38. INITIALIZE
-   ===================================================== */
+/* ===================================================== 38. INITIALIZE   ===================================================== */
 
 async function initializeDashboard() {
 
@@ -11987,9 +11988,7 @@ async function initializeDashboard() {
 }
 
 
-/* =====================================================
-   38. AUTH LISTENER
-   ===================================================== */
+/* ===================================================== 38. AUTH LISTENER ===================================================== */
 
 supabaseClient
   .auth
@@ -12020,9 +12019,7 @@ supabaseClient
   );
 
 
-/* =====================================================
-   38. START
-   ===================================================== */
+/* ===================================================== 38. START  ===================================================== */
 
 setLeadDateMinimum();
 setupLeadValidation();
