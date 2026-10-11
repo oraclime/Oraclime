@@ -10012,9 +10012,13 @@ async function loadSettingsCompletionLeads() {
     settingsCompletionLead.innerHTML =
       '<option value="">Select a lead</option>';
 
-    // Support can regenerate a completion code for any existing lead.
-    // The secure Supabase RPC remains responsible for rotating the code.
-    const availableLeads = data || [];
+    // Only leads that are actively being worked on or need correction
+    // can receive a completion code. Submitted/completed/cancelled leads
+    // must not appear here because their completion flow has moved on.
+    const availableLeads = (data || []).filter(function(lead) {
+      const status = String(lead.status || "").toUpperCase();
+      return ["IN_PROGRESS", "CORRECTION_REQUIRED"].includes(status);
+    });
 
     availableLeads.forEach(function(lead) {
       const option = document.createElement("option");
