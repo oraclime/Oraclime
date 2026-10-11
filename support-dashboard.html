@@ -1385,8 +1385,6 @@
     <option value="services">Services</option>
     <option value="payments">Payments</option>
     <option value="reports">Reports</option>
-    <option value="notifications">Notifications</option>
-    <option value="activity">Activity Logs</option>
     <option value="settings">Settings</option>
 
   </select>
@@ -1480,14 +1478,6 @@
 
       <button data-section="reports">
         Reports
-      </button>
-
-      <button data-section="notifications">
-        Notifications
-      </button>
-
-      <button data-section="activity">
-        Activity Logs
       </button>
 
       <button data-section="settings">
@@ -9002,29 +8992,8 @@ async function loadPartners() {
   } =
     await supabaseClient
       .from("partners")
-      .select(`
-        id,
-        user_id,
-        partner_code,
-        business_name,
-        contact_person,
-        email,
-        mobile,
-        alternate_mobile,
-        address,
-        city,
-        state,
-        pincode,
-        status,
-        notes,
-        company_name,
-        created_at,
-        updated_at
-      `)
-      .order(
-        "created_at",
-        { ascending: false }
-      );
+      .select("*")
+      .order("created_at", { ascending: false });
 
   partnersLoading.style.display = "none";
 
@@ -9881,17 +9850,40 @@ function reportSheetName(label, usedNames) {
 }
 
 function downloadReportsExcel() {
-  if (typeof XLSX === "undefined") {
-    showNotice("Excel export library is not available.", "error", reportsNotice);
-    return;
-  }
-
   if (!Object.keys(reportsData).length) {
     showNotice("Load the report data first.", "error", reportsNotice);
     return;
   }
 
   try {
+    if (typeof XLSX === "undefined") {
+      const rows = [];
+      rows.push(["Dataset", "Record JSON"]);
+      REPORT_DATASETS.forEach(function(dataset) {
+        const rawRows = reportsData[dataset.key];
+        if (!rawRows || rawRows.__error) return;
+        rawRows.forEach(function(row) {
+          rows.push([dataset.label, JSON.stringify(row)]);
+        });
+      });
+      const csv = rows.map(function(row) {
+        return row.map(function(value) {
+          const text = String(value == null ? "" : value);
+          return '"' + text.replace(/"/g, '""') + '"';
+        }).join(",");
+      }).join("\r\n");
+      const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "ORACLIME-Support-Report-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      showNotice("Excel library unavailable; downloaded an Excel-compatible CSV report.", "success", reportsNotice);
+      return;
+    }
     const workbook = XLSX.utils.book_new();
     const usedNames = {};
 
@@ -9937,17 +9929,40 @@ function downloadReportsExcel() {
 function downloadReportsPdf() {
   const pdfLib = window.jspdf;
 
-  if (!pdfLib || !pdfLib.jsPDF) {
-    showNotice("PDF export library is not available.", "error", reportsNotice);
-    return;
-  }
-
   if (!Object.keys(reportsData).length) {
     showNotice("Load the report data first.", "error", reportsNotice);
     return;
   }
 
   try {
+    if (!pdfLib || !pdfLib.jsPDF) {
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        showNotice("Allow pop-ups to create the PDF report, then choose Save as PDF in the print dialog.", "error", reportsNotice);
+        return;
+      }
+      let html = "<!doctype html><html><head><meta charset=\"utf-8\"><title>ORACLIME Support Report</title><style>body{font:12px Arial,sans-serif;padding:20px;color:#111}h1{font-size:20px}h2{font-size:15px;margin-top:24px}table{border-collapse:collapse;width:100%;margin-bottom:18px;table-layout:fixed}th,td{border:1px solid #bbb;padding:5px;text-align:left;overflow-wrap:anywhere;font-size:9px}th{background:#eee} @media print{body{padding:0}h2{break-after:avoid}table{break-inside:auto}tr{break-inside:avoid}}</style></head><body><h1>ORACLIME Support Operational Report</h1><p>Generated: " + new Date().toLocaleString() + "</p>";
+      REPORT_DATASETS.forEach(function(dataset) {
+        const rawRows = reportsData[dataset.key];
+        if (!rawRows || rawRows.__error) return;
+        html += "<h2>" + escapeHtml(dataset.label) + "</h2>";
+        if (!rawRows.length) { html += "<p>No records</p>"; return; }
+        const columns = Object.keys(rawRows[0]);
+        html += "<table><thead><tr>" + columns.map(function(col) { return "<th>" + escapeHtml(col) + "</th>"; }).join("") + "</tr></thead><tbody>";
+        rawRows.forEach(function(row) {
+          html += "<tr>" + columns.map(function(col) { return "<td>" + escapeHtml(reportCellValue(row[col])) + "</td>"; }).join("") + "</tr>";
+        });
+        html += "</tbody></table>";
+      });
+      html += "</body></html>";
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.onload = function() { printWindow.print(); };
+      showNotice("PDF library unavailable; opened a print-ready report. Choose Save as PDF in the print dialog.", "success", reportsNotice);
+      return;
+    }
     const doc = new pdfLib.jsPDF({
       orientation: "landscape",
       unit: "pt",
@@ -10805,12 +10820,6 @@ function sectionLabel(section) {
 
     reports:
       "Reports",
-
-    notifications:
-      "Notifications",
-
-    activity:
-      "Activity Logs",
 
     settings:
       "Settings"
