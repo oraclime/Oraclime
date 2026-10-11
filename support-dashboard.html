@@ -719,23 +719,6 @@
       flex: 1 1 280px;
     }
 
-
-    /* Settings completion-code lead dropdown: keep it consistent with the dark theme. */
-    #settingsCompletionLead {
-      color-scheme: dark;
-      color: var(--text);
-      background-color: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 11px 12px;
-      min-height: 42px;
-    }
-
-    #settingsCompletionLead option {
-      color: var(--text);
-      background-color: var(--surface);
-    }
-
     .technician-table-wrap {
       overflow-x: auto;
     }
@@ -1291,6 +1274,58 @@
   .activity-filters { width:100%; }
   .activity-filters select { flex:1; min-width:0; }
 }
+
+
+
+    /* GLOBAL DASHBOARD FORM CONTROLS — keep the existing dark theme consistent */
+    .dashboard-shell input:not([type="checkbox"]):not([type="radio"]),
+    .dashboard-shell select,
+    .dashboard-shell textarea,
+    input[type="search"],
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    input[type="password"],
+    select,
+    textarea {
+      box-sizing: border-box;
+      color: var(--text, #f4f7fb);
+      background-color: var(--surface, #0d1c2d);
+      border: 1px solid var(--line, #1b3850);
+      border-radius: 10px;
+      font: inherit;
+    }
+
+    .dashboard-shell input:not([type="checkbox"]):not([type="radio"]),
+    input[type="search"], input[type="text"], input[type="email"],
+    input[type="tel"], input[type="number"], input[type="date"],
+    input[type="password"], textarea {
+      padding: 11px 12px;
+    }
+
+    .dashboard-shell input::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--muted, #9aadc0);
+      opacity: 1;
+    }
+
+    .dashboard-shell input:focus,
+    .dashboard-shell select:focus,
+    .dashboard-shell textarea:focus,
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(53, 209, 170, .75);
+      box-shadow: 0 0 0 2px rgba(53, 209, 170, .12);
+    }
+
+    .dashboard-shell select option,
+    select option {
+      color: var(--text, #f4f7fb);
+      background: var(--surface, #0d1c2d);
+    }
 
 </style>
 </head>
@@ -6054,35 +6089,13 @@ async function loadUnassignedLeads() {
   } =
     await supabaseClient
       .from("leads")
-      .select(
-        `
-        id,
-        lead_number,
-        customer_name,
-        mobile,
-        address,
-        city,
-        state,
-        pincode,
-        service_type,
-        preferred_date,
-        preferred_time,
-        status,
-        assigned_technician_id,
-        created_at
-        `
-      )
+      // Use the same table access as the main dashboard. Selecting * avoids
+      // failing the whole Assignments page when an optional lead column is
+      // absent in a particular schema version.
+      .select("*")
       .is(
         "assigned_technician_id",
         null
-      )
-      .in(
-        "status",
-        [
-          "NEW",
-          "RESCHEDULED",
-          "RESCHEDULE_REQUESTED"
-        ]
       )
       .order(
         "created_at",
@@ -6121,10 +6134,19 @@ async function loadUnassignedLeads() {
 
   }
 
+  // Filter eligible statuses client-side so a new/renamed status does not
+  // cause the database query itself to fail. Keep only genuinely assignable leads.
+  const assignableStatuses = new Set([
+    "NEW",
+    "RESCHEDULED",
+    "RESCHEDULE_REQUESTED"
+  ]);
+
   unassignedLeads =
-    Array.isArray(data)
-      ? data
-      : [];
+    (Array.isArray(data) ? data : []).filter(function(lead) {
+      return !lead.assigned_technician_id &&
+        assignableStatuses.has(String(lead.status || "").toUpperCase());
+    });
 
   count.textContent =
     unassignedLeads.length +
@@ -9990,12 +10012,9 @@ async function loadSettingsCompletionLeads() {
     settingsCompletionLead.innerHTML =
       '<option value="">Select a lead</option>';
 
-    // Only leads that can still receive service completion are selectable.
-    // Completed and cancelled leads must not appear in this code-generation list.
-    const availableLeads = (data || []).filter(function(lead) {
-      const status = String(lead.status || "").trim().toUpperCase();
-      return status !== "COMPLETED" && status !== "CANCELLED";
-    });
+    // Support can regenerate a completion code for any existing lead.
+    // The secure Supabase RPC remains responsible for rotating the code.
+    const availableLeads = data || [];
 
     availableLeads.forEach(function(lead) {
       const option = document.createElement("option");
