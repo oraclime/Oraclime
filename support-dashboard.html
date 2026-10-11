@@ -3043,13 +3043,20 @@
     </div>
 
     <div style="padding-top:8px;max-width:720px;">
-      <h3 style="margin-bottom:8px;">Reset Password</h3>
+      <h3 style="margin-bottom:8px;">Partner / Technician Password Reset</h3>
       <p class="small" style="margin-bottom:18px;">
-        We will send a password-reset link to your registered Support email address.
+        Select a Partner or Technician account and set a new password directly. No reset email will be sent.
       </p>
-      <button class="btn primary" type="button" id="settingsResetPasswordButton">
-        Send Password Reset Email
-      </button>
+      <label for="settingsPasswordTarget" style="display:block;margin-bottom:8px;font-weight:700;">Partner / Technician Account</label>
+      <select id="settingsPasswordTarget" class="technician-search" style="width:100%;margin-bottom:14px;">
+        <option value="">Loading accounts...</option>
+      </select>
+      <label for="settingsNewPassword" style="display:block;margin-bottom:8px;font-weight:700;">New Password</label>
+      <input id="settingsNewPassword" class="technician-search" type="password" autocomplete="new-password" minlength="8" placeholder="Enter new password (minimum 8 characters)" style="width:100%;margin-bottom:14px;">
+      <label for="settingsConfirmPassword" style="display:block;margin-bottom:8px;font-weight:700;">Confirm New Password</label>
+      <input id="settingsConfirmPassword" class="technician-search" type="password" autocomplete="new-password" minlength="8" placeholder="Re-enter new password" style="width:100%;margin-bottom:14px;">
+      <button class="btn primary" type="button" id="settingsResetPasswordButton">Update Account Password</button>
+      <div class="small" style="margin-top:10px;">Only Partner and Technician accounts are available here.</div>
     </div>
   </div>
 
@@ -9966,12 +9973,11 @@ async function loadSettingsCompletionLeads() {
     settingsCompletionLead.innerHTML =
       '<option value="">Select a lead</option>';
 
-    const activeLeads = (data || []).filter(function(lead) {
-      const status = String(lead.status || "").toUpperCase();
-      return ["NEW", "ASSIGNED", "IN_PROGRESS"].includes(status);
-    });
+    // Support can regenerate a completion code for any existing lead.
+    // The secure Supabase RPC remains responsible for rotating the code.
+    const availableLeads = data || [];
 
-    activeLeads.forEach(function(lead) {
+    availableLeads.forEach(function(lead) {
       const option = document.createElement("option");
       option.value = lead.id;
       option.textContent =
@@ -9984,7 +9990,7 @@ async function loadSettingsCompletionLeads() {
       settingsCompletionLead.appendChild(option);
     });
 
-    if (!activeLeads.length) {
+    if (!availableLeads.length) {
       settingsCompletionLead.innerHTML =
         '<option value="">No leads found</option>';
     }
@@ -10017,6 +10023,7 @@ function renderSettings() {
   }
 
   loadSettingsCompletionLeads();
+  loadSettingsPasswordTargets();
 }
 
 async function generateSettingsCompletionCode() {
@@ -10156,42 +10163,91 @@ async function generateSettingsCompletionCode() {
   }
 }
 
+const settingsPasswordTarget = document.getElementById("settingsPasswordTarget");
+const settingsNewPassword = document.getElementById("settingsNewPassword");
+const settingsConfirmPassword = document.getElementById("settingsConfirmPassword");
+
+async function callSupportPasswordAdmin(payload) {
+  const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+  if (sessionError) throw sessionError;
+  const accessToken = sessionData?.session?.access_token;
+  if (!accessToken) throw new Error("Support session expired. Please sign in again.");
+
+  const { data, error } = await supabaseClient.functions.invoke(
+    "support-account-password-admin",
+    { body: payload, headers: { Authorization: "Bearer " + accessToken } }
+  );
+  if (error) {
+    let details = error.message || "Password administration request failed.";
+    try {
+      const response = error.context;
+      if (response && typeof response.json === "function") {
+        const body = await response.json();
+        details = body.error || body.message || details;
+      }
+    } catch (_) {}
+    throw new Error(details);
+  }
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
+async function loadSettingsPasswordTargets() {
+  if (!settingsPasswordTarget) return;
+  settingsPasswordTarget.innerHTML = '<option value="">Loading accounts...</option>';
+  try {
+    const data = await callSupportPasswordAdmin({ action: "list-accounts" });
+    const accounts = Array.isArray(data.accounts) ? data.accounts : [];
+    settingsPasswordTarget.innerHTML = '<option value="">Select a Partner or Technician</option>';
+    accounts.forEach(function(account) {
+      const option = document.createElement("option");
+      option.value = account.id;
+      option.textContent = (account.role || "ACCOUNT") + " — " +
+        (account.full_name || account.email || account.id) +
+        (account.email ? " (" + account.email + ")" : "");
+      settingsPasswordTarget.appendChild(option);
+    });
+    if (!accounts.length) settingsPasswordTarget.innerHTML = '<option value="">No Partner or Technician accounts found</option>';
+  } catch (error) {
+    console.error("Unable to load Partner/Technician accounts:", error);
+    settingsPasswordTarget.innerHTML = '<option value="">Unable to load accounts — deploy Edge Function</option>';
+    showNotice(error.message || "Unable to load accounts.", "error", settingsNotice);
+  }
+}
+
 async function sendSettingsPasswordReset() {
-  if (!currentAuthUser?.email) {
-    showNotice("Registered email address could not be found.", "error", settingsNotice);
+  const targetId = settingsPasswordTarget?.value;
+  const password = settingsNewPassword?.value || "";
+  const confirmation = settingsConfirmPassword?.value || "";
+
+  if (!targetId) {
+    showNotice("Please select a Partner or Technician account.", "error", settingsNotice);
     return;
   }
-
+  if (password.length < 8) {
+    showNotice("Password must be at least 8 characters.", "error", settingsNotice);
+    return;
+  }
+  if (password !== confirmation) {
+    showNotice("New password and confirmation do not match.", "error", settingsNotice);
+    return;
+  }
   if (!settingsResetPasswordButton) return;
+
+  const selectedLabel = settingsPasswordTarget.options[settingsPasswordTarget.selectedIndex]?.textContent || "selected account";
+  if (!window.confirm("Update the password for " + selectedLabel + " now? The change will apply to Supabase Auth immediately.")) return;
 
   const originalText = settingsResetPasswordButton.textContent;
   settingsResetPasswordButton.disabled = true;
-  settingsResetPasswordButton.textContent = "Sending...";
-
+  settingsResetPasswordButton.textContent = "Updating Password...";
   try {
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(
-      currentAuthUser.email,
-      {
-        redirectTo: window.location.origin + "/support-login.html"
-      }
-    );
-
-    if (error) {
-      throw new Error(error.message || "Unable to send password reset email.");
-    }
-
-    showNotice(
-      "Password reset email sent to " + currentAuthUser.email + ".",
-      "success",
-      settingsNotice
-    );
+    await callSupportPasswordAdmin({ action: "reset-password", user_id: targetId, password: password });
+    settingsNewPassword.value = "";
+    settingsConfirmPassword.value = "";
+    showNotice("Password updated successfully in Supabase Auth for " + selectedLabel + ".", "success", settingsNotice);
   } catch (error) {
-    console.error("Password reset error:", error);
-    showNotice(
-      error.message || "Unable to send password reset email.",
-      "error",
-      settingsNotice
-    );
+    console.error("Account password update error:", error);
+    showNotice(error.message || "Unable to update account password.", "error", settingsNotice);
   } finally {
     settingsResetPasswordButton.disabled = false;
     settingsResetPasswordButton.textContent = originalText;
