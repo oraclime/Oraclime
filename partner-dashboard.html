@@ -590,77 +590,73 @@
         : "—";
   }
 
+  // Keep image payloads out of the Notes text; the photo viewer displays them as images.
+  function cleanPartnerJobNotes(value) {
+    return String(value || "")
+      .replace(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g, "[Photo attached]")
+      .replace(/\s{2,}/g, " ")
+      .trim() || "—";
+  }
 
-  // ADDITIVE FEATURE: show existing technician-uploaded photos for this partner's job.
+  // ADDITIVE FEATURE: render photos embedded in lead.notes by the technician app.
   async function loadTechnicianServicePhotos(job) {
     const container = document.getElementById("jobPhotosContent");
     if (!container) return;
     container.innerHTML = '<div class="muted">Loading technician photos…</div>';
 
     try {
-      // currentJobs is loaded using the signed-in partner_id; do not allow unrelated job IDs.
       if (!job || !currentPartner || !currentJobs.some(item => item.id === job.id)) {
         container.innerHTML = '<div class="notice error">Photos are not available for this job.</div>';
         return;
       }
 
-      const { data: serviceOrders, error: serviceOrderError } = await supabaseClient
-        .from("service_orders")
-        .select("id")
-        .eq("lead_id", job.id);
-
-      if (serviceOrderError) throw serviceOrderError;
-      const serviceOrderIds = (serviceOrders || []).map(row => row.id).filter(Boolean);
-
-      if (!serviceOrderIds.length) {
-        container.innerHTML = '<div class="empty">No technician service photos found yet.</div>';
+      const notes = String(job.notes || "");
+      const matches = [...notes.matchAll(/data:image\/(?:png|jpe?g|webp|gif|bmp);base64,[A-Za-z0-9+/=]+/gi)];
+      if (matches.length) {
+        const photos = matches.map((match, index) => {
+          const previousEnd = index ? matches[index - 1].index + matches[index - 1][0].length : 0;
+          const prefix = notes.slice(previousEnd, match.index);
+          const labelMatch = prefix.match(/([A-Za-z][A-Za-z _-]*photo)\s*:\s*$/i);
+          const label = labelMatch ? labelMatch[1].replace(/[_-]+/g, " ").trim() : `Technician Photo ${index + 1}`;
+          return { url: match[0], label };
+        });
+        container.innerHTML = `<p class="muted" style="margin:0 0 12px">${photos.length} photo(s) submitted with this job.</p>` +
+          '<div class="service-photos-grid">' + photos.map((photo, index) => `
+            <div class="service-photo-card">
+              <a href="${photo.url}" target="_blank" rel="noopener noreferrer" title="Open full-size photo"><img src="${photo.url}" alt="${esc(photo.label)}" loading="lazy"></a>
+              <div class="photo-meta"><strong>${esc(photo.label)}</strong><div class="muted">Photo ${index + 1}</div><a href="${photo.url}" target="_blank" rel="noopener noreferrer">Open full size</a></div>
+            </div>`).join("") + '</div>';
         return;
       }
+
+      // Fallback for deployments that store uploads as document records.
+      const { data: serviceOrders, error: serviceOrderError } = await supabaseClient
+        .from("service_orders").select("id").eq("lead_id", job.id);
+      if (serviceOrderError) throw serviceOrderError;
+      const ids = (serviceOrders || []).map(row => row.id).filter(Boolean);
+      if (!ids.length) { container.innerHTML = '<div class="empty">No technician service photos found for this job.</div>'; return; }
 
       const { data: documents, error: documentsError } = await supabaseClient
         .from("documents")
         .select("id,service_order_id,visit_id,document_type,storage_path,original_filename,mime_type,created_at")
-        .in("service_order_id", serviceOrderIds)
-        .order("created_at", { ascending: true });
-
+        .in("service_order_id", ids).order("created_at", { ascending: true });
       if (documentsError) throw documentsError;
       const files = (documents || []).filter(doc => doc.storage_path);
+      if (!files.length) { container.innerHTML = '<div class="empty">No technician service photos found for this job.</div>'; return; }
 
-      if (!files.length) {
-        container.innerHTML = '<div class="empty">No technician service photos have been submitted for this job.</div>';
-        return;
-      }
-
-      const signedFiles = await Promise.all(files.map(async doc => {
-        const { data, error } = await supabaseClient
-          .storage.from("service-documents")
-          .createSignedUrl(doc.storage_path, 3600);
+      const signed = await Promise.all(files.map(async doc => {
+        const { data, error } = await supabaseClient.storage.from("service-documents").createSignedUrl(doc.storage_path, 3600);
         return { doc, url: error ? null : data?.signedUrl };
       }));
-
-      const available = signedFiles.filter(item => item.url);
-      if (!available.length) {
-        container.innerHTML = '<div class="notice error">Photo records were found, but Storage access was denied. Check the existing partner read permissions for documents and the service-documents bucket.</div>';
-        return;
-      }
-
-      container.innerHTML =
-        '<p class="muted" style="margin:0 0 12px">Photos submitted by the technician for this job.</p>' +
-        '<div class="service-photos-grid">' +
-        available.map(({doc, url}) => {
+      const available = signed.filter(x => x.url);
+      if (!available.length) { container.innerHTML = '<div class="notice error">Photo records were found, but Storage access was denied. Check existing partner read permissions.</div>'; return; }
+      container.innerHTML = `<p class="muted" style="margin:0 0 12px">${available.length} uploaded file(s).</p>` + '<div class="service-photos-grid">' +
+        available.map(({doc,url}) => {
           const label = String(doc.document_type || "SERVICE PHOTO").replaceAll("_", " ");
           const filename = doc.original_filename || label;
-          const isImage = String(doc.mime_type || "").startsWith("image/") ||
-            /\.(png|jpe?g|webp|gif|heic)$/i.test(filename);
-          return `<div class="service-photo-card">
-            ${isImage
-              ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="Open full-size photo"><img src="${esc(url)}" alt="${esc(label)}" loading="lazy"></a>`
-              : `<div style="padding:18px;text-align:center"><strong>${esc(label)}</strong><p><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open uploaded file</a></p></div>`}
-            <div class="photo-meta"><strong>${esc(label)}</strong><div class="muted">${esc(filename)}</div><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open full size</a></div>
-          </div>`;
-        }).join("") +
-        '</div>' +
-        (available.length < files.length ? '<p class="muted">Some files could not be opened due to Storage permissions.</p>' : '');
+          const isImage = String(doc.mime_type || "").startsWith("image/") || /\.(png|jpe?g|webp|gif|heic|bmp)$/i.test(filename);
+          return `<div class="service-photo-card">${isImage ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(url)}" alt="${esc(label)}" loading="lazy"></a>` : `<div style="padding:18px;text-align:center"><strong>${esc(label)}</strong><p><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open uploaded file</a></p></div>`}<div class="photo-meta"><strong>${esc(label)}</strong><div class="muted">${esc(filename)}</div><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open file</a></div></div>`;
+        }).join("") + '</div>';
     } catch (error) {
       console.error("Unable to load technician service photos:", error);
       container.innerHTML = '<div class="notice error">Unable to load technician photos: ' + esc(error?.message || "Unknown error") + '</div>';
@@ -719,7 +715,7 @@
 
         <div class="detail" style="grid-column:1/-1">
           <small>Notes</small>
-          <strong>${esc(job.notes)}</strong>
+          <strong>${esc(cleanPartnerJobNotes(job.notes))}</strong>
         </div>
       </div>
 
