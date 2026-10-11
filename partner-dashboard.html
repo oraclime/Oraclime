@@ -636,13 +636,41 @@
       const ids = (serviceOrders || []).map(row => row.id).filter(Boolean);
       if (!ids.length) { container.innerHTML = '<div class="empty">No technician service photos found for this job.</div>'; return; }
 
-      const { data: documents, error: documentsError } = await supabaseClient
+      const documentColumns = "id,service_order_id,visit_id,document_type,storage_path,original_filename,mime_type,created_at";
+      let documents = [];
+      const { data: serviceOrderDocuments, error: documentsError } = await supabaseClient
         .from("documents")
-        .select("id,service_order_id,visit_id,document_type,storage_path,original_filename,mime_type,created_at")
-        .in("service_order_id", ids).order("created_at", { ascending: true });
+        .select(documentColumns)
+        .in("service_order_id", ids)
+        .order("created_at", { ascending: true });
       if (documentsError) throw documentsError;
-      const files = (documents || []).filter(doc => doc.storage_path);
-      if (!files.length) { container.innerHTML = '<div class="empty">No technician service photos found for this job.</div>'; return; }
+      documents = serviceOrderDocuments || [];
+
+      // Some existing document records are linked through visit_id only.
+      // Resolve visits for these service orders and use that relationship as a fallback.
+      if (!documents.length) {
+        const { data: visits, error: visitsError } = await supabaseClient
+          .from("visits")
+          .select("id,service_order_id")
+          .in("service_order_id", ids);
+        if (visitsError) throw visitsError;
+        const visitIds = (visits || []).map(visit => visit.id).filter(Boolean);
+        if (visitIds.length) {
+          const { data: visitDocuments, error: visitDocumentsError } = await supabaseClient
+            .from("documents")
+            .select(documentColumns)
+            .in("visit_id", visitIds)
+            .order("created_at", { ascending: true });
+          if (visitDocumentsError) throw visitDocumentsError;
+          documents = visitDocuments || [];
+        }
+      }
+
+      const files = documents.filter(doc => doc.storage_path);
+      if (!files.length) {
+        container.innerHTML = '<div class="notice error">No photo records were returned for this job. If the technician uploaded photos, check the Supabase documents read policy for this partner account; no database records have been changed.</div>';
+        return;
+      }
 
       const signed = await Promise.all(files.map(async doc => {
         const { data, error } = await supabaseClient.storage.from("service-documents").createSignedUrl(doc.storage_path, 3600);
@@ -655,7 +683,7 @@
           const label = String(doc.document_type || "SERVICE PHOTO").replaceAll("_", " ");
           const filename = doc.original_filename || label;
           const isImage = String(doc.mime_type || "").startsWith("image/") || /\.(png|jpe?g|webp|gif|heic|bmp)$/i.test(filename);
-          return `<div class="service-photo-card">${isImage ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(url)}" alt="${esc(label)}" loading="lazy"></a>` : `<div style="padding:18px;text-align:center"><strong>${esc(label)}</strong><p><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open uploaded file</a></p></div>`}<div class="photo-meta"><strong>${esc(label)}</strong><div class="muted">${esc(filename)}</div><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open file</a></div></div>`;
+          return `<div class="service-photo-card">${isImage ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(url)}" alt="${esc(label)}" loading="lazy" onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterend','<div class=\"notice error\">Image preview failed. Use Open file.</div>')"></a>` : `<div style="padding:18px;text-align:center"><strong>${esc(label)}</strong><p><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open uploaded file</a></p></div>`}<div class="photo-meta"><strong>${esc(label)}</strong><div class="muted">${esc(filename)}</div><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open file</a></div></div>`;
         }).join("") + '</div>';
     } catch (error) {
       console.error("Unable to load technician service photos:", error);
