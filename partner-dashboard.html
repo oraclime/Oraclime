@@ -11,7 +11,16 @@
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(180deg,#06111d 0%,#071827 100%);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 .topbar{height:72px;background:#06111d;border-bottom:1px solid #17364e;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:20}.brand{font-size:22px;font-weight:850;letter-spacing:3px;color:var(--accent)}.brand span{color:var(--accent)}.top-actions{display:flex;gap:10px;align-items:center}.partner-chip{padding:9px 12px;color:#9eb2c5;font-size:13px}.btn{border-radius:8px;padding:10px 15px;font-weight:700;border:1px solid transparent}.btn-primary{background:var(--accent);color:#04141b}.btn-blue{background:var(--accent);color:#04141b}.btn-light{background:transparent;border-color:#246079;color:#f3f7fa}.btn-light:hover{border-color:var(--accent);color:var(--accent)}.btn-danger{background:transparent;color:var(--danger);border-color:#71404a}
 .layout{display:flex;min-height:calc(100vh - 72px)}.sidebar{width:218px;background:var(--sidebar);color:#fff;padding:24px 14px;flex:none;border-right:1px solid #17364e}.nav-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#7891a6;padding:8px 12px 14px}.nav button{width:100%;text-align:left;background:transparent;color:#c4d1dc;border:1px solid transparent;border-radius:9px;padding:11px 12px;margin:2px 0;font-weight:600}.nav button.active{background:#0a2934;border-color:#0e5e63;color:var(--accent)}.nav button:hover{background:#0b2333;color:#fff}.main{flex:1;padding:30px 28px;min-width:0}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}.page-head h1{margin:0 0 7px;font-size:30px;letter-spacing:.2px}.page-head p{margin:0;color:#91abc0}.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:22px}.stat{background:linear-gradient(145deg,#0d2539,#0b2032);border:1px solid #1b4a67;border-radius:14px;padding:18px;box-shadow:var(--shadow)}.stat .label{font-size:12px;color:#91a8ba;text-transform:uppercase;letter-spacing:.6px}.stat .value{font-size:28px;font-weight:800;margin-top:8px;color:#f7fbfd}.panel{background:linear-gradient(145deg,#0d2539,#0b2032);border:1px solid #1b4a67;border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.panel-head h2{margin:0;font-size:18px}.filters{display:flex;gap:10px;flex-wrap:wrap}.input,.select,.textarea{width:100%;border:1px solid #315872;border-radius:8px;padding:10px 12px;background:#081b2b;color:#edf5f9;outline:none}.input::placeholder,.textarea::placeholder{color:#6f8799}.input:focus,.select:focus,.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(39,214,189,.12)}.filters .input{max-width:300px}.filters .select{max-width:190px}.table-wrap{overflow:auto;border:1px solid #1b4a67;border-radius:10px}.table{width:100%;border-collapse:collapse;min-width:850px}.table th,.table td{padding:13px;border-bottom:1px solid #173d57;text-align:left;font-size:13px;white-space:nowrap}.table th{background:#0b1e30;color:#8fa8ba;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.7px}.table tr:hover td{background:rgba(39,214,189,.035)}.table tr:last-child td{border-bottom:0}.status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:750;background:#173e56;color:#b7d0df}.status.COMPLETED{background:#103d36;color:#54dfb1}.status.CANCELLED,.status.REJECTED{background:#4a252e;color:#ff9999}.status.IN_PROGRESS{background:#123c54;color:#70c7f1}.status.NEW,.status.PENDING{background:#4a3d1c;color:#f2cb69}.status.COMPLETION_SUBMITTED{background:#34285a;color:#c9b4ff}.empty{text-align:center;padding:35px;color:var(--muted)}.muted{color:var(--muted);font-size:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#dce8ef}.field.full{grid-column:1/-1}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.notice{padding:12px 14px;border-radius:9px;background:#12334a;color:#9fd4ed;font-size:13px;margin-bottom:14px;border:1px solid #22506b}.success{background:#0e382f;color:#72e4bd;border-color:#176454}.error{background:#44252b;color:#ff9d9d;border-color:#713944}.upload-box{border:1px dashed #3a637a;padding:18px;border-radius:10px;background:#091c2c}.upload-box input{margin-top:10px}.result-list{margin-top:12px;max-height:240px;overflow:auto}.result-item{padding:9px 11px;border-bottom:1px solid #173d57;font-size:13px}.result-item:last-child{border:0}.ok{color:var(--success)}.bad{color:var(--danger)}
-.modal{position:fixed;inset:0;background:rgba(1,8,15,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.open{display:flex}.modal-card{background:#0c2235;width:min(760px,100%);max-height:90vh;overflow:auto;border:1px solid #24536e;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.45);padding:22px}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}.modal-head h2{margin:0}.close{border:1px solid #315872;background:#102d43;color:#fff;border-radius:8px;font-size:22px;width:36px;height:36px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{padding:12px;border:1px solid #24506b;border-radius:9px;background:#0a1d2d}.detail small{display:block;color:#829bad;margin-bottom:4px}.detail strong{word-break:break-word;color:#f0f7fa}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 15%,#0d2b3c 0%,#06111d 50%,#040c14 100%)}.login-card{width:min(430px,100%);background:#0d2438;padding:30px;border-radius:14px;box-shadow:var(--shadow);border:1px solid #24536e}.login-card h1{margin:0 0 7px}.login-card p{color:var(--muted);margin:0 0 22px}.toast{position:fixed;right:22px;bottom:22px;background:#0e2739;color:#fff;border:1px solid #2a5c73;padding:12px 16px;border-radius:9px;display:none;z-index:100}.toast.show{display:block}@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.sidebar{display:none}.main{padding:18px}.cards{grid-template-columns:repeat(2,1fr)}.grid2,.detail-grid{grid-template-columns:1fr}.topbar{padding:0 16px}.partner-chip{display:none}}@media(max-width:500px){.cards{grid-template-columns:1fr}.page-head{flex-direction:column}.page-head .btn{width:100%}}
+.modal{position:fixed;inset:0;background:rgba(1,8,15,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal.open{display:flex}.modal-card{background:#0c2235;width:min(760px,100%);max-height:90vh;overflow:auto;border:1px solid #24536e;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.45);padding:22px}.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}.modal-head h2{margin:0}.close{border:1px solid #315872;background:#102d43;color:#fff;border-radius:8px;font-size:22px;width:36px;height:36px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{padding:12px;border:1px solid #24506b;border-radius:9px;background:#0a1d2d}.detail small{display:block;color:#829bad;margin-bottom:4px}.detail strong{word-break:break-word;color:#f0f7fa}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 15%,#0d2b3c 0%,#06111d 50%,#040c14 100%)}.login-card{width:min(430px,100%);background:#0d2438;padding:30px;border-radius:14px;box-shadow:var(--shadow);border:1px solid #24536e}.login-card h1{margin:0 0 7px}.login-card p{color:var(--muted);margin:0 0 22px}.toast{position:fixed;right:22px;bottom:22px;background:#0e2739;color:#fff;border:1px solid #2a5c73;padding:12px 16px;border-radius:9px;display:none;z-index:100}.toast.show{display:block}
+/* Technician completion photos: additive feature only */
+.service-photos-panel{margin-top:14px}
+.service-photos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px}
+.service-photo-card{border:1px solid #24506b;border-radius:10px;background:#0a1d2d;overflow:hidden}
+.service-photo-card img{display:block;width:100%;height:155px;object-fit:cover;background:#071827;cursor:pointer}
+.service-photo-card .photo-meta{padding:10px;font-size:12px;color:#dce8ef;overflow-wrap:anywhere}
+.service-photo-card a{color:#27d6bd;text-decoration:none}
+.service-photo-card a:hover{text-decoration:underline}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:800px){.sidebar{display:none}.main{padding:18px}.cards{grid-template-columns:repeat(2,1fr)}.grid2,.detail-grid{grid-template-columns:1fr}.topbar{padding:0 16px}.partner-chip{display:none}}@media(max-width:500px){.cards{grid-template-columns:1fr}.page-head{flex-direction:column}.page-head .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -581,6 +590,83 @@
         : "—";
   }
 
+
+  // ADDITIVE FEATURE: show existing technician-uploaded photos for this partner's job.
+  async function loadTechnicianServicePhotos(job) {
+    const container = document.getElementById("jobPhotosContent");
+    if (!container) return;
+    container.innerHTML = '<div class="muted">Loading technician photos…</div>';
+
+    try {
+      // currentJobs is loaded using the signed-in partner_id; do not allow unrelated job IDs.
+      if (!job || !currentPartner || !currentJobs.some(item => item.id === job.id)) {
+        container.innerHTML = '<div class="notice error">Photos are not available for this job.</div>';
+        return;
+      }
+
+      const { data: serviceOrders, error: serviceOrderError } = await supabaseClient
+        .from("service_orders")
+        .select("id")
+        .eq("lead_id", job.id);
+
+      if (serviceOrderError) throw serviceOrderError;
+      const serviceOrderIds = (serviceOrders || []).map(row => row.id).filter(Boolean);
+
+      if (!serviceOrderIds.length) {
+        container.innerHTML = '<div class="empty">No technician service photos found yet.</div>';
+        return;
+      }
+
+      const { data: documents, error: documentsError } = await supabaseClient
+        .from("documents")
+        .select("id,service_order_id,visit_id,document_type,storage_path,original_filename,mime_type,created_at")
+        .in("service_order_id", serviceOrderIds)
+        .order("created_at", { ascending: true });
+
+      if (documentsError) throw documentsError;
+      const files = (documents || []).filter(doc => doc.storage_path);
+
+      if (!files.length) {
+        container.innerHTML = '<div class="empty">No technician service photos have been submitted for this job.</div>';
+        return;
+      }
+
+      const signedFiles = await Promise.all(files.map(async doc => {
+        const { data, error } = await supabaseClient
+          .storage.from("service-documents")
+          .createSignedUrl(doc.storage_path, 3600);
+        return { doc, url: error ? null : data?.signedUrl };
+      }));
+
+      const available = signedFiles.filter(item => item.url);
+      if (!available.length) {
+        container.innerHTML = '<div class="notice error">Photo records were found, but Storage access was denied. Check the existing partner read permissions for documents and the service-documents bucket.</div>';
+        return;
+      }
+
+      container.innerHTML =
+        '<p class="muted" style="margin:0 0 12px">Photos submitted by the technician for this job.</p>' +
+        '<div class="service-photos-grid">' +
+        available.map(({doc, url}) => {
+          const label = String(doc.document_type || "SERVICE PHOTO").replaceAll("_", " ");
+          const filename = doc.original_filename || label;
+          const isImage = String(doc.mime_type || "").startsWith("image/") ||
+            /\.(png|jpe?g|webp|gif|heic)$/i.test(filename);
+          return `<div class="service-photo-card">
+            ${isImage
+              ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="Open full-size photo"><img src="${esc(url)}" alt="${esc(label)}" loading="lazy"></a>`
+              : `<div style="padding:18px;text-align:center"><strong>${esc(label)}</strong><p><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open uploaded file</a></p></div>`}
+            <div class="photo-meta"><strong>${esc(label)}</strong><div class="muted">${esc(filename)}</div><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open full size</a></div>
+          </div>`;
+        }).join("") +
+        '</div>' +
+        (available.length < files.length ? '<p class="muted">Some files could not be opened due to Storage permissions.</p>' : '');
+    } catch (error) {
+      console.error("Unable to load technician service photos:", error);
+      container.innerHTML = '<div class="notice error">Unable to load technician photos: ' + esc(error?.message || "Unknown error") + '</div>';
+    }
+  }
+
   function viewJob(id) {
     const job = currentJobs.find(item => item.id === id);
 
@@ -638,10 +724,12 @@
       </div>
 
       <div id="jobCodeDetail" style="margin-top:14px"></div>
+      <div id="jobPhotosDetail" class="panel service-photos-panel"><div class="panel-head"><h2>Technician Service Photos</h2></div><div id="jobPhotosContent" class="muted">Photos will load when available.</div></div>
     `;
 
     openModal("jobModal");
     loadCodeDetail(job.id);
+    loadTechnicianServicePhotos(job);
   }
 
   async function loadCodeDetail(id) {
