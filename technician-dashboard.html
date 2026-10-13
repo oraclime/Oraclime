@@ -653,13 +653,13 @@
             </div>
             <div class="profile-field">
               <label>Mobile Number</label>
-              <input id="profileMobile" type="tel" inputmode="numeric" maxlength="15">
-              <div class="profile-locked">You can update your mobile number.</div>
+              <input id="profileMobile" type="tel" inputmode="numeric" maxlength="15" readonly>
+              <div class="profile-locked">Only ORACLIME Support can change this.</div>
             </div>
             <div class="profile-field">
               <label>Alternative Email</label>
-              <input id="profileAlternateEmail" type="email" autocomplete="email">
-              <div class="profile-locked">You can update your alternative email.</div>
+              <input id="profileAlternateEmail" type="email" autocomplete="email" readonly>
+              <div class="profile-locked">Only ORACLIME Support can change this.</div>
             </div>
             <div class="profile-field">
               <label>Login Email</label>
@@ -1234,21 +1234,13 @@ async function saveProfile(){
     throw new Error("Technician profile is not ready.");
   }
 
-  const mobile=document.getElementById("profileMobile").value.trim();
-  const alternateEmail=document.getElementById("profileAlternateEmail").value.trim();
+  // Technicians may change only their availability from this profile.
   const availability=document.getElementById("profileAvailability").value;
-
-  if(mobile && !/^[0-9+()\-\s]{7,15}$/.test(mobile)){
-    throw new Error("Please enter a valid mobile number.");
-  }
-
-  if(alternateEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alternateEmail)){
-    throw new Error("Please enter a valid alternative email address.");
+  if(!["AVAILABLE","BUSY","OFFLINE"].includes(availability)){
+    throw new Error("Please select a valid availability status.");
   }
 
   const payload={
-    mobile:mobile || null,
-    alternate_email:alternateEmail || null,
     availability_status:availability,
     updated_at:new Date().toISOString()
   };
@@ -1546,8 +1538,10 @@ function renderJobs(jobs){
   }
 
 
-  // Completed jobs are shown only inside Completed History.
-  const activeJobs = jobs.filter(j => j.status !== "COMPLETED");
+  // Keep My Jobs limited to currently actionable jobs. Historical, completed,
+  // cancelled, and otherwise closed leads remain out of this list.
+  const activeStatuses = ["ASSIGNED", "ACCEPTED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"];
+  const activeJobs = jobs.filter(j => activeStatuses.includes(String(j.status || "").toUpperCase()));
 
   if(!activeJobs.length){
     jobsContainer.innerHTML = `
