@@ -6,7 +6,101 @@
     <title>About ORACLIME</title>
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
     <link rel="stylesheet" href="assets/style.css">
-  </head>
+  <style>
+
+/* Founder section refinement */
+.founder-section {
+  padding-top: 34px;
+  padding-bottom: 84px;
+}
+.founder-section .sectionhead {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+.founder-section .sectionhead > p {
+  color: var(--muted, #9aabc0);
+  margin-top: 10px;
+  line-height: 1.7;
+}
+.founder-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 28px;
+  padding: clamp(24px, 4vw, 44px);
+  overflow: hidden;
+  border: 1px solid rgba(45, 212, 191, .2);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(45, 212, 191, .10), transparent 45%),
+    linear-gradient(135deg, #102438 0%, #0a1726 100%);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .16);
+}
+.founder-mark {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #2dd4bf, #0f9f91);
+  color: #06131e;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  box-shadow: 0 12px 28px rgba(45, 212, 191, .18);
+}
+.founder-content .eyebrow {
+  color: #2dd4bf;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+.founder-content h3 {
+  margin: 9px 0 12px;
+  color: #f4f8fc;
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.2;
+}
+.founder-intro {
+  max-width: 820px;
+  color: #c3d0df;
+  font-size: 16px;
+  line-height: 1.85;
+  margin: 0;
+}
+.founder-pillars {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+.founder-pillar {
+  padding: 20px 22px;
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 16px;
+  background: rgba(3, 12, 23, .35);
+}
+.founder-pillar h4 {
+  color: #2dd4bf;
+  font-size: 15px;
+  margin: 0 0 9px;
+}
+.founder-pillar p {
+  color: #c3d0df;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .founder-section { padding-top: 22px; padding-bottom: 54px; }
+  .founder-card { grid-template-columns: 1fr; gap: 20px; padding: 24px; border-radius: 18px; }
+  .founder-mark { width: 64px; height: 64px; border-radius: 17px; font-size: 20px; }
+  .founder-pillars { grid-template-columns: 1fr; gap: 12px; margin-top: 22px; }
+  .founder-pillar { padding: 17px; }
+}
+
+</style>
+</head>
   <body>
     <div class="navwrap">
       <div class="container nav">
@@ -113,27 +207,35 @@
         </div>
       </div>
     </section>
-    <section>
-      <div class="container">
-        <div class="sectionhead">
-          <div class="eyebrow">Founder</div>
-          <h2>About the Founder</h2>
-        </div>
-        <div class="card">
-          <h3 class="ph">Mohd Aman Ashraf</h3>
-          <p class="ph">Founder & Operations Lead</p>
-          <p class="ph">Building ORACLIME from the ground up, with responsibility across business development, service coordination, operations, and the development of a reliable technician network.</p>
-          <p>
-            <strong>Vision:</strong>
-            <span class="ph">To build a trusted and scalable service coordination business that connects service demand with reliable technical execution across India.</span>
-          </p>
-          <p>
-            <strong>Mission:</strong>
-            <span class="ph">To deliver professional service execution through structured lead management, technician coordination, service verification, and customer-focused operations.</span>
-          </p>
+    <section class="founder-section">
+  <div class="container">
+    <div class="sectionhead">
+      <div class="eyebrow">THE PERSON BEHIND ORACLIME</div>
+      <h2>About the Founder</h2>
+      <p>Building a reliable bridge between service demand and technical expertise.</p>
+    </div>
+
+    <div class="founder-card">
+      <div class="founder-mark" aria-hidden="true">OA</div>
+      <div class="founder-content">
+        <div class="eyebrow">FOUNDER &amp; OPERATIONS LEAD</div>
+        <h3>Mohd Aman Ashraf</h3>
+        <p class="founder-intro">Building ORACLIME from the ground up, with a focus on business development, service coordination, operations, and a dependable technician network.</p>
+
+        <div class="founder-pillars">
+          <div class="founder-pillar">
+            <h4>Our Vision</h4>
+            <p>To build a trusted and scalable service coordination business connecting service demand with reliable technical execution across India.</p>
+          </div>
+          <div class="founder-pillar">
+            <h4>Our Mission</h4>
+            <p>To deliver professional service through structured lead management, technician coordination, verification, and customer-focused operations.</p>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
     <footer>
       <div class="container footgrid">
         <div>
@@ -158,8 +260,11 @@
           </div>
         </div>
       </div>
-      <p class="copyright">© Copyright 2026 ORACLIME. All rights reserved.</p>
-      <p class="legal">ORACLIME is a registered Micro Enterprise under Udyam Registration No. UDYAM-UP-59-0119829.</p>
+      <!-- Copyright 2026 ORACLIME -->    
+<div class="copyright" style="font-size:12px;color:#91a6b9;line-height:1.4;margin:0;padding:0 20px 8px;">
+  <p style="margin:0;">© Copyright 2026 ORACLIME. All rights reserved.</p>
+  <p style="margin:4px 0 0;">ORACLIME is a registered Micro Enterprise under Udyam Registration No. UDYAM-UP-59-0119829 </p>
+</div>
     </footer>
     <script src="assets/app.js">
     </script>
