@@ -5299,11 +5299,41 @@ function exportLeadsFile(format) {
   const fileBase = "Oraclime_Leads_" + from + "_to_" + to;
   if (format === "excel") {
     if (!window.XLSX) { alert("Excel export library did not load. Please refresh and try again."); return; }
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    worksheet["!cols"] = Object.keys(data[0]).map(function(key) { return { wch: Math.min(32, Math.max(key.length + 2, ...data.map(function(row) { return String(row[key] || "").length + 2; }))) }; });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
-    XLSX.writeFile(workbook, fileBase + ".xlsx");
+    try {
+      // Excel cells cannot exceed 32,767 characters. Split only oversized lead
+      // fields into continuation columns so the XLSX export does not fail.
+      const EXCEL_CELL_LIMIT = 32000;
+      const excelData = data.map(function(row) {
+        const output = {};
+        Object.keys(row).forEach(function(key) {
+          const value = String(row[key] == null ? "" : row[key]);
+          if (value.length <= EXCEL_CELL_LIMIT) {
+            output[key] = value;
+            return;
+          }
+          let part = 1;
+          for (let start = 0; start < value.length; start += EXCEL_CELL_LIMIT) {
+            const columnName = part === 1 ? key : key + " (continued " + part + ")";
+            output[columnName] = value.slice(start, start + EXCEL_CELL_LIMIT);
+            part += 1;
+          }
+        });
+        return output;
+      });
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const headers = Object.keys(excelData.reduce(function(all, row) { return Object.assign(all, row); }, {}));
+      worksheet["!cols"] = headers.map(function(key) {
+        let width = key.length + 2;
+        excelData.forEach(function(row) { width = Math.max(width, Math.min(32, String(row[key] || "").length + 2)); });
+        return { wch: Math.min(32, width) };
+      });
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+      XLSX.writeFile(workbook, fileBase + ".xlsx");
+    } catch (error) {
+      console.error("Lead Excel export failed:", error);
+      alert("Excel download failed: " + (error && error.message ? error.message : "Unknown error"));
+    }
     return;
   }
   if (!window.jspdf || !window.jspdf.jsPDF) { alert("PDF export library did not load. Please refresh and try again."); return; }
@@ -11925,9 +11955,7 @@ if (reportsPdfButton) {
 }
 
 
-/* =====================================================
-   38. LOGOUT
-   ===================================================== */
+/* =====================================================  38. LOGOUT   ===================================================== */
 
 if (logoutButton) {
 
@@ -11990,9 +12018,7 @@ if (logoutButton) {
 }
 
 
-/* =====================================================
-   38. ACCESS DENIED
-   ===================================================== */
+/* =====================================================  38. ACCESS DENIED  ===================================================== */
 
 function showAccessDenied(message) {
 
@@ -12152,7 +12178,6 @@ supabaseClient
 
     }
   );
-
 
 /* ===================================================== 38. START  ===================================================== */
 
