@@ -99,6 +99,70 @@
   .founder-pillar { padding: 17px; }
 }
 
+
+/* Footer layout refinement */
+footer .footgrid {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(150px, 0.8fr));
+  gap: clamp(24px, 4vw, 58px);
+  align-items: start;
+}
+footer .footer-column-title {
+  display: block;
+  color: #f4f8fc;
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 18px;
+}
+footer .footerlinks {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+footer .footerlinks a,
+footer .footerlinks span {
+  color: #a9bfd5;
+  font-size: 15px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+footer .footerlinks a {
+  text-decoration: none;
+  transition: color .2s ease;
+}
+footer .footerlinks a:hover {
+  color: #2dd4bf;
+}
+footer .copyright {
+  box-sizing: border-box;
+  width: min(100% - 40px, 1120px);
+  margin: 34px auto 0 !important;
+  padding: 18px 0 22px !important;
+  border-top: 1px solid rgba(148, 163, 184, .14);
+  text-align: center;
+}
+footer .copyright p {
+  margin: 5px 0 0 !important;
+}
+@media (max-width: 900px) {
+  footer .footgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 24px;
+  }
+}
+@media (max-width: 560px) {
+  footer .footgrid {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  footer .copyright {
+    width: calc(100% - 32px);
+    margin-top: 26px !important;
+    text-align: left;
+  }
+}
+
 </style>
 </head>
   <body>
@@ -238,37 +302,47 @@
 </section>
     <footer>
       <div class="container footgrid">
-        <div>
+        <div class="footer-brand">
           <div class="logo">ORACLIME</div>
           <p>Professional B2B + B2T service coordination for businesses, partners and service professionals.</p>
           <p class="small">HVAC / Air Conditioner • Related Technical Services</p>
         </div>
-   <!-- Safe --> 
-        
-        <div>
-          <strong>Company</strong>
+
+        <div class="footer-column">
+          <strong class="footer-column-title">Company</strong>
           <div class="footerlinks">
+            <a href="index.html">Home</a>
             <a href="about.html">About Us</a>
             <a href="contact.html">Contact Us</a>
             <a href="login.html">Login</a>
           </div>
         </div>
-         <!-- v02 -->   
-  
-        <div>
-          <strong>Contact</strong>
+
+        <div class="footer-column">
+          <strong class="footer-column-title">Legal</strong>
+          <div class="footerlinks">
+            <a href="legal/terms.html">Terms &amp; Conditions</a>
+            <a href="legal/privacy.html">Privacy Policy</a>
+            <a href="legal/anti-discrimination.html">Anti-discrimination Policy</a>
+            <a href="legal/warranty.html">Warranty &amp; Support</a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <strong class="footer-column-title">Contact</strong>
           <div class="footerlinks">
             <span>+91 9917306492 (WhatsApp Only)</span>
             <span>Availability: 24/7</span>
-            <span>Oraclime@gmail.com</span>
+            <a href="mailto:oraclime@gmail.com">oraclime@gmail.com</a>
           </div>
         </div>
       </div>
-      <!-- Copyright 2026 ORACLIME -->    
-<div class="copyright" style="font-size:12px;color:#91a6b9;line-height:1.4;margin:0;padding:0 20px 8px;">
-  <p style="margin:0;">© Copyright 2026 ORACLIME. All rights reserved.</p>
-  <p style="margin:4px 0 0;">ORACLIME is a registered Micro Enterprise under Udyam Registration No. UDYAM-UP-59-0119829 </p>
-</div>
+
+      <!-- Copyright 2026 ORACLIME -->
+      <div class="copyright">
+        <p>© Copyright 2026 ORACLIME. All rights reserved.</p>
+        <p>ORACLIME is a registered Micro Enterprise under Udyam Registration No. UDYAM-UP-59-0119829.</p>
+      </div>
     </footer>
     <script src="assets/app.js">
     </script>
