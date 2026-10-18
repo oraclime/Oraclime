@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="ring" x1="15%" y1="10%" x2="88%" y2="90%">
+      <stop offset="0" stop-color="#7effdc"/>
+      <stop offset=".35" stop-color="#00d9b5"/>
+      <stop offset=".7" stop-color="#00bfae"/>
+      <stop offset="1" stop-color="#48ffc0"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="20%" y1="15%" x2="85%" y2="100%">
+      <stop offset="0" stop-color="#a4ffd0"/>
+      <stop offset=".48" stop-color="#35f5ae"/>
+      <stop offset="1" stop-color="#00c9bc"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#003e4d"/>
+      <stop offset="1" stop-color="#00a99c"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="25" fill="#061225"/>
+  <!-- Open circular O mark -->
+  <path d="M64 13.5a50.5 50.5 0 1 0 39.8 81.6l-9.4-8.2A38 38 0 1 1 96.2 39l10.2-7.2A50.3 50.3 0 0 0 64 13.5Z" fill="url(#ring)"/>
+  <!-- Lower inner sweep gives the ring a layered, dimensional feel -->
+  <path d="M24.8 81.4c7.5 19.1 24.7 31.1 45.5 31.1 12.7 0 24.4-4.7 33.2-12.7l-7.8-7.3c-8.3 7.2-18.3 10.2-28.5 8.6-18.7-2.8-31.7-12.7-42.4-31.2Z" fill="url(#shade)" opacity=".72"/>
+  <!-- Leaf/ribbon through the lower opening -->
+  <path d="M25.5 61.5c13.8 11.7 27.6 10.2 43.2 17.8 12.4 6 16.2 16.4 20.2 22.7-15.9 2.8-31.5-2.3-43.6-13.7C34.4 78 28.5 69.5 25.5 61.5Z" fill="url(#leaf)"/>
+  <path d="M25.5 61.5c13.1 12.8 28.6 16.8 42.1 25.5 8.5 5.5 14.2 10.7 21.3 15-3.9-7.7-7.7-18.1-20.2-22.7-15.6-7.6-29.4-6.1-43.2-17.8Z" fill="#83ffd0" opacity=".88"/>
+</svg>
